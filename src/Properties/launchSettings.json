@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "slugcrafting": {
+      "commandName": "Project",
+      "commandLineArgs": "$(RainWorldDir) && RainWorld.exe"
+    }
+  }
+}

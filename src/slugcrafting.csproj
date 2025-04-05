@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="../lib/*.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="..\lib\BepInEx.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\Fisobs.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\HOOKS-Assembly-CSharp.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\PUBLIC-Assembly-CSharp.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\UnityEngine.CoreModule.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\UnityEngine.dll">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- PostBuild Target -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="Exists('$(RainWorldDir)')">
+    <Message Importance="high" Text="PostBuild target is running..." />
+    
+    <ItemGroup>
+      <Assets Include="$(ProjectDir)../assets/**/*.*" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/$(ProjectName)/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/$(ProjectName)/plugins" />
+  </Target>
+
+</Project>
