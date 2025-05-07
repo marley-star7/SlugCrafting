@@ -4,8 +4,8 @@
     "version": "0.0.1",
 	"authors": "marleystar7",
 	"description": "A mod adding potential for advanced slugcat crafting!",
-	"requirements": [ "fisobs" ],
-	"requirements_names": [ "Fisobs" ],
+	"requirements": [ "fisobs", "improved-input-config" ],
+	"requirements_names": [ "Fisobs" , "Improved Input Config: Extended"],
 	"priorities": [ "moreslugcats" ],
 	"tags": [ "Game Mechanics", "Items" ],
 	"checksum_override_version": false

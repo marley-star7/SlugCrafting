@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SlugCrafting.Items;
 
-sealed class BoneKnifeProperties : ItemProperties
+sealed class KnifeProperties : ItemProperties
 {
     public override void Throwable(Player player, ref bool throwable)
         => throwable = false;

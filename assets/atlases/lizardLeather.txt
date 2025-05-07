@@ -1,0 +1,35 @@
+{ "frames": {
+   "lizardLeather0.png": {
+    "frame": { "x": 0, "y": 0, "w": 36, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 36, "h": 36 },
+    "sourceSize": { "w": 36, "h": 36 },
+    "duration": 100
+   },
+   "lizardLeather1.png": {
+    "frame": { "x": 36, "y": 0, "w": 36, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 36, "h": 36 },
+    "sourceSize": { "w": 36, "h": 36 },
+    "duration": 100
+   },
+   "lizardLeather2.png": {
+    "frame": { "x": 72, "y": 0, "w": 36, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 36, "h": 36 },
+    "sourceSize": { "w": 36, "h": 36 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-x64",
+  "image": "lizardLeather.png",
+  "format": "RGBA8888",
+  "size": { "w": 108, "h": 36 },
+  "scale": "1"
+ }
+}

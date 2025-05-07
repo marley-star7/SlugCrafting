@@ -22,10 +22,6 @@
   "image": "boneKnife.png",
   "format": "RGBA8888",
   "size": { "w": 16, "h": 16 },
-  "scale": "1",
-  "layers": [
-   { "name": "Blade", "opacity": 255, "blendMode": "normal" },
-   { "name": "Handle", "opacity": 255, "blendMode": "normal" }
-  ]
+  "scale": "1"
  }
 }

@@ -5,12 +5,12 @@ using Fisobs.Sandbox;
 
 namespace SlugCrafting.Items;
 
-sealed class BoneKnifeFisob : Fisob
+sealed class KnifeFisob : Fisob
 {
-    public static readonly AbstractPhysicalObject.AbstractObjectType AbstractBoneKnife = new("BoneKnife", true);
-    public static readonly MultiplayerUnlocks.SandboxUnlockID BoneKnife = new("BoneKnife", true);
+    public static readonly AbstractPhysicalObject.AbstractObjectType abstractObjectType = new("Knife", true);
+    public static readonly MultiplayerUnlocks.SandboxUnlockID knife = new("Knife", true);
 
-    public BoneKnifeFisob() : base(AbstractBoneKnife)
+    public KnifeFisob() : base(abstractObjectType)
     {
         // Fisobs auto-loads the `icon_CentiShield` embedded resource as a texture.
         // See `CentiShields.csproj` for how you can add embedded resources to your project.
@@ -20,19 +20,18 @@ sealed class BoneKnifeFisob : Fisob
 
         SandboxPerformanceCost = new(linear: 0.3f, exponential: 0f);
 
-        RegisterUnlock(BoneKnife, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);
+        RegisterUnlock(knife, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
     {
         // TODO: add data later for this.
 
-        var result = new BoneKnifeAbstract(world, saveData.Pos, saveData.ID);
-
+        var result = new AbstractKnife(world, saveData.Pos, saveData.ID);
         return result;
     }
 
-    private static readonly BoneKnifeProperties properties = new();
+    private static readonly KnifeProperties properties = new();
 
     public override ItemProperties Properties(PhysicalObject forObject)
     {

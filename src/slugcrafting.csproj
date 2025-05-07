@@ -9,7 +9,35 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="../lib/*.dll" />
+    <Reference Include="..\lib\BepInEx.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\Fisobs.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\HOOKS-Assembly-CSharp.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\ImprovedInput.dll" />
+    <Reference Include="..\lib\MonoMod.RuntimeDetour.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\MonoMod.Utils.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\PUBLIC-Assembly-CSharp.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\Unity.Mathematics.dll" />
+    <Reference Include="..\lib\UnityEngine.CoreModule.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\UnityEngine.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="..\lib\UnityEngine.InputLegacyModule.dll">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +50,12 @@
     <Reference Update="..\lib\HOOKS-Assembly-CSharp.dll">
       <Private>False</Private>
     </Reference>
+    <Reference Update="..\lib\MonoMod.RuntimeDetour.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\MonoMod.Utils.dll">
+      <Private>False</Private>
+    </Reference>
     <Reference Update="..\lib\PUBLIC-Assembly-CSharp.dll">
       <Private>False</Private>
     </Reference>
@@ -29,6 +63,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Update="..\lib\UnityEngine.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Update="..\lib\UnityEngine.InputLegacyModule.dll">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
