@@ -12,12 +12,6 @@ sealed class KnifeFisob : Fisob
 
     public KnifeFisob() : base(abstractObjectType)
     {
-        // Fisobs auto-loads the `icon_CentiShield` embedded resource as a texture.
-        // See `CentiShields.csproj` for how you can add embedded resources to your project.
-
-        // If you want a simple grayscale icon, you can omit the following line.
-        //Icon = new CentiShieldIcon();
-
         SandboxPerformanceCost = new(linear: 0.3f, exponential: 0f);
 
         RegisterUnlock(knife, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);

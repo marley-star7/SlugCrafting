@@ -1,20 +1,16 @@
 ﻿using RWCustom;
 using UnityEngine;
 
+using MarMath;
+
 namespace SlugCrafting.Items;
 
 sealed class Knife : Weapon
 {
-    private const float SPRITE_DIRECTION_BLEND_TIME = 0.5f;
-    private const float ROTATION_BLEND_TIME = 0.35f;
-    private const float Y_DIFF_ROTATION_MODIFIER = 2f;
-
+    private const float SpriteDirectionBlendTime = 0.5f;
+    private const float RotationBlendTime = 0.35f;
+    private const float YDiffRotationModifier = 2f;
     private static float Rand => UnityEngine.Random.value;
-
-    private int flipped = 1;
-
-    new private float rotation;
-    new private float lastRotation;
 
     public float rotVel;
     private float faceDirection = 1f;
@@ -34,7 +30,7 @@ sealed class Knife : Weapon
         set => bladeColor = value;
     }
 
-    private readonly float rotationOffset = 110;
+    private readonly float GrabbedRotationYOffset = 30;
     public Knife(AbstractKnife abstr, Vector2 pos, Vector2 vel) 
         : base(abstr, abstr.world)
     {
@@ -46,15 +42,15 @@ sealed class Knife : Weapon
 
         bodyChunkConnections = new BodyChunkConnection[0];
 
-        airFriction = 0.999f;
-        gravity = 0.9f;
-        bounce = 0.1f;
-        surfaceFriction = 0.45f;
-        collisionLayer = 1;
-        waterFriction = 0.92f;
-        buoyancy = 0.75f;
+        base.airFriction = 0.999f;
+        base.gravity = 0.9f;
+        base.bounce = 0.1f;
+        base.surfaceFriction = 0.45f;
+        base.collisionLayer = 1;
+        base.waterFriction = 0.92f;
+        base.buoyancy = 0.75f;
 
-        rotation = Rand * 360f;
+        rotation = new Vector2(0, Rand * 360f);
     }
     public override void Update(bool eu)
     {
@@ -72,31 +68,39 @@ sealed class Knife : Weapon
             var grabber = grasp.grabber;
             var grabberChunk = grabber.mainBodyChunk;
 
+            //
+            // ROTATION X CALCULATION
+            //
+
             // Flip if the grabber is facing left.
-            float newRotationOffset;
+            float rotationXOffset = 0;
             if (graspChunk.pos.x < grabberChunk.pos.x)
-            {
-                flipped = -1;
-                newRotationOffset = 180f - rotationOffset;
-            }
-            else
-            {
-                flipped = 1;
-                newRotationOffset = rotationOffset;
-            }
+                rotationXOffset = 180;
 
-            faceDirection = Mathf.Lerp(faceDirection, flipped, SPRITE_DIRECTION_BLEND_TIME);
+            var flipped = MarMathf.InverseLerpNegToPos(180, 0, rotationXOffset);
 
-            var chunk = firstChunk;
-
-            lastRotation = rotation;
-            rotation = Mathf.Lerp(rotation, graspChunk.Rotation.GetAngle() + newRotationOffset, ROTATION_BLEND_TIME);
+            //
+            // ADDITIONAL COSMETIC Y ROTATION FOR MOVERY
+            //
 
             // Add slight rotation to the knife based off vertical difference between the two chunks (to simulate where the wrist would be resting).
             var yDiff = graspChunk.pos.y - grabberChunk.pos.y;
-            rotation -= yDiff * flipped * Y_DIFF_ROTATION_MODIFIER;
+            var addedRotY = -yDiff * YDiffRotationModifier * flipped;
+            // Add the visual rotation to position in hand.
+            addedRotY += GrabbedRotationYOffset * flipped;
 
-            //rotation += 0.9f * Vector2.Distance(chunk.lastPos, chunk.pos);
+            //
+            // ACTUAL SETTAGE
+            //
+
+            base.rotation = Vector2.Lerp(rotation, graspChunk.Rotation + new Vector2(rotationXOffset, 0), RotationBlendTime);
+            base.rotation.y += addedRotY;
+            base.lastRotation = rotation;
+        }
+        if (base.setRotation != null)
+        {
+            base.rotation = setRotation.Value;
+            base.setRotation = null;
         }
     }
 
@@ -112,6 +116,12 @@ sealed class Knife : Weapon
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         Vector2 pos = Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker);
+        Vector2 rot = Vector3.Slerp(lastRotation, rotation, timeStacker);
+
+        // TODO: The fact this does not account for over 180 degrees is a known bug, I'm literally too maff dumb rn to fix it
+        float spriteScaleX = Mathf.Sign(MarMathf.InverseLerpNegToPos(180, 0, rotation.x));
+
+        float spriteRotation = rot.y;
 
         // Reposition sprite to fit more naturally on hand.
         pos.x += 3.2f * faceDirection;
@@ -122,8 +132,8 @@ sealed class Knife : Weapon
         {
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
-            sLeaser.sprites[i].rotation = Mathf.Lerp(lastRotation, rotation, timeStacker);
-            sLeaser.sprites[i].scaleX = flipped;
+            sLeaser.sprites[i].rotation = spriteRotation;
+            sLeaser.sprites[i].scaleX = spriteScaleX;
         }
 
         sLeaser.sprites[0].color = bladeColor;

@@ -1,26 +1,67 @@
-using System;
 using UnityEngine;
 using RWCustom;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Menu;
-using MonoMod.Cil;
 
 using SlugCrafting.Items;
+using SlugCrafting.Scavenges;
+using MarMath;
 using ImprovedInput;
 
 namespace SlugCrafting;
 
 public static partial class Hooks
 {
+    // TODO: add different scavenging times saved to the items scavenge data type thingy when you add it.
+    private static bool CanMaul(Player scug)
+    {
+        PlayerCraftingData playerCraftingData = scug.GetCraftingData();
+
+        if (playerCraftingData.scavengeTimer == 0)
+            return true;
+        return false;
+    }
+    private static void Player_EatMeatUpdate(On.Player.orig_EatMeatUpdate orig, Player self, int graspIndex)
+    {
+        if (CanMaul(self))
+            orig(self, graspIndex);
+    }
+
+    // Not sure why there is a difference between EatMeatUpdate and MaulingUpdate, nor do I know if this does anything, but just to be safe?
+    private static void Player_MaulingUpdate(On.Player.orig_MaulingUpdate orig, Player self, int graspIndex)
+    {
+        if (CanMaul(self))
+            orig(self, graspIndex);
+    }
+
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
-        // CHECK WHAT HOLDING
+        var playerCraftingData = self.GetCraftingData();
+
+        ScavengingUpdate(ref self, ref playerCraftingData);
+
+        orig(self, eu);
+    }
+    private static void Player_GrabUpdate(On.Player.orig_GrabUpdate orig, Player self, bool eu)
+    {
+        // Call the original method
+        orig(self, eu);
+    }
+
+    public static void CraftingUpdate(ref Player self, ref PlayerCraftingData playerCraftingData)
+    {
+
+    }
+
+    public static void ScavengingUpdate(ref Player self, ref PlayerCraftingData playerCraftingData)
+    {
+
+        //
+        // CHECK WHAT HOLDING FOR SCAVENGE OR CRAFT
+        //
+
         Knife? graspedKnife = null;
-        int graspedKnifeGrasp = -1;
+        int graspedKnifeGraspIndex = -1;
         PhysicalObject? graspedPhysicalObject = null;
-        int graspedPhysicalObjectGrasp = -1;
+        int graspedPhysicalObjectGraspIndex = -1;
 
         // Check if the player is holding a graspedKnife and a creature simultaneously
         for (int i = 0; i < self.grasps.Length; i++)
@@ -33,79 +74,98 @@ public static partial class Hooks
             // Grabbed chunk takes priority first, because can be shared with item and creature.
             if (grasp.grabbedChunk.owner is Creature)
             {
-                graspedPhysicalObjectGrasp = i;
+                graspedPhysicalObjectGraspIndex = i;
                 graspedPhysicalObject = grasp.grabbed as PhysicalObject;
             }
             // ITEM CHECKING
             // Grabbed knife overrides grabbed chunk if detected then.
             if (grasp.grabbed is Knife)
             {
-                graspedKnifeGrasp = i;
+                graspedKnifeGraspIndex = i;
                 graspedKnife = grasp.grabbed as Knife;
             }
             else if (grasp.grabbed is PhysicalObject)
             {
-                graspedPhysicalObjectGrasp = i;
+                graspedPhysicalObjectGraspIndex = i;
                 graspedPhysicalObject = grasp.grabbed as PhysicalObject;
             }
         }
 
+        //
         // IF CAN SCAVENGE
-        if (graspedKnife != null && graspedPhysicalObject != null)
+        //
+
+        if (self.IsPressed(Inputs.Input.Scavenge) && graspedKnife != null && graspedPhysicalObject != null)
         {
-            // TODO: I'm aware this is a mess, it is temporary.
-            // IF WANT TO SCAVENGE
+            graspedKnife.BladeColor = Color.green; // TEMP
 
-            int playerNumber = self.playerState.playerNumber;
-            bool playerPressingScavenge = Plugin.InputScavenge.CheckRawPressed(playerNumber);
+            playerCraftingData.scavengeTimer++;
 
-            //if (playerPressingScavenge)
-            //{
-                graspedKnife.BladeColor = Color.green;
-                AbstractPhysicalObject scavengedAbstractObject = null;
+            // Cooldown before scavenge starts.
+            if (playerCraftingData.scavengeTimer < 10)
+                return;
 
-                var tilePosition = self.room.GetTilePosition(graspedPhysicalObject.bodyChunks[0].pos);
-                var pos = new WorldCoordinate(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
+            var scavenge = playerCraftingData.scavenge;
 
-                // Check for specific types of physical objects to return scavenge.
-                
-                /*if (graspedPhysicalObject is Lizard)
+            // If player is not currently scavenging a spot, try to find one to scavenge.
+            if (scavenge == null)
+            {
+                CreatureScavengeData scavengeData = null;
+                // SCAVENGING CURRENTLY ONLY WORKS FOR CREATURES
+                if (graspedPhysicalObject is Creature)
+                    scavengeData = (graspedPhysicalObject as Creature).GetCreatureScavengeData();
+                // If no scavenge data, return.
+                if (scavengeData == null)
+                    return;
+
+                var scavengeSpot = new ScavengeSpot(self.grasps[graspedPhysicalObjectGraspIndex].grabbedChunk.index, 0, 0);
+                scavenge = scavengeData.GetScavenge(scavengeSpot);
+                // If the grabbed scavenging spot or already scavenged, then search for one that isn't.
+                if (scavengeSpot == null || scavenge.canScavenge == false)
+                    scavengeData.GetNearestValidScavenge(scavengeSpot);
+                // If STILL null, there are no valid scavenge spots, return.
+                if (scavengeSpot == null)
+                    return;
+                else // If we found a new valid scavenge spot diff from orig, grab that one's chunk instead.
+                    self.grasps[graspedPhysicalObjectGraspIndex].chunkGrabbed = scavengeSpot.bodyChunkIndex;
+
+                // Save the scavenge data so we don't have to waste time searching for it again.
+                playerCraftingData.scavengeSpot = scavengeSpot;
+                playerCraftingData.scavenge = scavenge;
+            }
+
+            // DO SCAVENGE ANIMATION
+            if (scavenge.canScavenge == true)
+            {
+                scavenge.scavengeTime--;
+
+                if (scavenge.scavengeTime > 0)
+                    scavenge.animation.PlaySlugcatAnimation(self, graspedKnifeGraspIndex, graspedPhysicalObjectGraspIndex, playerCraftingData.scavengeTimer);
+                else // Scavenge is done!
                 {
-                    graspedKnife.BladeColor = Color.red;
-                    var lizard = graspedPhysicalObject as Lizard;
-                    var lizardGraphics = (lizard.graphicsModule as LizardGraphics);
+                    AbstractPhysicalObject scavengedAbstractObject = scavenge.Scavenge();
 
-                    lizardGraphicsStorage.TryGetValue(lizardGraphics, out LizardGraphicsData? lizardGraphicsData);
-                    scavengedAbstractObject = new AbstractLizardShell(self.room.world, pos, self.room.game.GetNewID())
+                    var tilePosition = self.room.GetTilePosition(graspedPhysicalObject.bodyChunks[0].pos);
+                    var pos = new WorldCoordinate(self.room.abstractRoom.index, tilePosition.x, tilePosition.y, 0);
+
+                    // GRAB OBJECT IF WE SCAVENGED ANYTHING
+                    if (scavengedAbstractObject != null)
                     {
-                        shellColor = lizardGraphics.effectColor,
-                        headSprite = lizardGraphicsData.spriteLeaser.sprites[lizardGraphics.SpriteHeadStart + 2].element.name
-                    };
-                }
-                else*/ if (graspedPhysicalObject is Lizard)
-                {
-                    graspedKnife.BladeColor = Color.red;
-                    scavengedAbstractObject = new AbstractLizardLeather(self.room.world, pos, self.room.game.GetNewID());
-                }
+                        self.room.abstractRoom.AddEntity(scavengedAbstractObject);
+                        scavengedAbstractObject.RealizeInRoom();
 
-                // GRAB OBJECT IF WE SCAVENGED ANYTHING
-                if (scavengedAbstractObject != null)
-                {
-                    // Where I am desperately going wrong...
-                    self.room.abstractRoom.AddEntity(scavengedAbstractObject);
-                    scavengedAbstractObject.RealizeInRoom();
-
-                    self.ReleaseGrasp(graspedPhysicalObjectGrasp);
-                    self.SlugcatGrab(scavengedAbstractObject.realizedObject, self.FreeHand());
+                        self.ReleaseGrasp(graspedPhysicalObjectGraspIndex);
+                        self.SlugcatGrab(scavengedAbstractObject.realizedObject, self.FreeHand());
+                        playerCraftingData.scavengeTimer = 0; // Reset the timer
+                    }
                 }
-            //}
+            }
+            else
+            {
+                playerCraftingData.scavengeSpot = null; // Reset the scavenge spot if we can't scavenge anymore.
+                playerCraftingData.scavenge = null; // Reset the scavenge data if we can't scavenge anymore.
+                playerCraftingData.scavengeTimer = 0; // Reset the timer to scavenge if not pressing scavenge.
+            }
         }
-
-        orig(self, eu);
-    }
-    private static void Player_GrabUpdate(On.Player.orig_GrabUpdate orig, Player self, bool eu)
-    {
-        // Call the original method
-        orig(self, eu);
     }
 }

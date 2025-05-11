@@ -1,13 +1,12 @@
 ﻿using BepInEx;
-using Fisobs.Core;
-using System.Linq;
-using System.Security.Permissions;
 using UnityEngine;
 using RWCustom;
 
-using SlugCrafting.Items;
+using Fisobs.Core;
 using ImprovedInput;
 
+using SlugCrafting.Items;
+using SlugCrafting.Scavenges;
 
 namespace SlugCrafting;
 
@@ -26,28 +25,23 @@ sealed class Plugin : BaseUnityPlugin
 
     public static bool restartMode = false;
 
-    //
-    // INPUT
-    //
-    public static PlayerKeybind InputScavenge;
-
     /// <summary>
     /// This method is called when the plugin is enabled
     /// </summary>
     public void OnEnable()
     {
-        var inputScavengeId = ID + ":scavenge";
-        // INPUTS
-        if (InputScavenge == null)
-            InputScavenge = PlayerKeybind.Get(inputScavengeId);
-
-        if (InputScavenge == null)
-            InputScavenge = PlayerKeybind.Register(inputScavengeId, NAME, "Scavenge", KeyCode.LeftShift, KeyCode.JoystickButton2);
+        Inputs.Input.OnPluginEnable();
 
         // FISOBS
-        Content.Register(new KnifeFisob());
-        Content.Register(new LizardLeatherFisob());
-        Content.Register(new LizardShellFisob());
+        Fisobs.Core.Content.Register(new KnifeFisob());
+        Fisobs.Core.Content.Register(new LizardLeatherFisob());
+
+        Fisobs.Core.Content.Register(new GreenLizardShellFisob());
+        Fisobs.Core.Content.Register(new PinkLizardShellFisob());
+
+        // SCAVENGE DATA
+        SlugCrafting.Core.Content.RegisterScavengeData(CreatureTemplate.Type.PinkLizard, typeof(GreenLizardScavengeData));
+        SlugCrafting.Core.Content.RegisterScavengeData(CreatureTemplate.Type.PinkLizard, typeof(PinkLizardScavengeData));
 
         // HOOKS
         Hooks.ApplyHooks();

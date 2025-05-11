@@ -32,9 +32,9 @@ class LizardLeather : PlayerCarryableItem, IDrawable
         : base(abstractLizardLeather)
     {
         base.bodyChunks = new[] {
-            new BodyChunk(this, 0, pos, 3f, 0.14f),
-            new BodyChunk(this, 0, pos - new Vector2(3f, 0), 3f, 0.14f),
-            new BodyChunk(this, 0, pos + new Vector2(3f, 0), 3f, 0.14f)
+            new BodyChunk(this, 0, pos, 3f, 0.11f),
+            new BodyChunk(this, 0, pos - new Vector2(3f, 0), 3f, 0.11f),
+            new BodyChunk(this, 0, pos + new Vector2(3f, 0), 3f, 0.11f)
         };
         // Cloth is made up of 3 small chunks to fake physics.
         base.bodyChunkConnections = new BodyChunkConnection[] {
@@ -67,8 +67,8 @@ class LizardLeather : PlayerCarryableItem, IDrawable
         ResetVertices();
 
         base.airFriction = 0.97f;
-        base.gravity = 0.9f;
         base.surfaceFriction = 0.45f;
+        base.gravity = 0.9f;
         base.collisionLayer = 0;
         base.waterFriction = 0.92f;
         base.buoyancy = 0.75f;
@@ -122,6 +122,7 @@ class LizardLeather : PlayerCarryableItem, IDrawable
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
         sLeaser.sprites = new FSprite[TotalSprites];
+        // Get random 1 of 3 different variants for the leather texture.
         var textureVariant = UnityEngine.Random.Range(0, 3);
         sLeaser.sprites[leatherSprite] = TriangleMesh.MakeGridMesh("lizardLeather" + textureVariant.ToString(), divs - 1);
 
@@ -130,6 +131,7 @@ class LizardLeather : PlayerCarryableItem, IDrawable
         {
             triMesh.verticeColors[i] = leatherColor;
         }
+
         AddToContainer(sLeaser, rCam, null);
     }
 
@@ -145,7 +147,13 @@ class LizardLeather : PlayerCarryableItem, IDrawable
             }
         }
 
-        if (base.slatedForDeletetion || room != rCam.room)
+        // Loop through and update the sprites.
+        for (int i = 0; i < TotalSprites; i++)
+        {
+            sLeaser.sprites[i].rotation = 0;
+        }
+
+            if (base.slatedForDeletetion || room != rCam.room)
         {
             sLeaser.CleanSpritesAndRemove();
         }
@@ -158,12 +166,12 @@ class LizardLeather : PlayerCarryableItem, IDrawable
 
     public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
     {
-        // ??= this is a null coalescing assignment operator, it will assign the value to newContainer if it is null.
         newContainer ??= rCam.ReturnFContainer("Items");
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
+
+        foreach (FSprite fsprite in sLeaser.sprites)
         {
-            sLeaser.sprites[i].RemoveFromContainer();
-            newContainer.AddChild(sLeaser.sprites[i]);
+            fsprite.RemoveFromContainer();
+            newContainer.AddChild(fsprite);
         }
     }
 
