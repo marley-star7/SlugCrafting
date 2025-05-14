@@ -7,7 +7,7 @@ namespace SlugCrafting.Items;
 sealed class AbstractLizardLeather : AbstractPhysicalObject
 {
     public AbstractLizardLeather(World world, WorldCoordinate pos, EntityID ID) 
-        : base(world, LizardLeatherFisob.abstractObjectType, null, pos, ID)
+        : base(world, LizardHideFisob.abstractObjectType, null, pos, ID)
     {
 
     }
@@ -16,7 +16,7 @@ sealed class AbstractLizardLeather : AbstractPhysicalObject
     {
         base.Realize();
         if (realizedObject == null)
-            realizedObject = new LizardLeather(this, Room.realizedRoom.MiddleOfTile(pos.Tile));
+            realizedObject = new LizardHide(this, Room.realizedRoom.MiddleOfTile(pos.Tile));
     }
 
     //public override string ToString()

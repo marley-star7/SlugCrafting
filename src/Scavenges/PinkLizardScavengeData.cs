@@ -25,14 +25,14 @@ public class PinkLizardScavengeData : CreatureScavengeData
                 }
             },
             // Body Index is 1
-            { new ScavengeSpot(1, 0, 0), new LizardLeatherScavenge(lizard)
+            { new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
                     animation = new SawBackForthScavengeAnimation(100),
                 }
             },
             // Body Index is 1
-            { new ScavengeSpot(2, 0, 0), new LizardLeatherScavenge(lizard)
+            { new ScavengeSpot(2, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
                     animation = new SawBackForthScavengeAnimation(100),

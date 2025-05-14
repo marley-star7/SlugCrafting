@@ -7,7 +7,7 @@ using Fisobs.Properties;
 
 namespace SlugCrafting.Items
 {
-    public sealed class LizardLeatherProperties : ItemProperties
+    public sealed class LizardHideProperties : ItemProperties
     {
         public override void Throwable(Player player, ref bool throwable)
             => throwable = true;

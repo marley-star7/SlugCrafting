@@ -24,17 +24,14 @@ public static class Input
         if (Scavenge == null)
             Scavenge = PlayerKeybind.Register(inputScavengeId, Plugin.NAME, "Scavenge", KeyCode.LeftShift, KeyCode.JoystickButton2);
 
-        Scavenge.HideConflict = (x) => x != PlayerKeybind.Grab;
+        if (Craft == null)
+            Craft = PlayerKeybind.Get(inputCraftId);
 
         if (Craft == null)
-            Craft = PlayerKeybind.Get(inputScavengeId);
+            Craft = PlayerKeybind.Register(inputCraftId, Plugin.NAME, "Craft", KeyCode.LeftShift, KeyCode.JoystickButton2);
 
-        if (Craft == null)
-            Craft = PlayerKeybind.Register(inputCraftId, Plugin.NAME, "Scavenge", KeyCode.LeftShift, KeyCode.JoystickButton2);
-
-        Craft.HideConflict = (x) => x != PlayerKeybind.Grab;
-
-        // Cross Conflicts
-        Craft.HideConflict = (x) => x != Scavenge;
+        // Conflicts
+        Craft.HideConflict = (keyBind) => (keyBind == PlayerKeybind.Grab || keyBind == Scavenge);
+        Scavenge.HideConflict = (keyBind) => (keyBind == PlayerKeybind.Grab || keyBind == Craft);
     }
 }

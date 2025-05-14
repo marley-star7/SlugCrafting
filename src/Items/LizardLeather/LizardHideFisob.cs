@@ -5,12 +5,12 @@ using Fisobs.Sandbox;
 
 namespace SlugCrafting.Items;
 
-sealed class LizardLeatherFisob : Fisob
+sealed class LizardHideFisob : Fisob
 {
     public static readonly AbstractPhysicalObject.AbstractObjectType abstractObjectType = new("LizardLeather", true);
     public static readonly MultiplayerUnlocks.SandboxUnlockID lizardLeather = new("LizardLeather", true);
 
-    public LizardLeatherFisob() : base(abstractObjectType)
+    public LizardHideFisob() : base(abstractObjectType)
     {
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
 
@@ -25,7 +25,7 @@ sealed class LizardLeatherFisob : Fisob
         return result;
     }
 
-    private static readonly LizardLeatherProperties properties = new();
+    private static readonly LizardHideProperties properties = new();
 
     public override ItemProperties Properties(PhysicalObject forObject)
     {

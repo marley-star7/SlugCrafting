@@ -24,7 +24,7 @@ public class GreenLizardScavengeData : CreatureScavengeData
                     animation = new SawBackForthScavengeAnimation(250),
                 }
             },
-            { new ScavengeSpot(1, 0, 0), new LizardLeatherScavenge(lizard)
+            { new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
                     animation = new SawBackForthScavengeAnimation(100),

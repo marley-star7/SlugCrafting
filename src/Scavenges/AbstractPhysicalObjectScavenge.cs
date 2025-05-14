@@ -1,8 +1,10 @@
 ﻿
 using System.Numerics;
-using SlugCrafting.Animations.Scavenging;
+using SlugCrafting.Animations;
 
 namespace SlugCrafting;
+
+// TODO: probably change this to be a struct for optimization purposes, since the only thing that changes is the function?
 public abstract class AbstractPhysicalObjectScavenge
 {
     /// <summary>

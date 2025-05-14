@@ -7,6 +7,8 @@ using ImprovedInput;
 
 using SlugCrafting.Items;
 using SlugCrafting.Scavenges;
+using SlugCrafting.Crafts;
+using SlugCrafting.Animations.Crafting;
 
 namespace SlugCrafting;
 
@@ -34,10 +36,41 @@ sealed class Plugin : BaseUnityPlugin
 
         // FISOBS
         Fisobs.Core.Content.Register(new KnifeFisob());
-        Fisobs.Core.Content.Register(new LizardLeatherFisob());
+        Fisobs.Core.Content.Register(new LizardHideFisob());
 
         Fisobs.Core.Content.Register(new GreenLizardShellFisob());
         Fisobs.Core.Content.Register(new PinkLizardShellFisob());
+
+        // CRAFT DATA
+        SlugCrafting.Core.Content.RegisterCraft(
+            AbstractPhysicalObject.AbstractObjectType.WaterNut,
+            AbstractPhysicalObject.AbstractObjectType.FirecrackerPlant,
+            new Craft()
+            {
+                primaryIngredient = new CraftIngredient()
+                {
+                    type = AbstractPhysicalObject.AbstractObjectType.WaterNut,
+                    consume = true,
+                },
+            secondaryIngredient = new CraftIngredient()
+                {
+                    type = AbstractPhysicalObject.AbstractObjectType.FirecrackerPlant,
+                    consume = true,
+                },
+                craftResult = (Creature crafter) =>
+                {
+                   return new AbstractPhysicalObject(
+                        crafter.room.world,
+                        AbstractPhysicalObject.AbstractObjectType.ScavengerBomb,
+                        null,
+                        crafter.coord,
+                        crafter.room.game.GetNewID()
+                    );
+                },
+                craftTime = 20,
+                animation = new SwallowCraftAnimation()
+            }
+        );
 
         // SCAVENGE DATA
         SlugCrafting.Core.Content.RegisterScavengeData(CreatureTemplate.Type.PinkLizard, typeof(GreenLizardScavengeData));

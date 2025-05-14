@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SlugCrafting.Items;
 
-class LizardLeather : PlayerCarryableItem, IDrawable
+class LizardHide : PlayerCarryableItem, IDrawable
 {
     public float rotation;
     public float lastRotation;
@@ -28,7 +28,7 @@ class LizardLeather : PlayerCarryableItem, IDrawable
     private float lastMovement;
 
     public override float ThrowPowerFactor => .7f;
-    public LizardLeather(AbstractLizardLeather abstractLizardLeather, Vector2 pos) 
+    public LizardHide(AbstractLizardLeather abstractLizardLeather, Vector2 pos) 
         : base(abstractLizardLeather)
     {
         base.bodyChunks = new[] {

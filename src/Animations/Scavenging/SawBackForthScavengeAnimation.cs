@@ -76,4 +76,8 @@ public class SawBackForthScavengeAnimation : HandAnimation
             graspedKnife.setRotation = new Vector2(knifeAnimRotationX, knifeAnimRotationY);
         }
     }
+
+    public override void PlaySlugcatAnimationGraphics(PlayerGraphics playerGraphics)
+    {
+    }
 }

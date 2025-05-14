@@ -3,9 +3,9 @@ using SlugCrafting.Items;
 
 namespace SlugCrafting.Scavenges.ScavengeSpots
 {
-    public class LizardLeatherScavenge : AbstractPhysicalObjectScavenge
+    public class LizardHideScavenge : AbstractPhysicalObjectScavenge
     {
-        public LizardLeatherScavenge(Lizard lizard) :  base(lizard) { }
+        public LizardHideScavenge(Lizard lizard) :  base(lizard) { }
 
         public override AbstractPhysicalObject Scavenge()
         {
