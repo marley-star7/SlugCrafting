@@ -1,5 +1,4 @@
-﻿using SlugCrafting.Animations.Scavenging;
-using SlugCrafting.Items;
+﻿using SlugCrafting.Items;
 
 namespace SlugCrafting.Scavenges.ScavengeSpots
 {

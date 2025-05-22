@@ -1,7 +1,7 @@
 ﻿using RWCustom;
 using UnityEngine;
 
-using MarMath;
+using MRCustom.Math;
 
 namespace SlugCrafting.Items;
 

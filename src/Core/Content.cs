@@ -21,8 +21,8 @@ public static class Content
 
     /// <summary>
     /// Register a new craft to the crafting system.
-    /// The primary ingredient is the one in your character's dominant hand.
-    /// The secondary ingredient is the one in your character's non-dominant hand.
+    /// The primary ingredient is the one in your character's dominant hand, and is the item that always ends up "changed" after crafts.
+    /// The secondary ingredient is the one in your character's non-dominant hand, it is where tools, or the item that is consumed is held.
     /// The craft will always end with the new item in your primary (dominant) hand.
     /// </summary>
     /// <param name="primaryIngredient"></param>

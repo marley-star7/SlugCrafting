@@ -7,8 +7,8 @@ namespace SlugCrafting.Items;
 sealed class AbstractKnife : AbstractPhysicalObject
 {
     // TODO: need to rework this whole class.
-    public AbstractKnife(World world, WorldCoordinate pos, EntityID ID) 
-        : base(world, KnifeFisob.abstractObjectType, null, pos, ID)
+    public AbstractKnife(World world, AbstractObjectType type, WorldCoordinate pos, EntityID ID) 
+        : base(world, type, null, pos, ID)
     {
 
     }

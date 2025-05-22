@@ -1,4 +1,4 @@
-﻿using SlugCrafting.Animations;
+﻿using MRCustom.Animations;
 
 namespace SlugCrafting.Crafts
 {
@@ -24,7 +24,7 @@ namespace SlugCrafting.Crafts
         /// </summary>
         public CraftResult craftResult;
 
-        public HandAnimation animation;
+        public string animation;
 
         public CraftIngredient[] ingredients;
 

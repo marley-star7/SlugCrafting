@@ -21,7 +21,7 @@ sealed class KnifeFisob : Fisob
     {
         // TODO: add data later for this.
 
-        var result = new AbstractKnife(world, saveData.Pos, saveData.ID);
+        var result = new AbstractKnife(world, abstractObjectType, saveData.Pos, saveData.ID);
         return result;
     }
 

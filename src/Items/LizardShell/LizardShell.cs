@@ -104,7 +104,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
             if (grabber is Player && (grabber as Player).Sneak > 0.01f)
             {
                 // CHANGE COLLISION LAYER TO BLOCK SPEARS WHEN CROUCHING (PARRYTIME!)
-                base.collisionLayer = 1;
+                base.collisionLayer = 2;
                 //bodyChunks[0].rad = abstractLizardShell.headBodyChunkRadius * 0.8f; // Make the shell smaller when crouching to make easier to position.
                 // If the player is sneaking, we want to make sure the shell is facing the same direction as the player.
                 var scug = grabber as Player;

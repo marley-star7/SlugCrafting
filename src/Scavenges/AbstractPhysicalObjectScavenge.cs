@@ -1,6 +1,6 @@
 ﻿
 using System.Numerics;
-using SlugCrafting.Animations;
+using MRCustom.Animations;
 
 namespace SlugCrafting;
 
@@ -36,7 +36,7 @@ public abstract class AbstractPhysicalObjectScavenge
 
     public bool canScavenge;
 
-    public HandAnimation animation;
+    public PlayerHandAnimationData.HandAnimationIndex handAnimation;
 
     public AbstractPhysicalObjectScavenge(PhysicalObject owner)
     {

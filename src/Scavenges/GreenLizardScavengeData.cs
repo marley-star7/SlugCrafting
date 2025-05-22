@@ -1,5 +1,4 @@
-﻿using SlugCrafting.Animations.Scavenging;
-using SlugCrafting.Items;
+﻿using SlugCrafting.Items;
 using SlugCrafting.Scavenges.ScavengeSpots;
 
 namespace SlugCrafting.Scavenges;
@@ -21,13 +20,13 @@ public class GreenLizardScavengeData : CreatureScavengeData
             { new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard, GreenLizardShellFisob.abstractObjectType)
                 {
                     scavengeTime = 250,
-                    animation = new SawBackForthScavengeAnimation(250),
+                    handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
             { new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    animation = new SawBackForthScavengeAnimation(100),
+                    handAnimation =  Enums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
         };
