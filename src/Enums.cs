@@ -8,23 +8,23 @@ public class Enums
     {
         // CRAFT ANIMATIONS
 
-        public static PlayerHandAnimationData.HandAnimationIndex? DoubleSwallowCraft = null;
-        public static PlayerHandAnimationData.HandAnimationIndex? SmashIntoCraft = null;
+        public static PlayerHandAnimationPlayer.HandAnimationIndex? DoubleSwallowCraft = null;
+        public static PlayerHandAnimationPlayer.HandAnimationIndex? SmashIntoCraft = null;
 
         // SCAVENGE ANIMATIONS
 
-        public static PlayerHandAnimationData.HandAnimationIndex? SawBackForthScavenge = null;
+        public static PlayerHandAnimationPlayer.HandAnimationIndex? SawBackForthScavenge = null;
 
         public static void RegisterValues()
         {
             // CRAFT ANIMATIONS
 
-            DoubleSwallowCraft = new PlayerHandAnimationData.HandAnimationIndex("DoubleSwallowCraft", true);
-            SmashIntoCraft = new PlayerHandAnimationData.HandAnimationIndex("SmashIntoCraft", true);
+            DoubleSwallowCraft = new PlayerHandAnimationPlayer.HandAnimationIndex("DoubleSwallowCraft", true);
+            SmashIntoCraft = new PlayerHandAnimationPlayer.HandAnimationIndex("SmashIntoCraft", true);
 
             // SCAVENGE ANIMATIONS
 
-            SawBackForthScavenge = new PlayerHandAnimationData.HandAnimationIndex("SawBackForthScavenge", true);
+            SawBackForthScavenge = new PlayerHandAnimationPlayer.HandAnimationIndex("SawBackForthScavenge", true);
         }
 
         public static void UnregisterValues()

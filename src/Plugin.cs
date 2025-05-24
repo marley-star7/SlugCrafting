@@ -166,9 +166,10 @@ sealed class Plugin : BaseUnityPlugin
                 craftResult = (Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject) =>
                 {
                     var spear = primaryIngredientObject as Spear;
-                    crafter.room.AddObject(new ExplosiveSpear.SpearFragment(spear.firstChunk.pos, Custom.RNV() * Mathf.Lerp(5f, 10f, UnityEngine.Random.value), spear));
-                    crafter.room.AddObject(new PuffBallSkin(spear.firstChunk.pos + spear.rotation * 10f, Custom.RNV() * Mathf.Lerp(10f, 30f, UnityEngine.Random.value), Color.red, Color.Lerp(Color.red, new Color(0f, 0f, 0f), 0.3f)));
-                    crafter.room.PlaySound(SoundID.Spear_Bounce_Off_Wall, spear.firstChunk.pos);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        crafter.room.AddObject(new ExplosiveSpear.SpearFragment(spear.firstChunk.pos, Custom.RNV() * Mathf.Lerp(3f, 6f, UnityEngine.Random.value), spear));
+                    }
 
                     return new AbstractKnife(
                          crafter.room.world,
@@ -177,12 +178,15 @@ sealed class Plugin : BaseUnityPlugin
                          crafter.room.game.GetNewID()
                      );
                 },
-                craftTime = 75,
+                craftTime = 200,
                 handAnimationIndex = Enums.HandAnimationIndex.SmashIntoCraft,
-                handAnimation = new SmashIntoCraftPlayerHandAnimation(75)
+                handAnimation = new SmashIntoCraftPlayerHandAnimation(200)
                 {
                     timeBetweenBeats = 20f,
                     sinBeatingCurveStartRad = 0.7f,
+
+                    beatSound = SoundID.Spear_Bounce_Off_Wall,
+                    breakSound = SoundID.Spear_Fragment_Bounce,
 
                     fullRiseHandOffsetPos = new Vector2(13f, 9f),
                     fullDescentHandOffsetPos = new Vector2(-8f, -17f),

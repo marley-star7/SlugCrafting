@@ -24,13 +24,5 @@ public static partial class Hooks
     private static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
     {
         orig(self);
-
-        var playerHandAnimationData = self.player.GetHandAnimationData();
-        var playerCraftingData = self.player.GetCraftingData();
-
-        if (playerCraftingData.craftTimer > 0 && playerCraftingData.currentPossibleCraft.Value.handAnimation != null)
-        {
-            playerCraftingData.currentPossibleCraft.Value.handAnimation.GraphicsUpdate(self);
-        }
     }
 }

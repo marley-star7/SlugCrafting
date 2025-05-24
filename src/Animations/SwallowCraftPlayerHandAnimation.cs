@@ -4,51 +4,55 @@ using MRCustom.Animations;
 
 namespace SlugCrafting.Animations;
 
-public class SwallowCraftPlayerHandAnimation : PlayerHandAnimation
+public class SwallowCraftPlayerHandAnimation : MRAnimation<Player>
 {
-    public SwallowCraftPlayerHandAnimation(float length) : base(length)
+    public SwallowCraftPlayerHandAnimation(float length)
     {
+        this.Length = length;
     }
 
-    protected Player player;
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
-    public override void Play(Player player)
+    public override void Start(Player player)
     {
-        this.player = player;
+        base.Start(player);
+
+        this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
         this.playerCraftingData = player.GetCraftingData();
     }
 
-    public override void GraphicsUpdate(PlayerGraphics playerGraphics)
+    public override void Stop(Player player)
     {
-        if (playerCraftingData.craftTimer > 0)
-        {
-            foreach (SlugcatHand hand in self.hands)
-            {
-                hand.pos = Vector2.Lerp(hand.pos, self.drawPositions[0, 0], playerCraftingData.craftTimer / 25f);
-            }
 
-            float num10 = Mathf.InverseLerp(0f, 110f, playerCraftingData.craftTimer);
-            float num11 = playerCraftingData.craftTimer / Mathf.Lerp(30f, 15f, num10);
-            if (self.player.standing)
-            {
-                self.drawPositions[0, 0].y += Mathf.Sin(num11 * 3.1415927f * 2f) * num10 * 2f;
-                self.drawPositions[1, 0].y += -Mathf.Sin((num11 + 0.2f) * 3.1415927f * 2f) * num10 * 3f;
-            }
-            else
-            {
-                self.drawPositions[0, 0].y += Mathf.Sin(num11 * 3.1415927f * 2f) * num10 * 3f;
-                self.drawPositions[0, 0].x += Mathf.Cos(num11 * 3.1415927f * 2f) * num10 * 1f;
-                self.drawPositions[1, 0].y += Mathf.Sin((num11 + 0.2f) * 3.1415927f * 2f) * num10 * 2f;
-                self.drawPositions[1, 0].x += -Mathf.Cos(num11 * 3.1415927f * 2f) * num10 * 3f;
-            }
-        }
     }
 
-    public override void Update(Player player)
+    public override void Update(int animationTimer)
     {
-        throw new NotImplementedException();
+
+    }
+
+    public override void GraphicsUpdate(int animationTimer)
+    {
+        foreach (SlugcatHand hand in playerGraphics.hands)
+        {
+            hand.pos = Vector2.Lerp(hand.pos, playerGraphics.drawPositions[0, 0], animationTimer / 25f);
+        }
+
+        float animationProgress = Mathf.InverseLerp(0f, 110f, animationTimer);
+        float num11 = animationTimer / Mathf.Lerp(30f, 15f, animationProgress);
+        if (playerGraphics.player.standing)
+        {
+            playerGraphics.drawPositions[0, 0].y += Mathf.Sin(num11 * Mathf.PI * 2f) * animationProgress * 2f;
+            playerGraphics.drawPositions[1, 0].y += -Mathf.Sin((num11 + 0.2f) * 3.1415927f * 2f) * animationProgress * 3f;
+        }
+        else
+        {
+            playerGraphics.drawPositions[0, 0].y += Mathf.Sin(num11 * Mathf.PI * 2f) * animationProgress * 3f;
+            playerGraphics.drawPositions[0, 0].x += Mathf.Cos(num11 * Mathf.PI * 2f) * animationProgress * 1f;
+            playerGraphics.drawPositions[1, 0].y += Mathf.Sin((num11 + 0.2f) * Mathf.PI * 2f) * animationProgress * 2f;
+            playerGraphics.drawPositions[1, 0].x += -Mathf.Cos(num11 * 3.1415927f * 2f) * animationProgress * 3f;
+        }
     }
 }

@@ -9,6 +9,8 @@ public static partial class Hooks
         ApplyPlayerGraphicsHooks();
         ApplyLizardGraphicsHooks();
 
+        ApplySpearHooks();
+
         MRCustom.Events.OnPlayerGrab += PlayerExtension.OnPlayerGrab;
         MRCustom.Events.OnPlayerReleaseGrasp += PlayerExtension.OnPlayerReleaseGrasp;
         MRCustom.Events.OnPlayerSwitchGrasp += PlayerExtension.OnPlayerSwitchGrasp;
@@ -20,6 +22,8 @@ public static partial class Hooks
         RemovePlayerHooks();
         RemovePlayerGraphicsHooks();
         RemoveLizardGraphicsHooks();
+
+        RemoveSpearHooks();
 
         MRCustom.Events.OnPlayerGrab -= PlayerExtension.OnPlayerGrab;
         MRCustom.Events.OnPlayerReleaseGrasp -= PlayerExtension.OnPlayerReleaseGrasp;

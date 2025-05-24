@@ -8,7 +8,7 @@ using MRCustom.Animations;
 
 namespace SlugCrafting.Animations;
 
-public class SawBackForthScavengePlayerHandAnimation : PlayerHandAnimation
+public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
 {
     /// <summary>
     /// How fast the saw moves back and forth.
@@ -16,31 +16,37 @@ public class SawBackForthScavengePlayerHandAnimation : PlayerHandAnimation
     /// </summary>
     public float timeBetweenSaws = 20f;
 
-    protected Player player;
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
-    public SawBackForthScavengePlayerHandAnimation(float length) : base(length)
+    public SawBackForthScavengePlayerHandAnimation(float length)
     {
-
+        this.Length = length;
     }
 
-    public override void Play(Player player)
+    public override void Start(Player player)
     {
-        this.player = player;
+        base.Start(player);
+
+        this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
         this.playerCraftingData = player.GetCraftingData();
     }
 
-    public override void Update(Player player)
+    public override void Stop(Player player)
     {
 
     }
 
-    public override void GraphicsUpdate(PlayerGraphics playerGraphics)
+    public override void Update(int animationTimer)
+    {
+
+    }
+
+    public override void GraphicsUpdate(int animationTimer)
     {
         var player = playerGraphics.player;
-        var playerCraftingData = player.GetCraftingData();
+        var playerCraftingData = owner.GetCraftingData();
         // TODO: spawn the sparks and stuff that occasionanly fly off corpse
         var scavengingChunk = player.grasps[playerCraftingData.creatureGraspUsed].grabbedChunk;
         var graspedSaw = player.grasps[playerCraftingData.knifeGraspUsed].grabbed;

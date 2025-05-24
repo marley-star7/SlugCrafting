@@ -5,6 +5,8 @@ using MRCustom.Math;
 
 namespace SlugCrafting.Items;
 
+// TODO: steal spear spragment texture to do for the basic knife :] (cuz its spear)
+
 sealed class Knife : Weapon
 {
     private const float SpriteDirectionBlendTime = 0.5f;

@@ -14,8 +14,8 @@ namespace SlugCrafting;
 
 public class PlayerCraftingData
 {
-    public int scavengeTimer = 0;
-    public int craftTimer = 0;
+    public float scavengeTimer = 0;
+    public float craftTimer = 0;
 
     public bool canCraft = false;
     public bool canScavenge = false;
@@ -81,7 +81,7 @@ public static class PlayerExtension
     {
         var playerCraftingData = player.GetCraftingData();
 
-        CheckForScavengeKnifeOrCreature(graspUsed);
+        CheckGraspsForScavengeKnifeOrCreature(graspUsed);
 
         // If the other hand is not empty, check for possible craft.
         if (player.grasps[GetOtherPlayerGrasp(graspUsed)] != null)
@@ -91,7 +91,7 @@ public static class PlayerExtension
         // SCAVENGING ITEMS CHECK
         //
 
-        void CheckForScavengeKnifeOrCreature(in int graspNum)
+        void CheckGraspsForScavengeKnifeOrCreature(in int graspNum)
         {
             var grasp = player.grasps[graspNum];
 
@@ -128,9 +128,28 @@ public static class PlayerExtension
         }
     }
 
+    public static void UpdateAnimationPlayerForCurrentCraft(Craft? craft)
+    {
+        /*
+        // TODO: this function is for updating the animation player for the current craft, but it is not used anywhere.
+        // TODO: make it so that whenever the craft is null, it properly stops the animation.
+        var playerAnimationPlayer = PlayerGraphics.player.GetHandAnimationPlayer();
+
+        if (craft == null)
+        {
+            playerAnimationPlayer.currentAnimationIndex = PlayerHandAnimationPlayer.HandAnimationIndex.None;
+            playerAnimationPlayer.Stop();
+        }
+        else
+        {
+        }
+        */
+    }
+
     public static Craft? CheckGraspsForPossibleCraft(Player player)
     {
         var playerCraftingData = player.GetCraftingData();
+        var playerHandAnimationPlayer = player.GetHandAnimationPlayer();
 
         AbstractPhysicalObject.AbstractObjectType primaryGraspObjectType = null;
         AbstractPhysicalObject.AbstractObjectType secondaryGraspObjectType = null;
@@ -177,6 +196,9 @@ public static class PlayerExtension
         {
             playerCraftingData.knifeGraspUsed = -1;
         }
+
+        // Update the current possible crafts
+        playerCraftingData.currentPossibleCraft = CheckGraspsForPossibleCraft(player);
     }
 
     //
@@ -188,7 +210,7 @@ public static class PlayerExtension
         // CHECK IF WANTS TO SCAVENGE
 
         var playerCraftingData = self.GetCraftingData();
-        var playerHandAnimationData = self.GetHandAnimationData();
+        var playerHandAnimationPlayer = self.GetHandAnimationPlayer();
 
         if (self.IsPressed(Inputs.Input.Scavenge) && playerCraftingData.knifeGraspUsed != -1 && playerCraftingData.creatureGraspUsed != -1)
         {
@@ -202,7 +224,7 @@ public static class PlayerExtension
 
             if (currentScavenge != null && currentScavenge.canScavenge == true)
             {
-                playerHandAnimationData.handAnimation = currentScavenge.handAnimation;
+                playerHandAnimationPlayer.currentAnimationIndex = currentScavenge.handAnimation;
                 currentScavenge.scavengeTime--;
 
                 if (currentScavenge.scavengeTime <= 0)
@@ -211,7 +233,7 @@ public static class PlayerExtension
         }
         else
         {
-            playerHandAnimationData.handAnimation = PlayerHandAnimationData.HandAnimationIndex.None;
+            playerHandAnimationPlayer.currentAnimationIndex = PlayerHandAnimationPlayer.HandAnimationIndex.None;
             playerCraftingData.scavengeTimer = 0; // Reset the timer to craft if not pressing craft.
         }
     }
@@ -242,30 +264,39 @@ public static class PlayerExtension
     internal static void CraftUpdate(Player self)
     {
         var playerCraftingData = self.GetCraftingData();
-        var playerHandAnimationData = self.GetHandAnimationData();
+        var playerHandAnimationPlayer = self.GetHandAnimationPlayer();
+
+        // This is sum shit, but idrc rn it works :"]!!!!!
 
         // Requirements for Crafting
-        if (self.IsPressed(Inputs.Input.Craft) && playerCraftingData.currentPossibleCraft != null)
+        if (playerCraftingData.currentPossibleCraft != null)
         {
-            // Make sure we aren't swallowing while crafting.
-            (self.graphicsModule as PlayerGraphics).swallowing = 0;
-
-            playerCraftingData.craftTimer++; // Reset the timer to craft if not pressing craft.
-            playerHandAnimationData.handAnimation = playerCraftingData.currentPossibleCraft.Value.handAnimationIndex;
-            // Do the animations update if we have one.
-            if (playerCraftingData.currentPossibleCraft.Value.handAnimation != null)
+            if (self.IsPressed(Inputs.Input.Craft))
             {
-                playerCraftingData.currentPossibleCraft.Value.handAnimation.Update(self);
-            }
+                // Make sure we aren't swallowing while crafting.
+                (self.graphicsModule as PlayerGraphics).swallowing = 0;
 
-            // If the craft timer has reached high enough, complete the craft.
-            if (playerCraftingData.craftTimer >= playerCraftingData.currentPossibleCraft.Value.craftTime)
-                CompleteCraft(self, playerCraftingData.currentPossibleCraft.Value);
-        }
-        else
-        {
-            playerHandAnimationData.handAnimation = PlayerHandAnimationData.HandAnimationIndex.None;
-            playerCraftingData.craftTimer = 0; // Reset the timer to craft if not pressing craft.
+                playerCraftingData.craftTimer++; // Reset the timer to craft if not pressing craft.
+                playerHandAnimationPlayer.currentAnimationIndex = playerCraftingData.currentPossibleCraft.Value.handAnimationIndex;
+                // Do the animations update if we have one.
+                if (playerCraftingData.currentPossibleCraft.Value.handAnimation != null)
+                {
+                    playerHandAnimationPlayer.Play(playerCraftingData.currentPossibleCraft.Value.handAnimation);
+                }
+
+                // If the craft timer has reached high enough, complete the craft.
+                if (playerCraftingData.craftTimer >= playerCraftingData.currentPossibleCraft.Value.craftTime)
+                    CompleteCraft(self, playerCraftingData.currentPossibleCraft.Value);
+            }
+            else
+            {
+                if (playerCraftingData.currentPossibleCraft.Value.handAnimation != null)
+                {
+                    playerHandAnimationPlayer.Stop(playerCraftingData.currentPossibleCraft.Value.handAnimation);
+                }
+                playerHandAnimationPlayer.currentAnimationIndex = PlayerHandAnimationPlayer.HandAnimationIndex.None;
+                playerCraftingData.craftTimer = 0; // Reset the timer to craft if not pressing craft.
+            }
         }
     }
 

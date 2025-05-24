@@ -1,65 +1,142 @@
-using SlugCrafting;
+using RWCustom;
 using UnityEngine;
+using Noise;
 
 using MRCustom.Math;
 using MRCustom.Animations;
 
+using SlugCrafting;
+using SlugCrafting.Crafts;
+
 namespace SlugCrafting.Animations;
 
-public class SmashIntoCraftPlayerHandAnimation : PlayerHandAnimation
+public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
 {
-
-    // TODO: definitely probably need to do classes for this sort of thing, that way can store data inbetween instead of re-calculating every time.
-    // TODO: set up a system so that can play sounds and count down the sounds, probably do this alongside the craft junk.
     // TODO: base it off the chunk position rather than hand.
-    // TODO: add real noise to this, so you can sit there like a caveman with a noisemaker.
+    // TODO: add secret functionality to hit in time with the music lol
+    // TODO: it'd be fun as well to find a way to be able to hit it on command, so you can play music. xd
 
+    /// <summary>
+    /// The position the hand will be when it is fully raised.
+    /// </summary>
     public Vector2 fullRiseHandOffsetPos = new Vector2(13f, 9f);
+    /// <summary>
+    /// The position the hand will be when it is fully down on the object.
+    /// </summary>
     public Vector2 fullDescentHandOffsetPos = new Vector2(-8f, -17f);
 
     /// <summary>
     /// Also technically speed which you beat objects.
     /// </summary>
-    public float timeBetweenBeats = 20f;
-    public float sinBeatingCurveStartRad = 0.7f; // How high up to start the sine curve, set a bit low for that little raise until crashing back down the hand.
+    public float timeBetweenBeats = 30f;
+    /// <summary>
+    /// How high up to start the sine curve, set a bit low for that little raise until crashing back down the hand.
+    /// </summary>
+    public float sinBeatingCurveStartRad = 0.7f;
+
+    /// <summary>
+    /// How long scug will close their eyes when the object breaks.
+    /// </summary>
+    public int eyesCloseOnBreakLength = 20;
+    /// <summary>
+    /// The time before eyes break.
+    /// </summary>
+    public int timeBeforeBreakEyesClose = 15;
+
+    /// <summary>
+    /// The sound that plays when the player beats the object.
+    /// </summary>
+    public SoundID beatSound;
+    /// <summary>
+    /// The sound that plays when the object finally breaks.
+    /// </summary>
+    public SoundID breakSound;
+
+    private Queue<float> beatSoundTimes;
 
     private float extraBeatTime = 0f;
     private float numOfTimesToBeat = 0f;
 
-    protected Player player;
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
-    public SmashIntoCraftPlayerHandAnimation(float length) 
-        : base(length)
+    public SmashIntoCraftPlayerHandAnimation(float length)
     {
-        float extraBeatTime = Length % timeBetweenBeats;
-        float numOfTimesToBeat = (Length - extraBeatTime) / timeBetweenBeats;
+        this.Length = length;
     }
 
-    public override void Play(Player player)
+    public override void Start(Player player)
     {
-        this.player = player;
+        base.Start(player);
+
+        this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
         this.playerCraftingData = player.GetCraftingData();
+
+        extraBeatTime = Length % timeBetweenBeats;
+        numOfTimesToBeat = (Length - extraBeatTime) / timeBetweenBeats;
+
+        // Add the times that the beat sound will play lol.
+        beatSoundTimes = new Queue<float>();
+        for (int i = 1; i < numOfTimesToBeat; i++)
+        {
+            beatSoundTimes.Enqueue(timeBetweenBeats * i);
+        }
+        // Add the last sound timer, which is the extra beat time.
+        beatSoundTimes.Enqueue(timeBetweenBeats * numOfTimesToBeat + extraBeatTime);
     }
 
-    public override void Update(Player player)
+    public override void Stop(Player owner)
     {
 
     }
 
-    public override void GraphicsUpdate(PlayerGraphics playerGraphics)
+    public override void Update(int animTimer)
     {
-        float animLength = playerCraftingData.currentPossibleCraft.Value.craftTime;
-        float animTimer = playerCraftingData.craftTimer;
+        // Play da sounds when da sounds need to be played.
+        if (beatSoundTimes.Peek() <= animTimer)
+        {
+            if (beatSoundTimes.Count > 1)
+            {
+                beatSoundTimes.Dequeue();
+                // Play the beat sound.
+                owner.room.PlaySound(beatSound, owner.firstChunk.pos);
+                owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 2500f, owner, 1f));
 
+                // Vibrate the spear if it is a spear for extra pizazz.
+                if (owner.grasps[0].grabbed is Spear)
+                    ((Spear)owner.grasps[0].grabbed).vibrate = 10;
+            }
+            // If we are on our last sound, play the break sound instead.
+            else if (beatSoundTimes.Count > 0)
+            {
+                beatSoundTimes.Dequeue();
+                // Final break sound which is much louder.
+                owner.room.PlaySound(breakSound, owner.firstChunk.pos);
+                owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 5000f, owner, 1f));
+            }
+        }
+
+        // Look up and blink at the last break.
+        if (animTimer > Length - timeBeforeBreakEyesClose)
+        {
+            playerGraphics.LookAtPoint(playerGraphics.drawPositions[0, 0] + fullRiseHandOffsetPos, 42069); // Hell yea
+            owner.eyesClosedTime = eyesCloseOnBreakLength;
+        }
+        else // Look down at the thing your smacking bruh.
+        {
+            playerGraphics.LookAtPoint(playerGraphics.drawPositions[0, 0] + fullDescentHandOffsetPos, 0.1f); // Very low interest, look at if there is nothing else.
+        }
+    }
+
+    public override void GraphicsUpdate(int animTimer)
+    {
         int beatedObjectIndex = 0;
         int beatingObjectIndex = 1;
 
         float timeThisBeat = timeBetweenBeats;
         // If we are on the last beat, add extra time.
-        bool isLastBeat = animTimer >= (animLength - (timeBetweenBeats + extraBeatTime));
+        bool isLastBeat = animTimer >= (Length - (timeBetweenBeats + extraBeatTime));
         if (isLastBeat)
             timeThisBeat += extraBeatTime;
 
@@ -91,7 +168,10 @@ public class SmashIntoCraftPlayerHandAnimation : PlayerHandAnimation
         Vector2 directionBeating = (fullRiseHandOffsetPos - fullDescentHandOffsetPos).normalized;
         float beatingKnockback = 2.5f;
 
-        beatingHand.pos = Vector2.Lerp(playerGraphics.drawPositions[0, 0] + fullRiseHandOffsetPos, beatedHand.pos, beatingHandProgress);
-        beatedHand.pos = Vector2.Lerp(playerGraphics.drawPositions[0, 0] + fullDescentHandOffsetPos + directionBeating * beatingKnockback, playerGraphics.drawPositions[0, 0] + fullDescentHandOffsetPos, beatedObjectKnockbackProgress);
+        var fullRiseHandPos = playerGraphics.drawPositions[0, 0] + fullRiseHandOffsetPos;
+        var fullDescentHandPos = playerGraphics.drawPositions[0, 0] + fullDescentHandOffsetPos;
+
+        beatingHand.pos = Vector2.Lerp(fullRiseHandPos, beatedHand.pos, beatingHandProgress);
+        beatedHand.pos = Vector2.Lerp(fullDescentHandPos + directionBeating * beatingKnockback, fullDescentHandPos, beatedObjectKnockbackProgress);
     }
 }

@@ -36,7 +36,7 @@ public abstract class AbstractPhysicalObjectScavenge
 
     public bool canScavenge;
 
-    public PlayerHandAnimationData.HandAnimationIndex handAnimation;
+    public PlayerHandAnimationPlayer.HandAnimationIndex handAnimation;
 
     public AbstractPhysicalObjectScavenge(PhysicalObject owner)
     {

@@ -72,11 +72,11 @@ namespace SlugCrafting.Crafts
         /// <summary>
         /// The index of the animation, set's the hand animation to this during crafts.
         /// </summary>
-        public PlayerHandAnimationData.HandAnimationIndex handAnimationIndex;
+        public PlayerHandAnimationPlayer.HandAnimationIndex handAnimationIndex;
         /// <summary>
         /// Optional use of the player hand animation class, can always leave null if want more custom stuff.
         /// </summary>
-        public PlayerHandAnimation handAnimation;
+        public MRAnimation<Player> handAnimation;
 
         public CraftIngredient primaryIngredient;
         public CraftIngredient secondaryIngredient;
