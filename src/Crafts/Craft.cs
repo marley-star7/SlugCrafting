@@ -5,43 +5,16 @@ namespace SlugCrafting.Crafts
 {
     public struct CraftIngredient
     {
-        private static bool DefaultValidation(in PhysicalObject physicalObject) { return true; }
-        /// <summary>
-        /// Return true if the ingredient is valid.
-        /// </summary>
-        /// <param name="physicalObject"></param>
-        /// <returns></returns>
-        public delegate bool IngredientValidation(in PhysicalObject physicalObject);
-
         /// <summary>
         /// The AbstractObjectType of the ingredient.
         /// </summary>
         public AbstractPhysicalObject.AbstractObjectType type;
 
-        private IngredientValidation _validation;
-        /// <summary>
-        /// Returns true if the ingredient is valid.
-        /// </summary>
-        public IngredientValidation validation
-        {
-            get => _validation ?? DefaultValidation;
-            set => _validation = value;
-        }
-
-        /// <summary>
-        /// Wether the ingredient is consumed on craft or not.
-        /// </summary>
-        public bool consume;
-
         public CraftIngredient(
-            AbstractPhysicalObject.AbstractObjectType type,
-            IngredientValidation validation = null,
-            bool consume = true
+            AbstractPhysicalObject.AbstractObjectType type
         )
         {
             this.type = type;
-            this._validation = validation;
-            this.consume = consume;
         }
     }
 
@@ -49,18 +22,37 @@ namespace SlugCrafting.Crafts
     // And we can get away without inheriting from anything here!
     public struct Craft
     {
-        // TODO: move this delegate to a seperate file, "crafting" or something?
         /// <summary>
         /// The delegate function that must be used to make the function for returning craft results.
         /// </summary>
         /// <returns></returns>
-        public delegate AbstractPhysicalObject CraftResult(Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject);
+        public delegate void CraftResult(Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject);
+
+        /// <summary>
+        /// Return true if the ingredient is valid.
+        /// </summary>
+        /// <param name="physicalObject"></param>
+        /// <returns></returns>
+        public delegate bool ValidateIngredients(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject);
+
+        private static bool DefaultValidation(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) { return true; }
 
         public Craft(CraftIngredient primaryIngredient, CraftIngredient secondaryIngredient, CraftResult craftResult)
         {
             this.primaryIngredient = primaryIngredient;
             this.secondaryIngredient = secondaryIngredient;
             this.craftResult = craftResult;
+        }
+
+        public ValidateIngredients _ingredientValidation;
+
+        /// <summary>
+        /// Should returns true if the ingredients are valid for a craft.
+        /// </summary>
+        public ValidateIngredients ingredientValidation
+        {
+            get => _ingredientValidation ?? DefaultValidation;
+            set => _ingredientValidation = value;
         }
 
         /// <summary>

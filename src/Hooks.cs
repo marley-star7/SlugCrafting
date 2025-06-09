@@ -1,29 +1,37 @@
-﻿namespace SlugCrafting.Hooks;
+﻿using ImprovedInput;
+using SlugCrafting.Crafts;
+using UnityEngine;
+
+namespace SlugCrafting;
 
 public static partial class Hooks
 {
-    // Add hooks
     internal static void ApplyHooks()
     {
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
         ApplyLizardGraphicsHooks();
 
+        ApplyPlayerCarryableItemHooks();
         ApplySpearHooks();
+        ApplySporePlantHooks();
 
         MRCustom.Events.OnPlayerGrab += PlayerExtension.OnPlayerGrab;
         MRCustom.Events.OnPlayerReleaseGrasp += PlayerExtension.OnPlayerReleaseGrasp;
         MRCustom.Events.OnPlayerSwitchGrasp += PlayerExtension.OnPlayerSwitchGrasp;
     }
 
-    // Remove hooks
     internal static void RemoveHooks()
     {
+        On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
+
         RemovePlayerHooks();
         RemovePlayerGraphicsHooks();
         RemoveLizardGraphicsHooks();
 
+        RemovePlayerCarryableItemHooks();
         RemoveSpearHooks();
+        RemoveSporePlantHooks();
 
         MRCustom.Events.OnPlayerGrab -= PlayerExtension.OnPlayerGrab;
         MRCustom.Events.OnPlayerReleaseGrasp -= PlayerExtension.OnPlayerReleaseGrasp;

@@ -1,10 +1,10 @@
 ﻿using RWCustom;
 using UnityEngine;
 
-using SlugCrafting.Items;
-
 using MRCustom.Math;
 using MRCustom.Animations;
+
+using SlugCrafting.Items.Weapons;
 
 namespace SlugCrafting.Animations;
 
@@ -30,7 +30,7 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
 
         this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
-        this.playerCraftingData = player.GetCraftingData();
+        this.playerCraftingData = player.GetPlayerCraftingData();
     }
 
     public override void Stop(Player player)
@@ -46,7 +46,7 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
     public override void GraphicsUpdate(int animationTimer)
     {
         var player = playerGraphics.player;
-        var playerCraftingData = owner.GetCraftingData();
+        var playerCraftingData = owner.GetPlayerCraftingData();
         // TODO: spawn the sparks and stuff that occasionanly fly off corpse
         var scavengingChunk = player.grasps[playerCraftingData.creatureGraspUsed].grabbedChunk;
         var graspedSaw = player.grasps[playerCraftingData.knifeGraspUsed].grabbed;

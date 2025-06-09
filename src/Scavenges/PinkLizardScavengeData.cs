@@ -1,23 +1,19 @@
 ﻿using SlugCrafting.Items;
-using SlugCrafting.Scavenges.ScavengeSpots;
 
 namespace SlugCrafting.Scavenges;
 
 public class PinkLizardScavengeData : CreatureScavengeData
 {
-    public LizardGraphics lizardGraphics;
-
     public PinkLizardScavengeData(Creature creature) : base(creature) { }
 
     protected override void RealizeScavengeData()
     {
         var lizard = creature as Lizard;
-        lizardGraphics = lizard.graphicsModule as LizardGraphics;
 
         ScavengeSpots = new Dictionary<ScavengeSpot, AbstractPhysicalObjectScavenge>()
         {
             // Head index is 0
-            { new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard, PinkLizardShellFisob.abstractObjectType)
+            { new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard)
                 {
                     scavengeTime = 200,
                     handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,

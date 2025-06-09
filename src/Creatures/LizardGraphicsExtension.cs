@@ -6,15 +6,15 @@ namespace SlugCrafting.Creatures
     /// Saves mainly the sprite leaser for each lizard in the lizard's graphics,
     /// So we can reference later when stealing their heads via scavenging!
     /// </summary>
-    public class LizardGraphicsData
+    public class LizardGraphicsCraftingData
     {
         public RoomCamera.SpriteLeaser spriteLeaser;
     }
 
     public static class LizardGraphicsExtension
     {
-        private static readonly ConditionalWeakTable<LizardGraphics, LizardGraphicsData> lizardsGraphicsStorage = new();
+        private static readonly ConditionalWeakTable<LizardGraphics, LizardGraphicsCraftingData> lizardsGraphicsStorage = new();
 
-        public static LizardGraphicsData GetGraphicsData(this LizardGraphics lizardGraphics) => lizardsGraphicsStorage.GetValue(lizardGraphics, _ => new LizardGraphicsData());
+        public static LizardGraphicsCraftingData GetLizardGraphicsCraftingData(this LizardGraphics lizardGraphics) => lizardsGraphicsStorage.GetValue(lizardGraphics, _ => new LizardGraphicsCraftingData());
     }
 }

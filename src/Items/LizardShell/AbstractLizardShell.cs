@@ -5,7 +5,11 @@ namespace SlugCrafting.Items;
 
 sealed class AbstractLizardShell : AbstractPhysicalObject
 {
+    public float health;
+    public float clampedHealth;
+
     public Color shellColor;
+    public CreatureTemplate.Type templateType;
 
     public const float MassModifier = 0.5f;
 
@@ -18,37 +22,55 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
     public float headBodyChunkRadius;
     public float headBodyChunkMass;
 
-    // TODO: later find out a way to get the lizard shell properties via the type dynamically instead of hardcoding them here. (so its more easily moddable to add lizard shells)
-
-    public AbstractLizardShell(World world, AbstractCreature.AbstractObjectType type, WorldCoordinate pos, EntityID ID)
-        : base(world, type, null, pos, ID)
+    private static Dictionary<CreatureTemplate.Type, AbstractObjectType> _creatureTemplateToShellAbstractObjectType = new()
     {
-        if (type == GreenLizardShellFisob.abstractObjectType)
+        { CreatureTemplate.Type.GreenLizard, GreenLizardShellFisob.abstractObjectType },
+        { CreatureTemplate.Type.PinkLizard, PinkLizardShellFisob.abstractObjectType }
+    };
+    public static AbstractObjectType GetAbstractObjectTypeForCreatureTemplate(CreatureTemplate.Type templateType)
+    {
+        if (_creatureTemplateToShellAbstractObjectType.ContainsKey(templateType))
         {
-            shellColor = Color.green;
+            return _creatureTemplateToShellAbstractObjectType[templateType];
         }
-        else if (type == PinkLizardShellFisob.abstractObjectType)
+        else
         {
-            var properties = PinkLizardShellFisob.properties;
-
-            shellColor = properties.ShellColor();
-
-            headSprite0Jaw = properties.HeadSprite0Jaw();
-            headSprite1LowerTeeth = properties.HeadSprite1LowerTeeth();
-            headSprite2UpperTeeth = properties.HeadSprite2UpperTeeth();
-            headSprite3Head = properties.HeadSprite3Head();
-            headSprite4Eyes = properties.HeadSprite4Eyes();
-
-            headBodyChunkRadius = properties.HeadBodyChunkRadius(); // Default for Pink Lizards
-            headBodyChunkMass = properties.HeadBodyChunkMass() * properties.MassModifier(); // Default for Pink Lizards
+            return LizardShellFisob.abstractObjectType; // Default for lizards that don't have a specific shell type.
         }
+    }
+
+    public AbstractLizardShell(World world, CreatureTemplate.Type templateType, WorldCoordinate pos, EntityID ID)
+        : base(
+            world, GetAbstractObjectTypeForCreatureTemplate(templateType), null, pos, ID)
+    {
+        this.templateType = templateType;
+        var type = GetAbstractObjectTypeForCreatureTemplate(templateType);
+
+        LizardShellProperties properties = LizardShellFisob.properties;
+
+        if (LizardShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
+            properties = LizardShellProperties.PropertiesOfTemplateType[templateType];
+
+        shellColor = properties.ShellColor();
+
+        headSprite0Jaw = properties.HeadSprite0Jaw();
+        headSprite1LowerTeeth = properties.HeadSprite1LowerTeeth();
+        headSprite2UpperTeeth = properties.HeadSprite2UpperTeeth();
+        headSprite3Head = properties.HeadSprite3Head();
+        headSprite4Eyes = properties.HeadSprite4Eyes();
+
+        headBodyChunkRadius = properties.HeadBodyChunkRadius();
+        headBodyChunkMass = properties.HeadBodyChunkMass() * properties.MassModifier();
+
+        health = properties.Health();
+        clampedHealth = properties.Health();
     }
 
     public override void Realize()
     {
         base.Realize();
         if (realizedObject == null)
-            realizedObject = new LizardShell(this, Room.realizedRoom.MiddleOfTile(pos.Tile));
+            realizedObject = new LizardShell(this);
     }
 
     public override string ToString()

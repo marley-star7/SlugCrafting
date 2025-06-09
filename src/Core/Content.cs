@@ -3,10 +3,11 @@ using UnityEngine;
 
 using SlugCrafting.Scavenges;
 using SlugCrafting.Crafts;
+using SlugCrafting.Items;
 
 namespace SlugCrafting.Core;
 
-public static class Content
+public static partial class Content
 {
     //
     // CRAFTING
@@ -28,9 +29,9 @@ public static class Content
     /// <param name="primaryIngredient"></param>
     /// <param name="secondaryIngredient"></param>
     /// <param name="newCraft"></param>
-    public static void RegisterCraft(AbstractPhysicalObject.AbstractObjectType primaryIngredient, AbstractPhysicalObject.AbstractObjectType secondaryIngredient, Craft newCraft)
+    public static void RegisterCraft(Craft newCraft)
     {
-        var ingredientTuple = (primaryIngredient, secondaryIngredient);
+        var ingredientTuple = (newCraft.primaryIngredient.type, newCraft.secondaryIngredient.type);
 
         if (Crafts.ContainsKey(ingredientTuple))
             Crafts[ingredientTuple] = newCraft;
@@ -122,7 +123,7 @@ public static class Content
     {
         var craftsContainingAllObjectTypes = new HashSet<ShelterCraft>();
 
-        if (ShelterCraftsUsingObjectType.TryGetValue(objectTypes[0], out HashSet<ShelterCraft> crafts));
+        if (ShelterCraftsUsingObjectType.TryGetValue(objectTypes[0], out HashSet<ShelterCraft> crafts)) ;
         else return craftsContainingAllObjectTypes;
 
         // Loop through all the crafts
@@ -170,7 +171,7 @@ public static class Content
     public static readonly Dictionary<CreatureTemplate.Type, Type> CreatureScavengeTypes = new Dictionary<CreatureTemplate.Type, Type>();
 
     /// <summary>
-    /// Register a creature type with its corresponding scavenge data type
+    /// Register a creature type with its corresponding scavenge data type.
     /// </summary>
     /// <param name="creatureType"></param>
     /// <param name="scavengeDataType"></param>
@@ -186,7 +187,7 @@ public static class Content
     }
 
     /// <summary>
-    /// // Create scavenge data for a given creature type
+    /// Create scavenge data for a given creature type.
     /// </summary>
     /// <param name="creatureType"></param>
     /// <returns></returns>
@@ -195,10 +196,29 @@ public static class Content
     {
         if (CreatureScavengeTypes.TryGetValue(creatureType, out Type scavengeDataType))
         {
-            var instance = (CreatureScavengeData) Activator.CreateInstance(scavengeDataType, creature);
+            var instance = (CreatureScavengeData)Activator.CreateInstance(scavengeDataType, creature);
+            return instance;
+        }
+        // Return default Lizard Scavenge Data if no specific lizard type is registered.
+        if (creature.Template.IsLizard)
+        {
+            Plugin.Logger.LogDebug($"No specific scavenge data registered for lizard type: {creatureType}, using default LizardScavengeData.");
+            var instance = (CreatureScavengeData)Activator.CreateInstance(typeof(LizardScavengeData), creature);
             return instance;
         }
 
-        throw new KeyNotFoundException($"No scavenge data registered for creature type: {creatureType}");
+        Plugin.Logger.LogDebug($"No scavenge data registered for creature type: {creatureType}");
+        return null;
+    }
+
+    //
+    // ITEM BUNDLES
+    //
+
+    public static readonly Dictionary<AbstractPhysicalObject.AbstractObjectType, ItemBundleProperties> ItemsBundleProperties = new Dictionary<AbstractPhysicalObject.AbstractObjectType, ItemBundleProperties>();
+
+    public static void RegisterItemBundleProperties(AbstractPhysicalObject.AbstractObjectType type, ItemBundleProperties properties)
+    {
+        ItemsBundleProperties[type] = properties;
     }
 }

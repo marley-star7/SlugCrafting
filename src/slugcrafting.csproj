@@ -17,12 +17,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="NewFolder\**" />
-	  <EmbeddedResource Remove="NewFolder\**" />
-	  <None Remove="NewFolder\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Reference Include="..\lib\Assembly-CSharp-firstpass.dll">
 		  <Private>false</Private>
 		</Reference>
@@ -65,6 +59,12 @@
 		<Reference Include="..\lib\UnityEngine.InputLegacyModule.dll">
 		  <Private>false</Private>
 		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Items\LandMine\" />
+	  <Folder Include="Items\Weapons\SporePlantSpear\" />
+	  <Folder Include="Scripts\" />
 	</ItemGroup>
 
   <!-- PostBuild Target -->

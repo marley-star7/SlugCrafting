@@ -1,0 +1,23 @@
+{
+	"id": "Crafter",
+	"name": "The Crafter",
+	"description": "Weak and too far into their own cycles, has learned how to use world's tools to survive to create their own.<LINE>Scavenge materials from objects and creatures, your survival will require wits and resourcefulness.",
+	"features": {
+		"color": "cccccc",
+		"walk_speed": 1.1,
+		"throw_skill": 0,
+		"custom_colors": [
+			{
+				"name": "Body",
+				"story": "cccccc",
+				"arena": [ "cccccc", "bfa369", "b3848d", "414052" ]
+			},
+			{
+				"name": "Eyes",
+				"story": "0E0202",
+				"arena": [ "0E0202", "623109", "890A3B", "FFFFFF" ]
+			}
+		],
+		"start_room": "SI_S04"
+	}
+}

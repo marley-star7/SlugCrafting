@@ -4,9 +4,18 @@ using Fisobs.Properties;
 
 namespace SlugCrafting.Items;
 
-abstract class LizardShellProperties : ItemProperties
+/// <summary>
+/// All default values based off pink lizards.
+/// </summary>
+public class LizardShellProperties : ItemProperties
 {
-    public virtual float MassModifier() => 0.4f;
+    /// <summary>
+    /// Dictionary of all the corresponding properties for each lizard template type.
+    /// Add to this when adding a custom lizard type to the dictionary for it to be recognized.
+    /// </summary>
+    public static Dictionary<CreatureTemplate.Type, LizardShellProperties> PropertiesOfTemplateType = new();
+
+    public virtual float MassModifier() => 0.3f;
 
     public virtual Color ShellColor() => new(0.5f, 0.5f, 0.5f);
 
@@ -16,8 +25,10 @@ abstract class LizardShellProperties : ItemProperties
     public virtual string HeadSprite3Head() => "LizardHead0.0";
     public virtual string HeadSprite4Eyes() => "LizardEyes0.0";
 
-    public virtual float HeadBodyChunkRadius() => 8f; // Default for Pink Lizards
-    public virtual float HeadBodyChunkMass() => 0.7f; // Default for Pink Lizards
+    public virtual float HeadBodyChunkRadius() => 8f;
+    public virtual float HeadBodyChunkMass() => 0.7f;
+
+    public virtual float Health() => 2f;
 
     public override void Throwable(Player player, ref bool throwable)
         => throwable = true;

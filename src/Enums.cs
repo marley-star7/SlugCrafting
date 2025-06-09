@@ -2,8 +2,12 @@
 
 namespace SlugCrafting;
 
-public class Enums
+public static class Enums
 {
+    public static readonly SlugcatStats.Name Crafter = new(nameof(Crafter), false);
+
+    //-- MR7: TODO: probably move the abstractobjecttypes from fisobs to here.
+
     public class HandAnimationIndex
     {
         // CRAFT ANIMATIONS

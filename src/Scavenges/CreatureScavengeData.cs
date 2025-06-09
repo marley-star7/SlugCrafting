@@ -126,13 +126,3 @@ public abstract class CreatureScavengeData
         return null;
     }
 }
-
-public static class CreatureExtension
-{
-    private static readonly ConditionalWeakTable<Creature, CreatureScavengeData> conditionalWeakTable = new();
-
-    public static CreatureScavengeData GetCreatureScavengeData(this Creature creature)
-    {
-        return conditionalWeakTable.GetValue(creature, _ => SlugCrafting.Core.Content.CreateScavengeData(creature, creature.Template.type));
-    }
-}

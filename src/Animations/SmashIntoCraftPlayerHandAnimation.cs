@@ -71,7 +71,7 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
 
         this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
-        this.playerCraftingData = player.GetCraftingData();
+        this.playerCraftingData = player.GetPlayerCraftingData();
 
         extraBeatTime = Length % timeBetweenBeats;
         numOfTimesToBeat = (Length - extraBeatTime) / timeBetweenBeats;
@@ -94,27 +94,34 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
     public override void Update(int animTimer)
     {
         // Play da sounds when da sounds need to be played.
-        if (beatSoundTimes.Peek() <= animTimer)
+        if (beatSoundTimes.Count >= 2 && beatSoundTimes.Peek() <= animTimer)
         {
-            if (beatSoundTimes.Count > 1)
-            {
-                beatSoundTimes.Dequeue();
-                // Play the beat sound.
-                owner.room.PlaySound(beatSound, owner.firstChunk.pos);
-                owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 2500f, owner, 1f));
+            beatSoundTimes.Dequeue();
+            // Play the beat sound.
+            owner.room.PlaySound(beatSound, owner.firstChunk.pos);
+            owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 2500f, owner, 1f));
 
-                // Vibrate the spear if it is a spear for extra pizazz.
-                if (owner.grasps[0].grabbed is Spear)
-                    ((Spear)owner.grasps[0].grabbed).vibrate = 10;
-            }
-            // If we are on our last sound, play the break sound instead.
-            else if (beatSoundTimes.Count > 0)
+            //- MR7 Vibrate the spear if it is a spear for extra pizazz.
+            if (owner.grasps[0].grabbed is Spear)
             {
-                beatSoundTimes.Dequeue();
-                // Final break sound which is much louder.
-                owner.room.PlaySound(breakSound, owner.firstChunk.pos);
-                owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 5000f, owner, 1f));
+                //- MR7 Vibration goes down over course of the beat time.
+                // This is for thematics of mimicking the spear getting more shakey,
+                // As well as for gameplay reasons showing acting as a minor visual indicator on how close to break.
+
+                var vibrationMultiplierWithTime = Mathf.InverseLerp(0, Length, animTimer);
+                vibrationMultiplierWithTime = 1 / vibrationMultiplierWithTime + 0.01f; // Inverse it so that it goes from 1 to 0 over time, prevent divison by zero.
+                vibrationMultiplierWithTime = Mathf.Clamp(vibrationMultiplierWithTime, 0.3f, 1f); // Clamp it to prevent it from going too low.
+
+                ((Spear)owner.grasps[0].grabbed).vibrate = (int)(10 * vibrationMultiplierWithTime);
             }
+        }
+        // If we are on our last sound, play the break sound instead.
+        else if (beatSoundTimes.Count >= 1 && beatSoundTimes.Peek() <= animTimer)
+        {
+            beatSoundTimes.Dequeue();
+            // Final break sound which is much louder.
+            owner.room.PlaySound(breakSound, owner.firstChunk.pos);
+            owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 5000f, owner, 1f));
         }
 
         // Look up and blink at the last break.

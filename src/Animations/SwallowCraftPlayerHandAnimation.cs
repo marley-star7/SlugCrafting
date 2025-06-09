@@ -20,7 +20,7 @@ public class SwallowCraftPlayerHandAnimation : MRAnimation<Player>
 
         this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
-        this.playerCraftingData = player.GetCraftingData();
+        this.playerCraftingData = player.GetPlayerCraftingData();
     }
 
     public override void Stop(Player player)

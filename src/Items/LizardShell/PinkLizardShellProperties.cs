@@ -14,4 +14,6 @@ class PinkLizardShellProperties : LizardShellProperties
 
     public override float HeadBodyChunkRadius() => 8f;
     public override float HeadBodyChunkMass() => 0.7f;
+
+    public override float Health() => 2f;
 }

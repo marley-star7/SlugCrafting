@@ -3,7 +3,7 @@ using UnityEngine;
 
 using SlugCrafting.Items;
 
-namespace SlugCrafting.Hooks;
+namespace SlugCrafting;
 
 public static partial class Hooks
 {

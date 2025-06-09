@@ -2,7 +2,7 @@
 using UnityEngine;
 using SlugCrafting.Creatures;
 
-namespace SlugCrafting.Hooks;
+namespace SlugCrafting;
 
 public static partial class Hooks
 {
@@ -22,6 +22,6 @@ public static partial class Hooks
     {
         orig(self, sLeaser, rCam);
         // Save on iniate of sprites the sprite leaser for the lizard.
-        self.GetGraphicsData().spriteLeaser = sLeaser;
+        self.GetLizardGraphicsCraftingData().spriteLeaser = sLeaser;
     }
 }
