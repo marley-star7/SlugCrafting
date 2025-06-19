@@ -17,6 +17,15 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
     // TODO: it'd be fun as well to find a way to be able to hit it on command, so you can play music. xd
 
     /// <summary>
+    /// The offset of rotation during the animation.
+    /// </summary>
+    public Vector2? primaryHandWeaponSetRotation = null;
+    /// <summary>
+    /// The offset of rotation during the animation.
+    /// </summary>
+    public Vector2? secondaryHandWeaponSetRotation = null;
+
+    /// <summary>
     /// The position the hand will be when it is fully raised.
     /// </summary>
     public Vector2 fullRiseHandOffsetPos = new Vector2(13f, 9f);
@@ -180,5 +189,18 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
 
         beatingHand.pos = Vector2.Lerp(fullRiseHandPos, beatedHand.pos, beatingHandProgress);
         beatedHand.pos = Vector2.Lerp(fullDescentHandPos + directionBeating * beatingKnockback, fullDescentHandPos, beatedObjectKnockbackProgress);
+
+        //-- MR7 TODO: just move this stuff down here to a different animation? that copies the data from smashIntoCraft, to remove the miniscule overhead (but moreso set a standard).
+        if (playerGraphics.player.grasps[0].grabbed is Weapon && primaryHandWeaponSetRotation != null)
+        {
+            var primaryHandWeapon = (Weapon)playerGraphics.player.grasps[0].grabbed;
+            primaryHandWeapon.rotation = primaryHandWeaponSetRotation.Value;
+        }
+
+        if (playerGraphics.player.grasps[1].grabbed is Weapon && secondaryHandWeaponSetRotation != null)
+        {
+            var secondaryHandWeapon = (Weapon)playerGraphics.player.grasps[1].grabbed;
+            secondaryHandWeapon.rotation = secondaryHandWeaponSetRotation.Value;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using SlugCrafting.Creatures;
+﻿using CompartmentalizedCreatureGraphics;
 
 namespace SlugCrafting;
 
@@ -22,6 +20,6 @@ public static partial class Hooks
     {
         orig(self, sLeaser, rCam);
         // Save on iniate of sprites the sprite leaser for the lizard.
-        self.GetLizardGraphicsCraftingData().spriteLeaser = sLeaser;
+        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
     }
 }

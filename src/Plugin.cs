@@ -14,16 +14,16 @@ namespace SlugCrafting;
 // 2. BepInDependency.DependencyFlags.SoftDependency - The other mod doesn't need to be installed, but if it is, it should load before yours.
 //[BepInDependency("author.some_other_mods_guid", BepInDependency.DependencyFlags.HardDependency)]
 
-// TODO: for some reason enabling these break it...
-//[BepInDependency("slime-cubed.slugbase")]
-//[BepInDependency("fisobs", BepInDependency.DependencyFlags.HardDependency)]
-//[BepInDependency("marleystar7.marcustom", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("slime-cubed.slugbase", BepInDependency.DependencyFlags.HardDependency)]
+//[BepInDependency("Fisobs", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("marley-star7.marcustom", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("marley-star7.ccg", BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency("improved-input-config", BepInDependency.DependencyFlags.SoftDependency)]
 
 [BepInPlugin(ID, NAME, VERSION)]
 sealed class Plugin : BaseUnityPlugin
 {
-    public const string ID = "marleystar7.slugcrafting"; //-- This should be the same as the id in modinfo.json!
+    public const string ID = "marley-star7.slugcrafting"; //-- This should be the same as the id in modinfo.json!
     public const string NAME = "Slug Crafting"; //-- This should be a human-readable version of your mod's name. This is used for log files and also displaying which mods get loaded. In general, it's a good idea to match this with your modinfo.json as well.
     public const string VERSION = "0.0.1"; //-- This follows semantic versioning. For more information, see https://semver.org/ - again, match what you have in modinfo.json
 
@@ -51,7 +51,16 @@ sealed class Plugin : BaseUnityPlugin
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
 
-        Logger.LogInfo("Slug Crafting plugin is loaded!");
+        try
+        {
+            Inputs.RegisterInputs();
+        }
+        catch
+        {
+            throw new Exception("Improved Input not enabled, or loaded after SlugCrafting.");
+        }
+
+        Logger.LogInfo("Slug Crafting is loaded!");
     }
 
     private static void LoadPlugin(RainWorld rainWorld)
@@ -84,25 +93,13 @@ sealed class Plugin : BaseUnityPlugin
                 return;
             else
                 Plugin.isPostInit = true;
+
+            Plugin.improvedInputEnabled = ModManager.ActiveMods.Exists((mod) => mod.id == "improved-input-config");
+            Plugin.improvedInputVersion = Int32.Parse(ModManager.ActiveMods.First((mod) => mod.id == "improved-input-config").version.Substring(0, 1));
         }
         catch (Exception e)
         {
             Plugin.Logger.LogError(e.Message);
         }
-
-        Plugin.improvedInputEnabled = ModManager.ActiveMods.Exists((mod) => mod.id == "improved-input-config");
-        if (Plugin.improvedInputEnabled)
-        {
-            try
-            {
-                Inputs.RegisterInputs();
-            }
-            catch
-            {
-                throw new Exception("Improved Input enabled but also not enabled???");
-            }
-        }
-
-        Plugin.improvedInputVersion = Int32.Parse(ModManager.ActiveMods.First((mod) => mod.id == "improved-input-config").version.Substring(0, 1));
     }
 }

@@ -1,12 +1,14 @@
-using RWCustom;
 using UnityEngine;
+using RWCustom;
 
+using MRCustom;
 using MRCustom.Animations;
 using MRCustom.Math;
 
 using ImprovedInput;
 
 using SlugCrafting.Items;
+using Kittehface.Framework20;
 
 namespace SlugCrafting;
 
@@ -19,6 +21,10 @@ public static partial class Hooks
         On.Player.GrabUpdate += Player_GrabUpdate;
         On.Player.EatMeatUpdate += Player_EatMeatUpdate;
         On.Player.MaulingUpdate += Player_MaulingUpdate;
+
+        MREvents.OnPlayerGrab += PlayerExtension.OnPlayerGrab;
+        MREvents.OnPlayerReleaseGrasp += PlayerExtension.OnPlayerReleaseGrasp;
+        MREvents.OnPlayerSwitchGrasp += PlayerExtension.OnPlayerSwitchGrasp;
     }
 
     // Remove hooks
@@ -28,6 +34,10 @@ public static partial class Hooks
         On.Player.GrabUpdate -= Player_GrabUpdate;
         On.Player.EatMeatUpdate -= Player_EatMeatUpdate;
         On.Player.MaulingUpdate -= Player_MaulingUpdate;
+
+        MREvents.OnPlayerGrab -= PlayerExtension.OnPlayerGrab;
+        MREvents.OnPlayerReleaseGrasp -= PlayerExtension.OnPlayerReleaseGrasp;
+        MREvents.OnPlayerSwitchGrasp -= PlayerExtension.OnPlayerSwitchGrasp;
     }
 
     // TODO: add different scavenging times saved to the items scavenge data type thingy when you add it.
@@ -54,12 +64,15 @@ public static partial class Hooks
             orig(self, graspIndex);
     }
 
+
     private static void Player_GrabUpdate(On.Player.orig_GrabUpdate orig, Player selfPlayer, bool eu)
     {
-        if (selfPlayer.IsCrafter() && selfPlayer.IsPressed(ImprovedInput.PlayerKeybind.Special))
-        {
+        //-- MR7: TODO: make slugcat hands have a different custom animation when holding alternate use, to indicate it.
+        // Probably just holding both hands higher up,
 
-        }
+        //-- MR7: Do not pickup items if holding alt use, since it could interfere with keybinds.
+        if (selfPlayer.IsCrafter() && selfPlayer.IsPressed(Inputs.AlternateUse))
+            selfPlayer.BundleGrabUpdate(eu);
         else
             orig(selfPlayer, eu);
     }

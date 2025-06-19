@@ -8,7 +8,7 @@ using SlugCrafting.Items;
 
 namespace SlugCrafting.Items.Weapons;
 
-public class SpearCraftingData : PlayerCarryableItemCraftingData
+public class SpearCraftingData
 {
     //
     // HARPOON DATA
@@ -46,7 +46,7 @@ public class SpearCraftingData : PlayerCarryableItemCraftingData
 
     public WeakReference<Spear> spearRef;
 
-    public SpearCraftingData(Spear spear) : base (spear)
+    public SpearCraftingData(Spear spear)
     {
         spearRef = new WeakReference<Spear>(spear);
     }
@@ -62,6 +62,11 @@ public class SpearCraftingData : PlayerCarryableItemCraftingData
 
 public static class SpearExtension
 {
+    public static readonly ConditionalWeakTable<PlayerCarryableItem, SpearCraftingData> craftingDataConditionalWeakTable = new();
+
+    public static SpearCraftingData GetSpearCraftingData(this Spear physicalObject) => craftingDataConditionalWeakTable.GetValue(physicalObject, _ => new SpearCraftingData(physicalObject));
+
+
     //
     // ATTACHED ITEMS UPDATE
     //
@@ -361,6 +366,4 @@ public static class SpearExtension
         spear.room.PlaySound(SoundID.Spear_Dislodged_From_Creature, chunk.pos);
     }
     */
-
-    public static SpearCraftingData GetSpearCraftingData(this Spear physicalObject) => (SpearCraftingData)PlayerCarryableItemCraftingExtension.craftingDataConditionalWeakTable.GetValue(physicalObject, _ => new PlayerCarryableItemCraftingData(physicalObject));
 }

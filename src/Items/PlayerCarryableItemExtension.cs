@@ -24,18 +24,27 @@ public static class PlayerCarryableItemCraftingExtension
 
     public static PlayerCarryableItemCraftingData GetPlayerCarryableItemCraftingData(this PlayerCarryableItem physicalObject) => craftingDataConditionalWeakTable.GetValue(physicalObject, _ => new PlayerCarryableItemCraftingData(physicalObject));
 
+    //
+    //-- CONVENIENCE FUNCTIONS FOR BUNDLE INTERACTION
+    //
+
+    public static bool CanBundleWith(this PlayerCarryableItem selfPlayerCarryableItem, PlayerCarryableItem playerCarryableItemToBundle)
+    {
+        return selfPlayerCarryableItem.abstractPhysicalObject.type == playerCarryableItemToBundle.abstractPhysicalObject.type;
+    }
+
     public static void AddItemToBundle(this PlayerCarryableItem selfPlayerCarryableItem, PlayerCarryableItem playerCarryableItemToAdd)
     {
         var selfCraftingData = selfPlayerCarryableItem.GetPlayerCarryableItemCraftingData();
         if (selfCraftingData.bundle == null)
         {
-            selfCraftingData.bundle = new ItemBundle(playerCarryableItemToAdd.abstractPhysicalObject.type);
+            selfCraftingData.bundle = new ItemBundle(selfPlayerCarryableItem, playerCarryableItemToAdd.abstractPhysicalObject.type);
         }
 
         selfCraftingData.bundle.AddItem(playerCarryableItemToAdd);
     }
 
-    public static void RemoveItemFromBundle(this PlayerCarryableItem selfPlayerCarryableItem, PlayerCarryableItem playerCarryableItemToAdd)
+    public static void RemoveItemFromBundle(this PlayerCarryableItem selfPlayerCarryableItem, PlayerCarryableItem playerCarryableItemToRemove)
     {
         var selfCraftingData = selfPlayerCarryableItem.GetPlayerCarryableItemCraftingData();
         if (selfCraftingData.bundle == null)
@@ -43,7 +52,18 @@ public static class PlayerCarryableItemCraftingExtension
             return;
         }
 
-        selfCraftingData.bundle.RemoveItem(playerCarryableItemToAdd);
+        selfCraftingData.bundle.RemoveItem(playerCarryableItemToRemove);
+    }
+
+    public static PlayerCarryableItem PopItemFromBundle(this PlayerCarryableItem selfPlayerCarryableItem)
+    {
+        var selfCraftingData = selfPlayerCarryableItem.GetPlayerCarryableItemCraftingData();
+        if (selfCraftingData.bundle == null)
+        {
+            return null;
+        }
+
+        return selfCraftingData.bundle.PopItem();
     }
 
     public static ItemBundle? GetBundle(this PlayerCarryableItem playerCarryableItem)

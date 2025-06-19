@@ -1,20 +1,26 @@
-﻿using RWCustom;
-using UnityEngine;
-
+﻿using System.Collections;
 using System.Runtime.CompilerServices;
+
+using UnityEngine;
+using RWCustom;
+
+using ImprovedInput;
+
+using MRCustom;
+using MRCustom.Animations;
 
 using SlugCrafting.Scavenges;
 using SlugCrafting.Crafts;
 using SlugCrafting.Items.Weapons;
-
-using MRCustom;
-using MRCustom.Animations;
-using ImprovedInput;
+using SlugCrafting.Items;
+using SlugCrafting.Accessories;
 
 namespace SlugCrafting;
 
 public class PlayerCraftingData
 {
+    public List<Accessory> accessories = new List<Accessory>();
+
     public float scavengeTimer = 0;
     public float craftTimer = 0;
 
@@ -195,6 +201,57 @@ public static class PlayerExtension
     }
 
     //
+    // BUNDLING / DEBUNDLING WITH GRAB
+    //
+
+    public static void BundleGrabUpdate(this Player selfPlayer, bool eu)
+    {
+        if (!selfPlayer.JustPressed(ImprovedInput.PlayerKeybind.Grab))
+            return;
+
+        //-- MR7: TODO: TEMP FUNCTIONALITY FOR TESTING, LATER HAVE DIFFERENT WAY OF EQUIPPING.
+        if (selfPlayer.grasps[0] != null && selfPlayer.grasps[0].grabbed is AccessoryItem)
+        {
+            selfPlayer.EquipAccessory((selfPlayer.grasps[0].grabbed as AccessoryItem).accessory);
+        }
+
+        //-- MR7: Prioritize items in the primary hand first for checks, following the standard of primary item's being the focus for interaction.
+        // As alternate into primary gives for the least amount of button presses only when need an item on demand to be used immediately from a bundle,
+        // (which can be mitigated via just having an empty hand mean that the bundle is always pulled from into it.)
+        //-- Otherwise in cases like a backpack, where you are interacting with that first item, and pulling out of it, it being in the primary, pulling into alternate,
+        // since it has other interaction is best. Which you then will likely throw the backpack on your back again or on the ground if is an emergency.
+
+        if (selfPlayer.grasps[0] != null && selfPlayer.grasps[0].grabbed is PlayerCarryableItem)
+        {
+            var primaryHandItem = selfPlayer.grasps[0].grabbed as PlayerCarryableItem;
+            //-- MR7: First look to add Item to second hand's bundle if second hand has item and is bundleable.
+            // If second hand empty, pop an item from the primary hand's bundle to put in alternate.
+
+            if (selfPlayer.grasps[1] != null && selfPlayer.grasps[1].grabbed is PlayerCarryableItem) // Both Hands Have Items
+            {
+                var secondaryHandItem = selfPlayer.grasps[1].grabbed as PlayerCarryableItem;
+
+                if (primaryHandItem.CanBundleWith(secondaryHandItem))
+                    secondaryHandItem.AddItemToBundle(primaryHandItem);
+                else //-- MR7: Just switch grasps instead, for quality of life.
+                    selfPlayer.SwitchHands();
+            }
+            else
+            {
+                if (primaryHandItem.GetBundle() != null)
+                    selfPlayer.SlugcatGrab(primaryHandItem.PopItemFromBundle(), selfPlayer.FreeHand());
+            }
+        }
+        //-- MR7: Only if primary hand is empty, do we fall back on checking the secondary hand for a bundle to pull from.
+        else if (selfPlayer.grasps[1] != null && selfPlayer.grasps[1].grabbed is PlayerCarryableItem)
+        {
+            var secondaryHandItem = selfPlayer.grasps[1].grabbed as PlayerCarryableItem;
+
+            selfPlayer.SlugcatGrab(secondaryHandItem.PopItemFromBundle(), selfPlayer.FreeHand());
+        }
+    }
+
+    //
     // SCAVENGING UPDATE
     //
 
@@ -317,5 +374,14 @@ public static class PlayerExtension
             abstractPhysicalObject.RealizeInRoom();
 
         self.SlugcatGrab(abstractPhysicalObject.realizedObject, self.FreeHand());
+    }
+
+    //
+    // ACCESSORIES
+    //
+
+    public static void EquipAccessory(this Player selfPlayer, Accessory accessory)
+    {
+        accessory.Equip(selfPlayer);
     }
 }

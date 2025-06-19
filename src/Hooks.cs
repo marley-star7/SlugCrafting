@@ -15,10 +15,6 @@ public static partial class Hooks
         ApplyPlayerCarryableItemHooks();
         ApplySpearHooks();
         ApplySporePlantHooks();
-
-        MRCustom.Events.OnPlayerGrab += PlayerExtension.OnPlayerGrab;
-        MRCustom.Events.OnPlayerReleaseGrasp += PlayerExtension.OnPlayerReleaseGrasp;
-        MRCustom.Events.OnPlayerSwitchGrasp += PlayerExtension.OnPlayerSwitchGrasp;
     }
 
     internal static void RemoveHooks()
@@ -32,9 +28,5 @@ public static partial class Hooks
         RemovePlayerCarryableItemHooks();
         RemoveSpearHooks();
         RemoveSporePlantHooks();
-
-        MRCustom.Events.OnPlayerGrab -= PlayerExtension.OnPlayerGrab;
-        MRCustom.Events.OnPlayerReleaseGrasp -= PlayerExtension.OnPlayerReleaseGrasp;
-        MRCustom.Events.OnPlayerSwitchGrasp -= PlayerExtension.OnPlayerSwitchGrasp;
     }
 }

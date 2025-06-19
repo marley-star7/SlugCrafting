@@ -33,7 +33,13 @@ public static partial class Hooks
         if (selfItemCraftingData.bundle == null || selfItemCraftingData.bundle.firstItem == selfItem)
             return;
 
-        //-- If the item is not the first item in the bundle, then update its position to match the first item.
+        //
+        // ITEM POSITIONING FOR OTHER THAN FIRST
+        //
+
+        // Should only be able to grab the first item in a bundle.
+        selfItem.forbiddenToPlayer = 1;
+        // If the item is not the first item in the bundle, then update its position to match the first item.
         var firstItem = selfItemCraftingData.bundle.firstItem;
         selfItem.firstChunk.pos = firstItem.firstChunk.pos; // TODO: need to add bundle offset.
         selfItem.firstChunk.vel = firstItem.firstChunk.vel;

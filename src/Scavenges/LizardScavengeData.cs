@@ -1,5 +1,4 @@
 ﻿using SlugCrafting.Items;
-using SlugCrafting.Creatures;
 using SlugCrafting.Scavenges;
 
 namespace SlugCrafting.Scavenges;

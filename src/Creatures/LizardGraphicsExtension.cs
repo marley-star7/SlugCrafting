@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿/*
+using System.Runtime.CompilerServices;
 
 namespace SlugCrafting.Creatures
 {
@@ -8,7 +9,7 @@ namespace SlugCrafting.Creatures
     /// </summary>
     public class LizardGraphicsCraftingData
     {
-        public RoomCamera.SpriteLeaser spriteLeaser;
+        public RoomCamera.SpriteLeaser sLeaser;
     }
 
     public static class LizardGraphicsExtension
@@ -18,3 +19,4 @@ namespace SlugCrafting.Creatures
         public static LizardGraphicsCraftingData GetLizardGraphicsCraftingData(this LizardGraphics lizardGraphics) => lizardsGraphicsStorage.GetValue(lizardGraphics, _ => new LizardGraphicsCraftingData());
     }
 }
+*/

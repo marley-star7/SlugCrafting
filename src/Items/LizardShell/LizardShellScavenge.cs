@@ -1,4 +1,4 @@
-﻿using SlugCrafting.Creatures;
+﻿using CompartmentalizedCreatureGraphics;
 
 namespace SlugCrafting.Items;
 
@@ -14,7 +14,7 @@ public class LizardShellScavenge : AbstractPhysicalObjectScavenge
     public override AbstractPhysicalObject Scavenge()
     {
         var lizardGraphics = lizard.graphicsModule as LizardGraphics;
-        var sLeaser = lizardGraphics.GetLizardGraphicsCraftingData().spriteLeaser;
+        var sLeaser = lizardGraphics.GetGraphicsModuleCCGData().sLeaser;
 
         var shell = new AbstractLizardShell(lizard.room.world, lizard.Template.type, lizard.coord, lizard.room.game.GetNewID())
         {

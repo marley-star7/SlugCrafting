@@ -1,11 +1,11 @@
 {
-	"id": "marleystar7.slugcrafting",
+	"id": "marley-star7.slugcrafting",
 	"name": "Slug Crafting",
     "version": "0.0.1",
-	"authors": "marleystar7",
+	"authors": "marley-star7",
 	"description": "A mod adding potential for advanced slugcat crafting!",
-	"requirements": [ "marleystar7.marcustom", "slime-cubed.slugbase", "fisobs", "improved-input-config" ],
-	"requirements_names": [ "MRCustom", "SlugBase", "Fisobs", "Improved Input Config: Extended" ],
+	"requirements": [ "marley-star7.ccg", "marley-star7.marcustom", "slime-cubed.slugbase", "fisobs", "improved-input-config" ],
+	"requirements_names": [ "Compartmentalized Creature Graphics", "MRCustom", "SlugBase", "Fisobs", "Improved Input Config: Extended" ],
 	"priorities": [ "moreslugcats" ],
 	"tags": [ "Game Mechanics", "Items" ],
 	"checksum_override_version": false

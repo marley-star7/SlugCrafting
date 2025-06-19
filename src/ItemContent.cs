@@ -1,7 +1,7 @@
 ﻿using RWCustom;
 using UnityEngine;
 
-using Fisobs.Core;
+using MRCustom;
 
 using SlugCrafting.Items;
 using SlugCrafting.Items.Weapons;
@@ -28,6 +28,8 @@ public static partial class Content
         Fisobs.Core.Content.Register(new LizardShellFisob());
         Fisobs.Core.Content.Register(new GreenLizardShellFisob());
         Fisobs.Core.Content.Register(new PinkLizardShellFisob());
+
+        Fisobs.Core.Content.Register(new GreenLizardShellHelmetFisob());
 
         //Fisobs.Core.Content.Register(new DoubleSidedSpearFisob());
     }
@@ -308,6 +310,11 @@ public static partial class Content
 
                 craftTime = 20,
                 handAnimationIndex = Enums.HandAnimationIndex.SmashIntoCraft,
+                handAnimation = new SmashIntoCraftPlayerHandAnimation(20)
+                {
+                    primaryHandWeaponSetRotation = new Vector2(1, 1).normalized,
+                    secondaryHandWeaponSetRotation = new Vector2(1, 1).normalized
+                }
             }
         );
 

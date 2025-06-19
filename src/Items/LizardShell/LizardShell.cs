@@ -69,6 +69,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
         var num = UnityEngine.Random.Range(3, 8);
         for (int k = 0; k < num; k++)
         {
+            //-- MR7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
             Vector2 pos = firstChunk.pos + Custom.DegToVec(Rand * 360f) * 5f * Rand;
             Vector2 vel = -impactVelocity * -0.1f + Custom.DegToVec(Rand * 360f) * Mathf.Lerp(0.2f, 0.4f, Rand) * impactVelocity.magnitude;
             room.AddObject(new Spark(pos, vel, new Color(1f, 1f, 1f), null, 10, 170));

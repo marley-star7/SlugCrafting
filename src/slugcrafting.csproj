@@ -59,6 +59,10 @@
 		<Reference Include="..\lib\UnityEngine.InputLegacyModule.dll">
 		  <Private>false</Private>
 		</Reference>
+		<Reference Include="CompartmentalizedCreatureGraphics">
+		  <HintPath>..\lib\CompartmentalizedCreatureGraphics.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -75,8 +79,8 @@
       <Assets Include="$(ProjectDir)../assets/**/*.*" />
     </ItemGroup>
     
-    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/$(ProjectName)/%(RecursiveDir)%(Filename)%(Extension)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/$(ProjectName)/plugins" />
+    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/slugcrafting/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/slugcrafting/plugins" />
   </Target>
 
 </Project>
