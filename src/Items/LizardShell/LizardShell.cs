@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace SlugCrafting.Items;
 
+// TODO: take jawOpenAngle, and jawOpenFacotr stuff from source.
+// TODO: get pickup blink working.
+
 class LizardShell : PlayerCarryableItem, IDrawable
 {
     public override float ThrowPowerFactor => 1f;
