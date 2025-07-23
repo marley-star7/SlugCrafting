@@ -1,6 +1,4 @@
-﻿using SlugCrafting.Items;
-
-namespace SlugCrafting.Scavenges;
+﻿namespace SlugCrafting.Scavenges;
 
 public class PinkLizardScavengeData : CreatureScavengeData
 {
@@ -16,21 +14,21 @@ public class PinkLizardScavengeData : CreatureScavengeData
             { new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard)
                 {
                     scavengeTime = 200,
-                    handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
             // Body Index is 1
             { new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
             // Body Index is 1
             { new ScavengeSpot(2, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
         };

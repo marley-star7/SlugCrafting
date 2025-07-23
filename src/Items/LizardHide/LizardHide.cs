@@ -13,7 +13,7 @@ class LizardHide : PlayerCarryableItem, IDrawable
     public int TotalSprites;
     public int hideSprite;
 
-    public MRCord mRCord;
+    public MRLinePhysics mRLinePhysics;
 
     public bool lastGrabbed;
 
@@ -40,13 +40,13 @@ class LizardHide : PlayerCarryableItem, IDrawable
         TotalSprites = 1;
         hideSprite = 0;
 
-        mRCord = new MRCord(this, firstChunk, divs)
+        mRLinePhysics = new MRLinePhysics(this, firstChunk, divs)
         {
             partLength = hideScale,
             restSpeed = 0.3f,
             midPart = divs / 2,
         };
-        mRCord.SetPartsRadius(divs);
+        mRLinePhysics.SetPartsRadius(divs);
 
         hidePointsPos = new Vector2[divs, divs];
         hidePointsLastPos = new Vector2[divs, divs];
@@ -77,7 +77,7 @@ class LizardHide : PlayerCarryableItem, IDrawable
 
         //movementDir -= new Vector2(0f, 9.8f); // TODO: replace with whatever the global gravity thing is or whatever decides movement pully.
 
-        mRCord.Update();
+        mRLinePhysics.Update();
         // VERTEX POINT PLACEMENTS
         for (int i = 0; i < divs; i++)
         {
@@ -88,10 +88,10 @@ class LizardHide : PlayerCarryableItem, IDrawable
                 (
                     //-- // Centered around the first chunk and scaled.
                     (i - divs / 2) * hideScale
-                    + mRCord.parts[i].pos.x,
+                    + mRLinePhysics.parts[i].pos.x,
 
                     (j - divs / 2) * hideScale
-                    + mRCord.parts[j].pos.y
+                    + mRLinePhysics.parts[j].pos.y
                 );
                 hidePointsLastPos[i, j] = hidePointsPos[i, j];
             }
@@ -122,10 +122,10 @@ class LizardHide : PlayerCarryableItem, IDrawable
     {
         var triMesh = sLeaser.sprites[hideSprite] as TriangleMesh;
 
-        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRCord.parts[0].lastPos, mRCord.parts[0].pos, timeStacker);
-        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRCord.parts[1].lastPos, mRCord.parts[1].pos, timeStacker), startingStalksChangeInPos) * mRCord.partLength;
+        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRLinePhysics.parts[0].lastPos, mRLinePhysics.parts[0].pos, timeStacker);
+        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRLinePhysics.parts[1].lastPos, mRLinePhysics.parts[1].pos, timeStacker), startingStalksChangeInPos) * mRLinePhysics.partLength;
 
-        for (int i = 0; i < mRCord.parts.Length; i++)
+        for (int i = 0; i < mRLinePhysics.parts.Length; i++)
         {
             for (int j = 0; j < divs; j++)
             {
@@ -193,7 +193,7 @@ class LizardHide : PlayerCarryableItem, IDrawable
 
     private void Reset()
     {
-        mRCord.ResetParts();
+        mRLinePhysics.ResetParts();
         for (int i = 0; i < divs; i++)
         {
             for (int j = 0; j < divs; j++)

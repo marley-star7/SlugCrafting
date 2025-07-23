@@ -1,8 +1,4 @@
-﻿
-using System.Numerics;
-using MRCustom.Animations;
-
-namespace SlugCrafting;
+﻿namespace SlugCrafting;
 
 // TODO: probably change this to be a struct for optimization purposes, since the only thing that changes is the function?
 public abstract class AbstractPhysicalObjectScavenge

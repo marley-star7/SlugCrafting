@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-
-using System.Runtime.CompilerServices;
-
-namespace SlugCrafting.Scavenges;
+﻿namespace SlugCrafting.Scavenges;
 
 /// <summary>
 /// A struct that contains the position of a scavenge spot.

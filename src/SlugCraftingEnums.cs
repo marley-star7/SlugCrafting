@@ -1,12 +1,19 @@
-﻿using MRCustom.Animations;
+﻿namespace SlugCrafting;
 
-namespace SlugCrafting;
-
-public static class Enums
+public static class SlugCraftingEnums
 {
     public static readonly SlugcatStats.Name Crafter = new(nameof(Crafter), false);
 
-    //-- MR7: TODO: probably move the abstractobjecttypes from fisobs to here.
+    public class AbstractObjectType
+    {
+        //-- MR7: TODO: move the abstractobjecttypes from fisobs properties files to here.
+        public static readonly AbstractPhysicalObject.AbstractObjectType Knife = new("Knife", true);
+    }
+
+    public class SandboxID
+    {
+        public static readonly MultiplayerUnlocks.SandboxUnlockID Knife = new("Knife", true);
+    }
 
     public class HandAnimationIndex
     {

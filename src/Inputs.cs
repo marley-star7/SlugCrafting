@@ -1,7 +1,4 @@
-﻿using ImprovedInput;
-using UnityEngine;
-
-namespace SlugCrafting;
+﻿namespace SlugCrafting;
 
 public static class Inputs
 {

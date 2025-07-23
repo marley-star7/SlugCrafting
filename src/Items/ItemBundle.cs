@@ -28,7 +28,7 @@ public class ItemBundle
     /// <param name="type"></param>
     public ItemBundle(PlayerCarryableItem firstItem, AbstractPhysicalObject.AbstractObjectType type)
     {
-        var maxBundleSize = Content.ItemsBundleProperties[type].maxBundleSize;
+        var maxBundleSize = SlugCrafting.Core.Content.ItemsBundleProperties[type].maxBundleSize;
 
         items = new List<PlayerCarryableItem>();
         // Cap the capacity because don't need to hold more.

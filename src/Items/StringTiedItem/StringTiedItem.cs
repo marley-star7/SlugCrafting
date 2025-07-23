@@ -7,7 +7,7 @@ namespace SlugCrafting.Items;
 
 public class StringTiedItem : PlayerCarryableItem, IDrawable
 {
-    public MRCord mRCord;
+    public MRLinePhysics mRLinePhysics;
     public AbstractStringTiedItem abstractStringTiedItem;
 
     public float TotalStringLength = 200f;
@@ -94,14 +94,14 @@ public class StringTiedItem : PlayerCarryableItem, IDrawable
         base.waterFriction = 0.92f;
         base.buoyancy = 1.2f;
 
-        mRCord = new MRCord(this, firstChunk, TotalStringParts)
+        mRLinePhysics = new MRLinePhysics(this, firstChunk, TotalStringParts)
         {
             partLength = stringPartLength,
             restSpeed = stringRestSpeed,
             midPart = 0 // The point at which you grab is the first part of the stalk.
         };
-        mRCord.SetPartsRadius(stringThickness);
-        mRCord.forceSetPartPositions = new Dictionary<int, Vector2>
+        mRLinePhysics.SetPartsRadius(stringThickness);
+        mRLinePhysics.forceSetPartPositions = new Dictionary<int, Vector2>
         {
             { 0, Vector2.zero},
             { TotalStringParts - 1, Vector2.zero }
@@ -135,25 +135,25 @@ public class StringTiedItem : PlayerCarryableItem, IDrawable
     public override void PlaceInRoom(Room placeRoom)
     {
         base.PlaceInRoom(placeRoom);
-        mRCord.ResetParts();
+        mRLinePhysics.ResetParts();
     }
 
     public override void NewRoom(Room newRoom)
     {
         base.NewRoom(newRoom);
-        mRCord.ResetParts();
+        mRLinePhysics.ResetParts();
     }
 
     public override void Update(bool eu)
     {
         base.Update(eu);
 
-        mRCord.forceSetPartPositions[0] = firstChunk.pos;
+        mRLinePhysics.forceSetPartPositions[0] = firstChunk.pos;
         if (BodyChunkTiedIndex != -1)
         {
-            mRCord.forceSetPartPositions[TotalStringParts - 1] = BodyChunkTied.pos;
+            mRLinePhysics.forceSetPartPositions[TotalStringParts - 1] = BodyChunkTied.pos;
         }
-        mRCord.Update();
+        mRLinePhysics.Update();
     }
 
     //
@@ -164,7 +164,7 @@ public class StringTiedItem : PlayerCarryableItem, IDrawable
     {
         sLeaser.sprites = new FSprite[TotalSprites]
         {
-            TriangleMesh.MakeLongMesh(mRCord.parts.Length, pointyTip: false, customColor: true)
+            TriangleMesh.MakeLongMesh(mRLinePhysics.parts.Length, pointyTip: false, customColor: true)
         };
         AddToContainer(sLeaser, rCam, null);
     }
@@ -173,11 +173,11 @@ public class StringTiedItem : PlayerCarryableItem, IDrawable
     {
         var triMesh = sLeaser.sprites[StringSprite] as TriangleMesh;
 
-        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRCord.parts[0].lastPos, mRCord.parts[0].pos, timeStacker);
-        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRCord.parts[1].lastPos, mRCord.parts[1].pos, timeStacker), startingStalksChangeInPos) * stringPartLength;
-        for (int i = 0; i < mRCord.parts.Length; i++)
+        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRLinePhysics.parts[0].lastPos, mRLinePhysics.parts[0].pos, timeStacker);
+        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRLinePhysics.parts[1].lastPos, mRLinePhysics.parts[1].pos, timeStacker), startingStalksChangeInPos) * stringPartLength;
+        for (int i = 0; i < mRLinePhysics.parts.Length; i++)
         {
-            Vector2 currentStalkPos = Vector2.Lerp(mRCord.parts[i].lastPos, mRCord.parts[i].pos, timeStacker);
+            Vector2 currentStalkPos = Vector2.Lerp(mRLinePhysics.parts[i].lastPos, mRLinePhysics.parts[i].pos, timeStacker);
             Vector2 normalized = (currentStalkPos - startingStalksChangeInPos).normalized;
             Vector2 currentStalkPerpindicularAngle = Custom.PerpendicularVector(normalized);
             float distanceFromFirstStalk = Vector2.Distance(currentStalkPos, startingStalksChangeInPos) / 5f;

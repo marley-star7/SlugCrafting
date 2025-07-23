@@ -1,45 +1,31 @@
-﻿using UnityEngine;
-using RWCustom;
-using SlugCrafting.Items.Weapons;
-
+﻿
 namespace SlugCrafting;
 
-public static partial class Hooks
+internal static class SpearHooks
 {
-    private static void ApplySpearHooks()
+    internal static bool Spear_HitSomething(On.Spear.orig_HitSomething orig, Spear self, SharedPhysics.CollisionResult result, bool eu)
     {
-        On.Spear.Update += Spear_Update;
-        On.Spear.Thrown += Spear_Thrown;
-        On.Spear.LodgeInCreature_CollisionResult_bool += Spear_LodgeInCreature;
-        On.Spear.ChangeMode += Spear_ChangeMode;
-
-        On.Spear.InitiateSprites += Spear_InitiateSprites;
-        On.Spear.DrawSprites += Spear_DrawSprites;
-
-        On.PhysicalObject.NewRoom += Spear_NewRoom;
-        On.UpdatableAndDeletable.Destroy += Spear_Destroy;
+        if (result.obj == null)
+        {
+            return false;
+        }
+        var didHit = true;
+        if (result.obj is Player)
+        {
+            var playerCraftingData = ((Player)result.obj).GetPlayerCraftingData();
+            for (int i = 0; i < playerCraftingData.accessories.Count; i++)
+            {
+                didHit = playerCraftingData.accessories[i].OnSpearHitWearer(self, result, eu);
+            }
+        }
+        if (!didHit)
+        {
+            return false;
+        }
+        return orig(self, result, eu);
     }
 
-    private static void RemoveSpearHooks()
-    {
-        On.Spear.ChangeMode -= Spear_ChangeMode;
-        On.Spear.Update -= Spear_Update;
-        On.Spear.Thrown -= Spear_Thrown;
-        On.Spear.LodgeInCreature_CollisionResult_bool -= Spear_LodgeInCreature;
-        On.Spear.ChangeMode -= Spear_ChangeMode;
-
-        On.Spear.InitiateSprites -= Spear_InitiateSprites;
-        On.Spear.DrawSprites -= Spear_DrawSprites;
-
-        On.PhysicalObject.NewRoom -= Spear_NewRoom;
-        On.UpdatableAndDeletable.Destroy -= Spear_Destroy;
-    }
-
-    //
-    // HOOKS FUNCS
-    //
-
-    private static void Spear_Update(On.Spear.orig_Update orig, Spear selfSpear, bool eu)
+    internal static void Spear_Update(On.Spear.orig_Update orig, Spear selfSpear, bool eu)
     {
         var spearData = selfSpear.GetSpearCraftingData();
 
@@ -74,7 +60,7 @@ public static partial class Hooks
         }
     }
 
-    private static void Spear_Thrown(On.Spear.orig_Thrown orig, Spear self, Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
+    internal static void Spear_Thrown(On.Spear.orig_Thrown orig, Spear self, Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
     {
         orig(self, thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
 
@@ -84,7 +70,7 @@ public static partial class Hooks
         };
     }
 
-    private static void Spear_LodgeInCreature(On.Spear.orig_LodgeInCreature_CollisionResult_bool orig, Spear selfSpear, SharedPhysics.CollisionResult result, bool eu)
+    internal static void Spear_LodgeInCreature(On.Spear.orig_LodgeInCreature_CollisionResult_bool orig, Spear selfSpear, SharedPhysics.CollisionResult result, bool eu)
     {
         orig(selfSpear, result, eu);
         var selfSpearCraftingData = selfSpear.GetSpearCraftingData();
@@ -99,7 +85,7 @@ public static partial class Hooks
         */
     }
 
-    private static void Spear_Destroy(On.UpdatableAndDeletable.orig_Destroy orig, UpdatableAndDeletable self)
+    internal static void Spear_Destroy(On.UpdatableAndDeletable.orig_Destroy orig, UpdatableAndDeletable self)
     {
         orig(self);
 
@@ -122,7 +108,7 @@ public static partial class Hooks
         }
     }
 
-    private static void Spear_NewRoom(On.PhysicalObject.orig_NewRoom orig, PhysicalObject self, Room newRoom)
+    internal static void Spear_NewRoom(On.PhysicalObject.orig_NewRoom orig, PhysicalObject self, Room newRoom)
     {
         orig(self, newRoom);
 
@@ -132,7 +118,7 @@ public static partial class Hooks
         var spear = self as Spear;
     }
 
-    private static void Spear_ChangeMode(On.Spear.orig_ChangeMode orig, Spear selfSpear, Weapon.Mode newMode)
+    internal static void Spear_ChangeMode(On.Spear.orig_ChangeMode orig, Spear selfSpear, Weapon.Mode newMode)
     {
         orig(selfSpear, newMode);
 
@@ -169,12 +155,12 @@ public static partial class Hooks
     // GRAPHICS FUNCTIONS
     //
 
-    private static void Spear_InitiateSprites(On.Spear.orig_InitiateSprites orig, Spear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+    internal static void Spear_InitiateSprites(On.Spear.orig_InitiateSprites orig, Spear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
         orig(self, sLeaser, rCam);
     }
 
-    private static void Spear_DrawSprites(On.Spear.orig_DrawSprites orig, Spear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    internal static void Spear_DrawSprites(On.Spear.orig_DrawSprites orig, Spear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         var spearData = self.GetSpearCraftingData();
 

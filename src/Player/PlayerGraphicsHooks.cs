@@ -1,39 +1,7 @@
-﻿using RWCustom;
-using UnityEngine;
+﻿namespace SlugCrafting;
 
-using MRCustom.Animations;
-using MRCustom.Math;
-
-using SlugCrafting.Items;
-using SlugCrafting.Accessories;
-
-using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
-using CompartmentalizedCreatureGraphics;
-
-namespace SlugCrafting;
-
-public static partial class Hooks
+internal static class PlayerGraphicsHooks
 {
-    //-- Add hooks
-    internal static void ApplyPlayerGraphicsHooks()
-    {
-        On.PlayerGraphics.Update += PlayerGraphics_Update;
-
-        On.PlayerGraphics.InitiateSprites += PlayerGraphics_InitiateSprites;
-        //On.PlayerGraphics.DrawSprites += PlayerGraphics_DrawSprites;
-        On.PlayerGraphics.ApplyPalette += PlayerGraphics_ApplyPalette;
-    }
-
-    //-- Remove hooks
-    internal static void RemovePlayerGraphicsHooks()
-    {
-        On.PlayerGraphics.Update -= PlayerGraphics_Update;
-
-        On.PlayerGraphics.InitiateSprites -= PlayerGraphics_InitiateSprites;
-        //On.PlayerGraphics.DrawSprites += PlayerGraphics_DrawSprites;
-        On.PlayerGraphics.ApplyPalette -= PlayerGraphics_ApplyPalette;
-    }
-
     /* 
     Sprite 0 = BodyA
     Sprite 1 = HipsA
@@ -49,7 +17,7 @@ public static partial class Hooks
     sprite 11 = pixel Mark of comunication
     */
 
-    private static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
+    internal static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
     {
         orig(self);
     }
@@ -58,56 +26,14 @@ public static partial class Hooks
     // IDRAWABLE
     //
 
-    private static void AddCrafterDynamicCosmetics(PlayerGraphics playerGraphics)
+    internal static void PlayerGraphics_ctor(On.PlayerGraphics.orig_ctor orig, PlayerGraphics self, PhysicalObject ow)
     {
-        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        //
-        // BUILD THE COMPARTMENTALIZED SCUG
-        //
 
-        PlayerGraphicsCCGData.AddDefaultVanillaSlugcatDynamicLeftEarCosmetic(playerGraphics);
-        PlayerGraphicsCCGData.AddDefaultVanillaSlugcatDynamicRightEarCosmetic(playerGraphics);
-
-        // LEFT EYE
-        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEye()
-        {
-            spriteName = "ccgCrafterEye",
-            defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
-            side = -1,
-            defaultScaleX = -1,
-            snapValue = PlayerGraphicsCCGData.DefaultVanillaFaceSnapValue,
-        }
-        );
-
-        // RIGHT EYE
-        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEye()
-        {
-            spriteName = "ccgCrafterEye",
-            defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
-            side = 1,
-            defaultScaleX = 1,
-            snapValue = PlayerGraphicsCCGData.DefaultVanillaFaceSnapValue,
-        }
-        );
-
-        PlayerGraphicsCCGData.AddDefaultVanillaSlugcatDynamicNoseCosmetic(playerGraphics);
+        orig(self, ow);
     }
 
-    private static void PlayerGraphics_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-    {
-        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
-
-        if (playerGraphics.player.IsCrafter())
-        {
-            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true; // Crafter always requires it, since thats how armors work.
-            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = AddCrafterDynamicCosmetics;
-        }
-
-        orig(playerGraphics, sLeaser, rCam);
-    }
-
-    private static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    internal static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
         orig(playerGraphics, sLeaser, rCam, palette);
 

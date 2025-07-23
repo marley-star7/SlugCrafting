@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-
-using MRCustom.Animations;
-
-namespace SlugCrafting.Animations;
+﻿namespace SlugCrafting.Animations;
 
 public class SwallowCraftPlayerHandAnimation : MRAnimation<Player>
 {

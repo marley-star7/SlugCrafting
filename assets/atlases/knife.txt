@@ -18,7 +18,7 @@
  },
  "meta": {
   "app": "https://www.aseprite.org/",
-  "version": "1.3.13-x64",
+  "version": "1.3.14.4-x64",
   "image": "knife.png",
   "format": "RGBA8888",
   "size": { "w": 16, "h": 16 },

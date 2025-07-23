@@ -5,6 +5,8 @@
 	"features": {
 		"color": "cccccc",
 		"walk_speed": 1.1,
+		"climb_speed": 1,
+		"tunnel_speed": 1,
 		"throw_skill": 0,
 		"custom_colors": [
 			{

@@ -1,35 +1,14 @@
-﻿using RWCustom;
-using UnityEngine;
+﻿namespace SlugCrafting;
 
-using SlugCrafting.Items;
-
-namespace SlugCrafting;
-
-public static partial class Hooks
+public static class SporePlantHooks
 {
-    // Add hooks
-    private static void ApplySporePlantHooks()
-    {
-        On.SporePlant.Update += SporePlant_Update;
-        On.SporePlant.Collide += SporePlant_Collide;
-        On.SporePlant.DrawSprites += SporePlant_DrawSprites;
-    }
-
-    // Remove hooks
-    private static void RemoveSporePlantHooks()
-    {
-        On.SporePlant.Update -= SporePlant_Update;
-        On.SporePlant.Collide -= SporePlant_Collide;
-        On.SporePlant.DrawSprites -= SporePlant_DrawSprites;
-    }
-
-    private static void SporePlant_Collide(On.SporePlant.orig_Collide orig, SporePlant self, PhysicalObject otherObject, int myChunk, int otherChunk)
+    internal static void SporePlant_Collide(On.SporePlant.orig_Collide orig, SporePlant self, PhysicalObject otherObject, int myChunk, int otherChunk)
     {
         //if (otherObject != self.GetSlugCraftingData().stuckInSpear)
             orig(self, otherObject, myChunk, otherChunk);
     }
 
-    private static void SporePlant_Update(On.SporePlant.orig_Update orig, SporePlant self, bool eu)
+    internal static void SporePlant_Update(On.SporePlant.orig_Update orig, SporePlant self, bool eu)
     {
         orig(self, eu);
 
@@ -59,7 +38,7 @@ public static partial class Hooks
         */
     }
 
-    private static void SporePlant_DrawSprites(On.SporePlant.orig_DrawSprites orig, SporePlant self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    internal static void SporePlant_DrawSprites(On.SporePlant.orig_DrawSprites orig, SporePlant self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
         /*

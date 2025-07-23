@@ -1,10 +1,4 @@
-﻿using UnityEngine;
-using RWCustom;
-
-using BepInEx;
-using BepInEx.Logging;
-
-namespace SlugCrafting;
+﻿namespace SlugCrafting;
 
 //-- MR7: I might occasionally leave these "guide" comment's around in case someone wishes to learn modding based off this mod's code.
 // I did something similar with "Da Vinki", open source is a helpful learning tool, and I gotta show gratitude by making it easier for the next guy.
@@ -41,7 +35,43 @@ sealed class Plugin : BaseUnityPlugin
         // Someday's I think about logging with my logger, and I get all loggy...
         Logger = base.Logger;
 
-        Enums.HandAnimationIndex.RegisterValues();
+        SlugCraftingEnums.HandAnimationIndex.RegisterValues();
+
+        var crafterCosmeticsPreset = new SlugcatCosmeticsPreset(
+            new DynamicCosmetic[]
+            {
+                SlugcatCosmeticsPreset.CreateDefaultVanillaSlugcatDynamicLeftEarCosmetic(),
+                SlugcatCosmeticsPreset.CreateDefaultVanillaSlugcatDynamicRightEarCosmetic(),
+                SlugcatCosmeticsPreset.CreateDefaultVanillaSlugcatDynamicNoseCosmetic(),
+
+                new DynamicSlugcatEyeCosmetic(new SpriteLayerGroup[]{ 
+                    new SpriteLayerGroup((int) CCGEnums.SlugcatCosmeticLayer.Eyes, 0)
+                })
+                {
+                    spriteName = "ccgCrafterEye",
+                    defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
+                    side = -1,
+                    defaultScaleX = -1,
+                    snapValue = 15,
+                },
+
+                new DynamicSlugcatEyeCosmetic(new SpriteLayerGroup[]{
+                    new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Eyes, 0)
+                })
+                {
+                    spriteName = "ccgCrafterEye",
+                    defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
+                    side = 1,
+                    defaultScaleX = 1,
+                    snapValue = 15,
+                },
+            })
+        {
+            baseHeadSpriteName = "ccgSlugcatHeadA0",
+            baseFaceSpriteName = "marNothing",
+        };
+
+        CompartmentalizedCreatureGraphics.Core.Content.AddCharacterCosmeticPreset(SlugCraftingEnums.Crafter, crafterCosmeticsPreset);
 
         Core.Content.RegisterSlugCraftingFisobs();
         Core.Content.RegisterSlugCraftingCrafts();
@@ -76,7 +106,7 @@ sealed class Plugin : BaseUnityPlugin
 
     public void OnDisable()
     {
-        Enums.HandAnimationIndex.UnregisterValues();
+        SlugCraftingEnums.HandAnimationIndex.UnregisterValues();
         //VLogger.LogInfo("OnDisable\n" + StackTraceUtility.ExtractStackTrace());
         if (restartMode)
         {

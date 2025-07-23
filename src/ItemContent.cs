@@ -112,7 +112,7 @@ public static partial class Content
                 },
 
                 craftTime = 40,
-                handAnimationIndex = Enums.HandAnimationIndex.DoubleSwallowCraft,
+                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.DoubleSwallowCraft,
                 handAnimation = new SwallowCraftPlayerHandAnimation(40)
                 {
                 }
@@ -158,7 +158,7 @@ public static partial class Content
                     player.RealizeAndGrab(
                         new AbstractKnife(
                              crafter.room.world,
-                             KnifeFisob.abstractObjectType,
+                             SlugCraftingEnums.AbstractObjectType.Knife,
                              crafter.coord,
                              crafter.room.game.GetNewID()
                          )
@@ -166,7 +166,7 @@ public static partial class Content
                 },
 
                 craftTime = 200,
-                handAnimationIndex = Enums.HandAnimationIndex.SmashIntoCraft,
+                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft,
                 handAnimation = new SmashIntoCraftPlayerHandAnimation(200)
                 {
                     timeBetweenBeats = 20f,
@@ -191,7 +191,7 @@ public static partial class Content
 
                 secondaryIngredient = new CraftIngredient()
                 {
-                    type = KnifeFisob.abstractObjectType,
+                    type = SlugCraftingEnums.AbstractObjectType.Knife,
                 },
 
                 ingredientValidation = (in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
@@ -270,7 +270,7 @@ public static partial class Content
                 },
 
                 craftTime = 100,
-                handAnimationIndex = Enums.HandAnimationIndex.SmashIntoCraft, // TODO: CHANGE THIS TO BE VALID
+                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft, // TODO: CHANGE THIS TO BE VALID
                 handAnimation = new SharpenCraftPlayerHandAnimation(100)
             }
         );
@@ -309,7 +309,7 @@ public static partial class Content
                 },
 
                 craftTime = 20,
-                handAnimationIndex = Enums.HandAnimationIndex.SmashIntoCraft,
+                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft,
                 handAnimation = new SmashIntoCraftPlayerHandAnimation(20)
                 {
                     primaryHandWeaponSetRotation = new Vector2(1, 1).normalized,
@@ -354,7 +354,7 @@ public static partial class Content
                 },
 
                 craftTime = 20,
-                handAnimationIndex = Enums.HandAnimationIndex.SmashIntoCraft,
+                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft,
                 handAnimation = new SmashIntoCraftPlayerHandAnimation(20)
             }
         );

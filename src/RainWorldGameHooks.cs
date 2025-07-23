@@ -1,6 +1,4 @@
-﻿using SlugBase.SaveData;
-
-namespace SlugCrafting;
+﻿namespace SlugCrafting;
 
 public static partial class Hooks
 {

@@ -1,7 +1,4 @@
-﻿using SlugCrafting.Items;
-using SlugCrafting.Scavenges;
-
-namespace SlugCrafting.Scavenges;
+﻿namespace SlugCrafting.Scavenges;
 
 /// <summary>
 /// Default scavenge data for lizards, used for non-specificed lizard type scavenges.
@@ -21,14 +18,14 @@ public class LizardScavengeData : CreatureScavengeData
                 new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard)
                 {
                     scavengeTime = 200,
-                    handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
             {   
                 new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    handAnimation =  Enums.HandAnimationIndex.SawBackForthScavenge,
+                    handAnimation =  SlugCraftingEnums.HandAnimationIndex.SawBackForthScavenge,
                 }
             },
         };

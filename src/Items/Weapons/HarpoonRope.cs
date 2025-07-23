@@ -1,7 +1,4 @@
-﻿using RWCustom;
-using UnityEngine;
-
-namespace SlugCrafting.Items.Weapons;
+﻿namespace SlugCrafting.Items.Weapons;
 
 //
 // HARPOON ROPE

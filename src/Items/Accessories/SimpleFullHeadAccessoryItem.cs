@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SlugCrafting.Items.Accessories;
+using UnityEngine;
 
 namespace SlugCrafting.Items;
 

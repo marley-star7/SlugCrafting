@@ -7,7 +7,7 @@ namespace SlugCrafting.Items;
 
 public class String : PlayerCarryableItem, IDrawable
 {
-    public MRCord mRCord;
+    public MRLinePhysics mRLinePhysics;
 
     public int StringSprite => 0;
     public const int TotalSprites = 1;
@@ -49,30 +49,30 @@ public class String : PlayerCarryableItem, IDrawable
         base.waterFriction = 0.92f;
         base.buoyancy = 1.2f;
 
-        mRCord = new MRCord(this, firstChunk, TotalStringParts)
+        mRLinePhysics = new MRLinePhysics(this, firstChunk, TotalStringParts)
         {
             partLength = stringPartLength,
             restSpeed = stringRestSpeed,
         };
-        mRCord.SetPartsRadius(stringThickness);
+        mRLinePhysics.SetPartsRadius(stringThickness);
     }
 
     public override void PlaceInRoom(Room placeRoom)
     {
         base.PlaceInRoom(placeRoom);
-        mRCord.ResetParts();
+        mRLinePhysics.ResetParts();
     }
 
     public override void NewRoom(Room newRoom)
     {
         base.NewRoom(newRoom);
-        mRCord.ResetParts();
+        mRLinePhysics.ResetParts();
     }
 
     public override void Update(bool eu)
     {
         base.Update(eu);
-        mRCord.Update();
+        mRLinePhysics.Update();
     }
 
     //
@@ -83,7 +83,7 @@ public class String : PlayerCarryableItem, IDrawable
     {
         sLeaser.sprites = new FSprite[TotalSprites]
         {
-            TriangleMesh.MakeLongMesh(mRCord.parts.Length, pointyTip: false, customColor: true)
+            TriangleMesh.MakeLongMesh(mRLinePhysics.parts.Length, pointyTip: false, customColor: true)
         };
         AddToContainer(sLeaser, rCam, null);
     }
@@ -92,11 +92,11 @@ public class String : PlayerCarryableItem, IDrawable
     {
         var triMesh = sLeaser.sprites[StringSprite] as TriangleMesh;
 
-        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRCord.parts[0].lastPos, mRCord.parts[0].pos, timeStacker);
-        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRCord.parts[1].lastPos, mRCord.parts[1].pos, timeStacker), startingStalksChangeInPos) * stringPartLength;
-        for (int i = 0; i < mRCord.parts.Length; i++)
+        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRLinePhysics.parts[0].lastPos, mRLinePhysics.parts[0].pos, timeStacker);
+        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRLinePhysics.parts[1].lastPos, mRLinePhysics.parts[1].pos, timeStacker), startingStalksChangeInPos) * stringPartLength;
+        for (int i = 0; i < mRLinePhysics.parts.Length; i++)
         {
-            Vector2 currentStalkPos = Vector2.Lerp(mRCord.parts[i].lastPos, mRCord.parts[i].pos, timeStacker);
+            Vector2 currentStalkPos = Vector2.Lerp(mRLinePhysics.parts[i].lastPos, mRLinePhysics.parts[i].pos, timeStacker);
             Vector2 normalized = (currentStalkPos - startingStalksChangeInPos).normalized;
             Vector2 currentStalkPerpindicularAngle = Custom.PerpendicularVector(normalized);
             float distanceFromFirstStalk = Vector2.Distance(currentStalkPos, startingStalksChangeInPos) / 5f;

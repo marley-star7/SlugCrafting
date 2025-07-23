@@ -1,4 +1,5 @@
 using RWCustom;
+using SlugCrafting.Creatures;
 using UnityEngine;
 
 namespace SlugCrafting.Items;
@@ -10,14 +11,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
 {
     public override float ThrowPowerFactor => 1f;
 
-    private int whiteFlicker = 0;
-    private int flicker;
-    private float flickerColor = 0;
-
-    public const int SourceCodeLizardsFlickerThreshold = 10;
-    public const int SourceCodeLizardsWhiteFlickerThreshold = 15;
-
-    public RoomPalette palette;
+    LizardShellColorGraphics lizardShellColorGraphics;
 
     public const int TotalSprites = 3;
     public const int SpriteJawStart = 1;
@@ -65,17 +59,21 @@ class LizardShell : PlayerCarryableItem, IDrawable
 
         // Initialize HeadSprites to avoid nullability issues
         HeadSprites = new string[TotalSprites];
+        lizardShellColorGraphics = new LizardShellColorGraphics(effectColor);
     }
+
     private static float Rand => UnityEngine.Random.value;
     public void HitEffect(Vector2 impactVelocity)
     {
+        var sparkColor = lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.clampedHealth);
+
         var num = UnityEngine.Random.Range(3, 8);
         for (int k = 0; k < num; k++)
         {
             //-- MR7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
             Vector2 pos = firstChunk.pos + Custom.DegToVec(Rand * 360f) * 5f * Rand;
             Vector2 vel = -impactVelocity * -0.1f + Custom.DegToVec(Rand * 360f) * Mathf.Lerp(0.2f, 0.4f, Rand) * impactVelocity.magnitude;
-            room.AddObject(new Spark(pos, vel, new Color(1f, 1f, 1f), null, 10, 170));
+            room.AddObject(new Spark(pos, vel, sparkColor, null, 10, 170));
         }
 
         room.AddObject(new StationaryEffect(firstChunk.pos, new Color(1f, 1f, 1f), null, StationaryEffect.EffectType.FlashingOrb));
@@ -97,8 +95,8 @@ class LizardShell : PlayerCarryableItem, IDrawable
         base.HitByWeapon(weapon);
 
         AddDamage(weapon.HeavyWeapon ? 0.5f : 0.2f);
-        WhiteFlicker(20);
-        Flicker(30);
+        lizardShellColorGraphics.WhiteFlicker(20);
+        lizardShellColorGraphics.Flicker(30);
 
         if (grabbedBy.Count > 0)
         {
@@ -134,12 +132,9 @@ class LizardShell : PlayerCarryableItem, IDrawable
     {
         base.Update(eu);
 
-        var chunk = firstChunk;
+        lizardShellColorGraphics.Update();
 
-        if (flicker > 0)
-            flicker--;
-        if (whiteFlicker > 0)
-            whiteFlicker--;
+        var chunk = firstChunk;
 
         // TODO: Get this scraping sound working damnit!
         /*
@@ -225,74 +220,8 @@ class LizardShell : PlayerCarryableItem, IDrawable
     {
         get
         {
-            if (abstractLizardShell.templateType == CreatureTemplate.Type.BlackLizard)
-            {
-                return palette.blackColor;
-            }
             return abstractLizardShell.shellColor;
         }
-    }
-
-    private Color HeadColor1
-    {
-        get
-        {
-        /*
-        if (abstractLizardShell.templateType == CreatureTemplate.Type.WhiteLizard)
-        {
-            return Color.Lerp(new Color(1f, 1f, 1f), whiteCamoColor, whiteCamoColorAmount);
-        }
-        if (abstractLizardShell.templateType == CreatureTemplate.Type.Salamander)
-        {
-            return SalamanderColor;
-        }
-        if (snowAccCosmetic != null)
-        {
-            return Color.Lerp(palette.blackColor, effectColor, Mathf.Min(1f, snowAccCosmetic.DebrisSaturation * 1.5f));
-        }
-        */
-        return palette.blackColor;
-        }
-    }
-
-    private Color HeadColor2
-    {
-        get
-        {
-            /*
-            if abstractLizardShell.templateType == CreatureTemplate.Type.WhiteLizard)
-            {
-                return Color.Lerp(palette.blackColor, whiteCamoColor, whiteCamoColorAmount);
-            }
-            */
-            return effectColor;
-        }
-    }
-
-    public Color HeadColor(float timeStacker)
-    {
-        if (whiteFlicker > SourceCodeLizardsWhiteFlickerThreshold)
-        {
-            return new Color(1f, 1f, 1f);
-        }
-        float a = Mathf.InverseLerp(0, abstractLizardShell.clampedHealth, abstractLizardShell.health);
-        if (flicker > SourceCodeLizardsFlickerThreshold)
-        {
-            a = flickerColor;
-        }
-        return Color.Lerp(HeadColor1, HeadColor2, a);
-    }
-
-    public void Flicker(int fl)
-    {
-        if (fl > flicker)
-            flicker = fl;
-    }
-
-    public void WhiteFlicker(int fl)
-    {
-        if (fl > whiteFlicker)
-            whiteFlicker = fl;
     }
 
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -324,6 +253,8 @@ class LizardShell : PlayerCarryableItem, IDrawable
 
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
+        lizardShellColorGraphics.DrawSpritesUpdate();
+
         Vector2 pos = Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker);
         Vector2 rot = Vector3.Slerp(lastRotation, rotation, timeStacker);
 
@@ -370,13 +301,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
         // ACTUAL UPDATING THE SPRITES
         //
 
-        //-- flicker code stolen from source.
-        if (flicker > SourceCodeLizardsFlickerThreshold)
-        {
-            flickerColor = UnityEngine.Random.value;
-        }
-
-        var effectColor = HeadColor(timeStacker);
+        var effectColor = lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.clampedHealth);
         // HEAD SPRITES UPDATE
         for (int i = SpriteJawStart; i < TotalSprites; i++)
         {
@@ -397,7 +322,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
             sLeaser.sprites[i].rotation = jawRotation;
-            sLeaser.sprites[i].color = HeadColor(timeStacker);
+            sLeaser.sprites[i].color = effectColor;
         }
 
         if (slatedForDeletetion || room != rCam.room)
@@ -408,7 +333,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
 
     public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        this.palette = palette;
+        lizardShellColorGraphics.ApplyPalette(palette);
         // If teeth is enabled.
         //sLeaser.sprites[2].color = palette.blackColor;
     }

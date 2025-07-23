@@ -1,25 +1,22 @@
-﻿using System.Collections;
-using System.Runtime.CompilerServices;
-
-using UnityEngine;
-using RWCustom;
-
-using ImprovedInput;
-
-using MRCustom;
-using MRCustom.Animations;
-
-using SlugCrafting.Scavenges;
-using SlugCrafting.Crafts;
-using SlugCrafting.Items.Weapons;
-using SlugCrafting.Items;
-using SlugCrafting.Accessories;
+﻿using SlugCrafting.Items.Accessories;
+using System;
+using static SlugCrafting.Accessories.Accessory;
 
 namespace SlugCrafting;
 
 public class PlayerCraftingData
 {
-    public List<Accessory> accessories = new List<Accessory>();
+    public List<Accessory> accessories = new();
+    public Dictionary<Accessory.EquipRegion, Accessory> equipRegionAccessories = new();
+
+    /// <summary>
+    /// The mass applied from accessories for each body chunk.
+    /// </summary>
+    public float[] accessoriesMass = new float[]
+    {
+        0,
+        0,
+    };
 
     public float scavengeTimer = 0;
     public float craftTimer = 0;
@@ -65,7 +62,7 @@ public static class PlayerExtension
 
     public static bool IsCrafter(this Player player)
     {
-        return player.slugcatStats.name == Enums.Crafter;
+        return player.slugcatStats.name == SlugCraftingEnums.Crafter;
     }
 
     /// <summary>
@@ -77,7 +74,7 @@ public static class PlayerExtension
     public static bool CanPhysicalCraft(this Player player)
     {
         // TODO: later set this up so that other scugs can craft if this is enabled.
-        return player.slugcatStats.name == Enums.Crafter;
+        return player.slugcatStats.name == SlugCraftingEnums.Crafter;
     }
 
     //
@@ -376,6 +373,20 @@ public static class PlayerExtension
         self.SlugcatGrab(abstractPhysicalObject.realizedObject, self.FreeHand());
     }
 
+    //-- TODO: maybe move this to MRCustom.
+    /// <summary>
+    /// Copied from source code for how the player ends a roll.
+    /// </summary>
+    /// <param name="self"></param>
+    public static void EndRoll(this Player self)
+    {
+        self.rollCounter = 0;
+        self.rollDirection = 0;
+        self.room.PlaySound(SoundID.Slugcat_Roll_Finish, self.mainBodyChunk, loop: false, 1f, 1f);
+        self.animation = Player.AnimationIndex.None;
+        self.standing = self.input[0].y > -1;
+    }
+
     //
     // ACCESSORIES
     //
@@ -383,5 +394,14 @@ public static class PlayerExtension
     public static void EquipAccessory(this Player selfPlayer, Accessory accessory)
     {
         accessory.Equip(selfPlayer);
+    }
+
+    public static void UpdateMass(this Player self)
+    {
+        //-- MR7: We basically just update malnourished again to what it is, for compatability reasons
+        // as this is what changes is almost always what is interfering with the player's mass.
+        // SetMalnourished is already hooked to run ApplyAccessoryMass, so this is just a more fitting function name.
+        // it effectively acts as a reset to base, before we re-add player accessories, instead of having to minus and divide values all over again.
+        self.SetMalnourished(self.Malnourished);
     }
 }

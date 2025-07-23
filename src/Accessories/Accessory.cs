@@ -1,7 +1,5 @@
-﻿using SlugCrafting.Accessories;
-using UnityEngine;
-
-using CompartmentalizedCreatureGraphics;
+﻿//-- MR7: Just like base game, functionality and graphics are seperate classes.
+// Cosmetics are the accessory graphics, while the gameplay function code resides in the accessory.
 
 namespace SlugCrafting.Accessories;
 
@@ -52,27 +50,69 @@ public class Accessory
         HideRegion.None,
     };
 
-    public Player? wearer;
+    public Player? wearer
+    {
+        get { return cosmetics[0].wearer as Player; }
+    }
     /// <summary>
     /// The overlaying sprite parts that make up the total accessory.
     /// </summary>
     public DynamicCosmetic[] cosmetics;
 
-    public float runSpeedModifier;
+    public AccessoryArmorStats? armorStats;
 
-    public Accessory(DynamicCosmetic[] cosmetics)
+    public bool isEquipped => cosmetics[0].isEquipped;
+
+    public Accessory(DynamicCosmetic[] cosmetics, AccessoryArmorStats? armorStats = null)
     {
         this.cosmetics = cosmetics;
+        this.armorStats = armorStats;
     }
 
     public void Equip(Player wearer)
     {
-        wearer.GetPlayerCraftingData().accessories.Add(this);
-        this.wearer = wearer;
+        var wearerCraftingData = wearer.GetPlayerCraftingData();
+
+        wearerCraftingData.accessories.Add(this);
+        // Equip this accessory to all equip regions.
+        for (int i = 0; i < equipRegions.Length; i++)
+        {
+            if (wearerCraftingData.equipRegionAccessories.ContainsKey(equipRegions[i]))
+            {
+                var existingAccessory = wearerCraftingData.equipRegionAccessories[equipRegions[i]];
+                //TODO: add unequip functionality here, or that scug just says (no)
+            }
+            else
+            {
+                wearerCraftingData.equipRegionAccessories[equipRegions[i]] = this;
+            }
+        }
+
+        wearer.UpdateMass();
 
         for (int i = 0; i < cosmetics.Length; i++)
         {
             cosmetics[i].Equip(wearer);
         }
+    }
+
+    public virtual bool OnSpearHitWearer(Spear spear, SharedPhysics.CollisionResult result, bool eu)
+    {
+        return true;
+    }
+
+    public virtual void OnWearerViolence(ViolenceContext violenceContext)
+    {
+
+    }
+
+    public virtual void OnWearerTerrainImpact(TerrainImpactContext impactContext)
+    {
+        // Default implementation does nothing.
+    }
+
+    public virtual void OnWearerGrabbed(Creature.Grasp grasp)
+    {
+        // Default implementation does nothing.
     }
 }

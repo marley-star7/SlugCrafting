@@ -1,25 +1,8 @@
-﻿using RWCustom;
-using UnityEngine;
+﻿namespace SlugCrafting;
 
-using SlugCrafting.Items;
-using MRCustom.Animations;
-using MRCustom.Math;
-
-namespace SlugCrafting;
-
-public static partial class Hooks
+internal static class PlayerCarryableHooks
 {
-    private static void ApplyPlayerCarryableItemHooks()
-    {
-        On.PlayerCarryableItem.Update += PlayerCarryableItem_Update;
-    }
-
-    private static void RemovePlayerCarryableItemHooks()
-    {
-        On.PlayerCarryableItem.Update -= PlayerCarryableItem_Update;
-    }
-
-    private static void PlayerCarryableItem_Update(On.PlayerCarryableItem.orig_Update orig, PlayerCarryableItem selfItem, bool eu)
+    internal static void PlayerCarryableItem_Update(On.PlayerCarryableItem.orig_Update orig, PlayerCarryableItem selfItem, bool eu)
     {
         orig(selfItem, eu);
 

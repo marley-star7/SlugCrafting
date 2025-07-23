@@ -1,12 +1,4 @@
-using RWCustom;
-using UnityEngine;
 using Noise;
-
-using MRCustom.Math;
-using MRCustom.Animations;
-
-using SlugCrafting;
-using SlugCrafting.Crafts;
 
 namespace SlugCrafting.Animations;
 

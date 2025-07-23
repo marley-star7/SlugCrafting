@@ -1,12 +1,4 @@
-﻿using RWCustom;
-using UnityEngine;
-
-using System.Runtime.CompilerServices;
-using SlugCrafting.Crafts;
-using MoreSlugcats;
-using SlugCrafting.Items;
-
-namespace SlugCrafting.Items.Weapons;
+﻿namespace SlugCrafting.Items.Weapons;
 
 public class SpearCraftingData
 {

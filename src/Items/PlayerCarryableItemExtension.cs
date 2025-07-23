@@ -1,9 +1,4 @@
-﻿using RWCustom;
-using UnityEngine;
-
-using System.Runtime.CompilerServices;
-
-namespace SlugCrafting.Items;
+﻿namespace SlugCrafting.Items;
 
 public class PlayerCarryableItemCraftingData
 {

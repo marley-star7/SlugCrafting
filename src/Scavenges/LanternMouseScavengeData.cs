@@ -1,6 +1,4 @@
-﻿using SlugCrafting.Items;
-
-namespace SlugCrafting.Scavenges;
+﻿namespace SlugCrafting.Scavenges;
 
 public class LanternMouseScavengeData : CreatureScavengeData
 {
@@ -16,7 +14,7 @@ public class LanternMouseScavengeData : CreatureScavengeData
                 new ScavengeSpot(0, 0, 0), new StringScavenge(mouse)
                 {
                     scavengeTime = 50,
-                    handAnimation = Enums.HandAnimationIndex.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.HandAnimationIndex.SawBackForthScavenge,
                     requiresKnife = false, // LanternMouse can scavenge without a knife
                 }
             },

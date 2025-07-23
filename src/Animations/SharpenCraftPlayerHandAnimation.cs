@@ -1,12 +1,4 @@
-﻿using RWCustom;
-using UnityEngine;
-
-using MRCustom.Math;
-using MRCustom.Animations;
-
-using SlugCrafting.Items.Weapons;
-
-namespace SlugCrafting.Animations;
+﻿namespace SlugCrafting.Animations;
 
 public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
 {

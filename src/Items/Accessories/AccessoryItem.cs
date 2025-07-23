@@ -2,13 +2,12 @@
 using RWCustom;
 
 using CompartmentalizedCreatureGraphics;
-using SlugCrafting.Accessories;
 
-namespace SlugCrafting.Items;
+namespace SlugCrafting.Items.Accessories;
 
 public class AccessoryItem : PlayerCarryableItem, IDrawable
 {
-    public Player wearer;
+    public Player? wearer => accessory.wearer;
 
     public Accessory accessory;
 
@@ -19,11 +18,10 @@ public class AccessoryItem : PlayerCarryableItem, IDrawable
 
     public virtual void Equip(Player wearer)
     {
-        this.wearer = wearer;
         wearer.EquipAccessory(accessory);
 
-        this.CollideWithObjects = false;
-        this.CollideWithTerrain = false;
+        CollideWithObjects = false;
+        CollideWithTerrain = false;
     }
 
     //
