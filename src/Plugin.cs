@@ -1,6 +1,12 @@
-﻿namespace SlugCrafting;
+﻿// TODO: work further on the hand animation system, set up adding animation events and such.
+// TODO: there will be both animationTimeEvents and animationLoopEvents
+// loops will run on specific loops points of an animation, or some sort of better terminology, like the end of a saw or on point of impact when hitting spear.
+// Time animationevents work on a specific time, likely can do that implementation later actually.
+// TODO: need to set up so that animations for crafts are an array of animations, that play in order for how many loops, and their speed, that way can transfer between them nicely.
 
-//-- MR7: I might occasionally leave these "guide" comment's around in case someone wishes to learn modding based off this mod's code.
+namespace SlugCrafting;
+
+//-- MS7: I might occasionally leave these "guide" comment's around in case someone wishes to learn modding based off this mod's code.
 // I did something similar with "Da Vinki", open source is a helpful learning tool, and I gotta show gratitude by making it easier for the next guy.
 
 // There are two types of dependencies:
@@ -27,7 +33,9 @@ sealed class Plugin : BaseUnityPlugin
     public static bool improvedInputEnabled;
     public static int improvedInputVersion = 0;
 
-    internal static ManualLogSource Logger;
+    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private static new ManualLogSource Logger;
+    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     public void OnEnable()
     {
@@ -35,43 +43,7 @@ sealed class Plugin : BaseUnityPlugin
         // Someday's I think about logging with my logger, and I get all loggy...
         Logger = base.Logger;
 
-        SlugCraftingEnums.HandAnimationIndex.RegisterValues();
-
-        var crafterCosmeticsPreset = new SlugcatCosmeticsPreset(
-            new DynamicCosmetic[]
-            {
-                SlugcatCosmeticsPreset.CreateDefaultVanillaSlugcatDynamicLeftEarCosmetic(),
-                SlugcatCosmeticsPreset.CreateDefaultVanillaSlugcatDynamicRightEarCosmetic(),
-                SlugcatCosmeticsPreset.CreateDefaultVanillaSlugcatDynamicNoseCosmetic(),
-
-                new DynamicSlugcatEyeCosmetic(new SpriteLayerGroup[]{ 
-                    new SpriteLayerGroup((int) CCGEnums.SlugcatCosmeticLayer.Eyes, 0)
-                })
-                {
-                    spriteName = "ccgCrafterEye",
-                    defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
-                    side = -1,
-                    defaultScaleX = -1,
-                    snapValue = 15,
-                },
-
-                new DynamicSlugcatEyeCosmetic(new SpriteLayerGroup[]{
-                    new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Eyes, 0)
-                })
-                {
-                    spriteName = "ccgCrafterEye",
-                    defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
-                    side = 1,
-                    defaultScaleX = 1,
-                    snapValue = 15,
-                },
-            })
-        {
-            baseHeadSpriteName = "ccgSlugcatHeadA0",
-            baseFaceSpriteName = "marNothing",
-        };
-
-        CompartmentalizedCreatureGraphics.Core.Content.AddCharacterCosmeticPreset(SlugCraftingEnums.Crafter, crafterCosmeticsPreset);
+        //CompartmentalizedCreatureGraphics.Core.Content.AddCharacterCosmeticPreset(SlugCraftingEnums.Crafter, crafterCosmeticsPreset);
 
         Core.Content.RegisterSlugCraftingFisobs();
         Core.Content.RegisterSlugCraftingCrafts();
@@ -80,6 +52,8 @@ sealed class Plugin : BaseUnityPlugin
 
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
+
+        SlugCraftingEnums.PlayerHandAnimations.RegisterValues();
 
         try
         {
@@ -95,18 +69,17 @@ sealed class Plugin : BaseUnityPlugin
 
     private static void LoadPlugin(RainWorld rainWorld)
     {
+        Resources.LoadResources();
+
         //-- Do not re-apply hooks on restart mode!
         if (!restartMode)
         {
             Hooks.ApplyHooks();
         }
-
-        Resources.LoadResources();
     }
 
     public void OnDisable()
     {
-        SlugCraftingEnums.HandAnimationIndex.UnregisterValues();
         //VLogger.LogInfo("OnDisable\n" + StackTraceUtility.ExtractStackTrace());
         if (restartMode)
         {
@@ -132,4 +105,16 @@ sealed class Plugin : BaseUnityPlugin
             Plugin.Logger.LogError(e.Message);
         }
     }
+
+    internal static void LogInfo(object ex) => Logger.LogInfo(ex);
+
+    internal static void LogMessage(object ex) => Logger.LogMessage(ex);
+
+    internal static void LogDebug(object ex) => Logger.LogDebug(ex);
+
+    internal static void LogWarning(object ex) => Logger.LogWarning(ex);
+
+    internal static void LogError(object ex) => Logger.LogError(ex);
+
+    internal static void LogFatal(object ex) => Logger.LogFatal(ex);
 }

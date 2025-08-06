@@ -1,0 +1,21 @@
+{
+  "spriteNames": [ "ccgCrafterEye" ],
+  "spriteLayerGroups": [
+    {
+      "layerName": "Eye",
+      "startSpriteIndex": 0,
+      "endSpriteIndex": 0
+    }
+  ],
+  "anglePositions": [
+    [ -2, 1 ],
+    [ -1, 2 ],
+    [ 3, 3 ],
+    [ 5, 2 ],
+    [ 6, 1 ]
+  ],
+  "scaleX": -1,
+  "scaleY": 1,
+  "side": 1,
+  "snap": 15
+}

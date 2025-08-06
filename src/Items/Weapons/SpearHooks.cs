@@ -75,7 +75,7 @@ internal static class SpearHooks
         orig(selfSpear, result, eu);
         var selfSpearCraftingData = selfSpear.GetSpearCraftingData();
 
-        //- MR7: If player manages to lodge the spear in a creature we do NOT trigger the spore plant immediately,
+        //- MS7: If player manages to lodge the spear in a creature we do NOT trigger the spore plant immediately,
         // so they have some time to get away, rewarding them with the spore plant spear actually working in stopping the threat.
         // Ideally, we somehow change the spore plant's to focus the specific impaled creature, but couldn't figure out how to do that good yet sooo.
         // TODO: make it so that the spore plant focuses the area closer around the creature impaled, or avoids the player.

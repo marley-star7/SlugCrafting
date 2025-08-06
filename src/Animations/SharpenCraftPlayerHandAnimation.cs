@@ -11,16 +11,8 @@ public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
-    public SharpenCraftPlayerHandAnimation(float length)
-    {
-        this.Length = length;
-    }
-
     public override void Start(Player player)
     {
-        base.Start(player);
-
-        this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
         this.playerCraftingData = player.GetPlayerCraftingData();
     }
@@ -30,15 +22,19 @@ public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
 
     }
 
-    public override void Update(int animationTimer)
+    public override void Update(Player player, float animationTimer)
     {
 
     }
 
-    public override void GraphicsUpdate(int animationTimer)
+    public override void GraphicsUpdate(Player player, float animationTimer)
     {
-        var player = playerGraphics.player;
-        var playerCraftingData = owner.GetPlayerCraftingData();
+        var playerCraftingData = player.GetPlayerCraftingData();
+        var playerGraphics = player.graphicsModule as PlayerGraphics;
+
+        if (playerGraphics == null)
+            return;
+
         // TODO: spawn the sparks and stuff that occasionanly fly off corpse
         var sharpeningChunk = player.grasps[0].grabbedChunk;
         var graspedSharpener = player.grasps[1].grabbed;
@@ -61,7 +57,7 @@ public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
 
         var sawMotionPosY = sharpeningChunk.pos.y + sharpeningChunk.rad; // Starts at top of body chunk
 
-        var sawProgress = Mathf.InverseLerp(0, animationTimer, Length);
+        var sawProgress = Mathf.InverseLerp(0, animationTimer, length);
         sawMotionPosY -= sawProgress * sharpeningChunk.rad * 2; // Slowly moves down to bottom of body chunk.
 
         //

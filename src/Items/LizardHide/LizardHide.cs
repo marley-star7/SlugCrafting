@@ -83,7 +83,7 @@ class LizardHide : PlayerCarryableItem, IDrawable
         {
             for (int j = 0; j < divs; j++)
             {
-                //- MR7: Set hide points to form a simple rectangle, and then use 
+                //- MS7: Set hide points to form a simple rectangle, and then use 
                 hidePointsPos[i, j] = new Vector2
                 (
                     //-- // Centered around the first chunk and scaled.

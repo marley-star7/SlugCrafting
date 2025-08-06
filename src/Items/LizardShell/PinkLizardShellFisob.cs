@@ -7,17 +7,14 @@ namespace SlugCrafting.Items;
 
 sealed class PinkLizardShellFisob : Fisob
 {
-    public static readonly AbstractPhysicalObject.AbstractObjectType abstractObjectType = new("PinkLizardShell", true);
-    public static readonly MultiplayerUnlocks.SandboxUnlockID sandboxUnlockID = new("PinkLizardShell", true);
-
     public static readonly PinkLizardShellProperties properties = new();
 
-    public PinkLizardShellFisob() : base(abstractObjectType)
+    public PinkLizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.PinkLizardShell)
     {
         LizardShellProperties.PropertiesOfTemplateType[CreatureTemplate.Type.PinkLizard] = properties;
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(sandboxUnlockID, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxID.PinkLizardShell, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

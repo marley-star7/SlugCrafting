@@ -33,7 +33,7 @@ internal static class Extras
             }
             catch (Exception e)
             {
-                //-- MR7: Requires "Assembly-CSharp-firstpass" to function Debug Logger.
+                //-- MS7: Requires "Assembly-CSharp-firstpass" to function Debug Logger.
                 Debug.LogException(e);
             }
         };

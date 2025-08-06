@@ -26,7 +26,7 @@ public static partial class Hooks
         bool result = orig(self, grabbedObj, graspUsed, chunkGrabbed, shareability, dominance, overrideEquallyDominant, pacifying);
 
         if (self is Player)
-            PlayerExtension.OnPlayerGrab((Player)self, grabbedObj, graspUsed, chunkGrabbed, shareability, dominance, overrideEquallyDominant, pacifying);
+            PlayerHooks.OnPlayerGrab((Player)self, grabbedObj, graspUsed, chunkGrabbed, shareability, dominance, overrideEquallyDominant, pacifying);
 
         return result;
     }
@@ -36,6 +36,6 @@ public static partial class Hooks
         orig(self, grasp);
 
         if (self is Player)
-            PlayerExtension.OnPlayerReleaseGrasp((Player)self, grasp);
+            PlayerHooks.OnPlayerReleaseGrasp((Player)self, grasp);
     }
 }

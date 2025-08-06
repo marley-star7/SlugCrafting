@@ -20,13 +20,13 @@ public class LizardShellScavenge : AbstractPhysicalObjectScavenge
         {
             // Copy all the data of the lizard to the scavenged shell.
             shellColor = lizardGraphics.effectColor,
-            headBodyChunkRadius = lizard.firstChunk.rad,
+            rad = lizard.firstChunk.rad,
 
-            //-- MR7 Reduce the mass of the head chunk to make it ACTUALLY carryable lol (green liz especially), dw the mass still matters.
+            //-- MS7 Reduce the mass of the head chunk to make it ACTUALLY carryable lol (green liz especially), dw the mass still matters.
             // However, the choice of lizard shells (green liz especially) still being so heavy was purposeful decision on my end,
             // Acting as a balance decision that getting to bring a shell to work with is harder the heavier,
             // often requiring baiting of the lizard or some other means, since green lizard armor for example is so good.
-            headBodyChunkMass = lizard.firstChunk.mass * 0.3f,
+            mass = lizard.firstChunk.mass * 0.3f,
 
             headSprite0Jaw = sLeaser.sprites[lizardGraphics.SpriteHeadStart].element.name,
             headSprite1LowerTeeth = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 1].element.name,

@@ -1,4 +1,4 @@
-﻿//-- MR7: Made this to share the code of lizard color graphics calculations of-
+﻿//-- MS7: Made this to share the code of lizard color graphics calculations of-
 // durability/health changing color, being hit causing flickering, etc.
 
 namespace SlugCrafting.Creatures;
@@ -48,7 +48,7 @@ public class LizardShellColorGraphics
         this.palette = palette;
     }
 
-    //-- MR7: Copied from source "HeadColor1".
+    //-- MS7: Copied from source "HeadColor1".
     private Color EffectColor1
     {
         get {
@@ -70,7 +70,7 @@ public class LizardShellColorGraphics
         }
     }
 
-    //-- MR7: Copied from source "HeadColor2".
+    //-- MS7: Copied from source "HeadColor2".
     private Color EffectColor2
     {
         get {
@@ -84,7 +84,7 @@ public class LizardShellColorGraphics
         }
     }
 
-    //-- MR7: Copied from source "HeadColor".
+    //-- MS7: Copied from source "HeadColor".
     public Color ShellColor(in float health, in float maxHealth)
     {
         if (whiteFlicker > sourceCodeLizardsWhiteFlickerThreshold)
@@ -105,19 +105,14 @@ public class LizardShellColorGraphics
             flicker = sourceCodeLizardsFlickerThreshold;
     }
 
-    public void Flicker(int fl)
+    public void Flicker(int fl = 20)
     {
         if (fl > flicker)
             flicker = fl;
     }
 
-    public void WhiteFlicker()
-    {
-        if (sourceCodeLizardsWhiteFlickerThreshold > whiteFlicker)
-            whiteFlicker = sourceCodeLizardsWhiteFlickerThreshold;
-    }
 
-    public void WhiteFlicker(int fl)
+    public void WhiteFlicker(int fl = 30)
     {
         if (fl > whiteFlicker)
             whiteFlicker = fl;

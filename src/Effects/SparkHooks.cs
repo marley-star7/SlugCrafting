@@ -8,10 +8,10 @@ namespace SlugCrafting.Effects;
 
 public static class SparkHooks
 {
-    //-- MR7: Base game sparks REQUIRE lizard graphics be sent as a parameter to get the lizard graphics spark effects,
+    //-- MS7: Base game sparks REQUIRE lizard graphics be sent as a parameter to get the lizard graphics spark effects,
     // Well NAH, I'm changing it so that you don't. Just by mimicking the lizardGraphics source stuff but replacing it with my own.
 
-    //-- MR7: Well NAH, turns out I actually don't need this stuff at all lol, woops.
+    //-- MS7: Well NAH, turns out I actually don't need this stuff at all lol, woops.
 
     internal static void Spark_Update(On.Spark.orig_Update orig, Spark self, bool eu)
     {

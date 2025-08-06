@@ -71,16 +71,22 @@
 	  <Folder Include="Scripts\" />
 	</ItemGroup>
 
-  <!-- PostBuild Target -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="Exists('$(RainWorldDir)')">
-    <Message Importance="high" Text="PostBuild target is running..." />
-    
-    <ItemGroup>
-      <Assets Include="$(ProjectDir)../assets/**/*.*" />
-    </ItemGroup>
-    
-    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/slugcrafting/%(RecursiveDir)%(Filename)%(Extension)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/slugcrafting/plugins" />
-  </Target>
+	<!-- PostBuild Target -->
+	<Target Name="GenerateMod" AfterTargets="PostBuildEvent">
+		<!-- Delete old plugin DLLs -->
+		<ItemGroup>
+			<RemovePlugins Include="../slugcrafting/plugins/*.dll" />
+		</ItemGroup>
+		<Delete Files="@(RemovePlugins)" />
+
+		<!-- Copy main mod DLL to plugins -->
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="../slugcrafting/plugins/" />
+
+		<!-- Copy dependencies (e.g., System.Text.Json) to libs -->
+		<ItemGroup>
+			<!-- Add other dependencies here -->
+		</ItemGroup>
+		<Copy SourceFiles="@(LibFiles)" DestinationFolder="../slugcrafting/libs/" SkipUnchangedFiles="true" />
+	</Target>
 
 </Project>

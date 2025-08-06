@@ -1,0 +1,33 @@
+{
+  "name": "Crafter",
+  "baseHeadSpriteName": "ccgSlugcatHead",
+  "baseFaceSpriteName": "marNothing",
+  "baseBodySpriteName": "marError64",
+  "baseArmSpriteName": "marError64",
+  "baseLegsSpriteName": "marError64",
+  "baseHipsSpriteName": "marError64",
+  "baseTailSpriteName": "marError64",
+  "basePixelSpriteName": "marError64",
+  "dynamicCosmetics": [
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEye",
+      "propertiesId": "crafterLeftEye"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEye",
+      "propertiesId": "crafterRightEye"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatFaceCosmetic",
+      "propertiesId": "vanillaNose"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEar",
+      "propertiesId": "crafterLeftEar"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEar",
+      "propertiesId": "crafterRightEar"
+    }
+  ]
+}

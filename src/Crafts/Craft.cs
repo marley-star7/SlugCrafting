@@ -22,6 +22,14 @@ namespace SlugCrafting.Crafts
     // And we can get away without inheriting from anything here!
     public struct Craft
     {
+        public enum BodyModeRequirements
+        {
+            Any,
+            Stand,
+            Sneak,
+        }
+        public BodyModeRequirements bodyModeRequirement = BodyModeRequirements.Any;
+
         /// <summary>
         /// The delegate function that must be used to make the function for returning craft results.
         /// </summary>
@@ -29,13 +37,53 @@ namespace SlugCrafting.Crafts
         public delegate void CraftResult(Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject);
 
         /// <summary>
-        /// Return true if the ingredient is valid.
+        /// The function that returns the crafted object.
         /// </summary>
-        /// <param name="physicalObject"></param>
-        /// <returns></returns>
-        public delegate bool ValidateIngredients(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject);
+        public CraftResult craftResult;
 
-        private static bool DefaultValidation(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) { return true; }
+        private int _totalAnimationLoops;
+        public int totalAnimationLoops
+        {
+            get => _totalAnimationLoops;
+        }
+
+        public struct Animation
+        {
+            public readonly int loopsInAnimation;
+            public readonly PlayerHandAnimationPlayer.AnimationIndex animation;
+
+            public Animation(int loopsInAnimation, PlayerHandAnimationPlayer.AnimationIndex animation)
+            {
+                this.loopsInAnimation = loopsInAnimation;
+                this.animation = animation;
+            }
+        }
+
+        private Animation[] _animations;
+        public Animation[] animations
+        {
+            get => _animations;
+            set
+            {
+                _animations = value;
+
+                _totalAnimationLoops = 0;
+                for (int i = 0; i < _animations.Length; i++)
+                    _totalAnimationLoops += _animations[i].loopsInAnimation;
+            }
+        }
+
+        public CraftIngredient primaryIngredient;
+        public CraftIngredient secondaryIngredient;
+
+        /// <summary>
+        /// Wether or not a craft requires the crafter to be standing still or not.
+        /// </summary>
+        public bool canCraftWhileMoving = true;
+        /// <summary>
+        /// Wether or not you can craft while doing activities such as climbing, which requires at least one hand holding the pole.
+        /// </summary>
+        public bool needBothHandsFree = false;
 
         public Craft(CraftIngredient primaryIngredient, CraftIngredient secondaryIngredient, CraftResult craftResult)
         {
@@ -44,8 +92,16 @@ namespace SlugCrafting.Crafts
             this.craftResult = craftResult;
         }
 
-        public ValidateIngredients _ingredientValidation;
+        private static bool DefaultValidation(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) { return true; }
 
+        /// <summary>
+        /// Return true if the ingredient is valid.
+        /// </summary>
+        /// <param name="physicalObject"></param>
+        /// <returns></returns>
+        public delegate bool ValidateIngredients(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject);
+
+        public ValidateIngredients _ingredientValidation;
         /// <summary>
         /// Should returns true if the ingredients are valid for a craft.
         /// </summary>
@@ -54,23 +110,5 @@ namespace SlugCrafting.Crafts
             get => _ingredientValidation ?? DefaultValidation;
             set => _ingredientValidation = value;
         }
-
-        /// <summary>
-        /// The function that returns the crafted object.
-        /// </summary>
-        public CraftResult craftResult;
-
-        public float craftTime;
-        /// <summary>
-        /// The index of the animation, set's the hand animation to this during crafts.
-        /// </summary>
-        public PlayerHandAnimationPlayer.HandAnimationIndex handAnimationIndex;
-        /// <summary>
-        /// Optional use of the player hand animation class, can always leave null if want more custom stuff.
-        /// </summary>
-        public MRAnimation<Player> handAnimation;
-
-        public CraftIngredient primaryIngredient;
-        public CraftIngredient secondaryIngredient;
     }
 }

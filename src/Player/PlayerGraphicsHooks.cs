@@ -28,8 +28,6 @@ internal static class PlayerGraphicsHooks
 
     internal static void PlayerGraphics_ctor(On.PlayerGraphics.orig_ctor orig, PlayerGraphics self, PhysicalObject ow)
     {
-
-
         orig(self, ow);
     }
 
@@ -40,7 +38,7 @@ internal static class PlayerGraphicsHooks
         if (!playerGraphics.player.IsCrafter())
             return;
 
-        //-- MR7: It's barely noticable, but basing the color off the room pallete makes it look a bit better.
+        //-- MS7: It's barely noticable, but basing the color off the room pallete makes it look a bit better.
         // There is also potential issue that comes with a gray scug that depending on the room palette, especially fog color, they can become almost impossible to see.
         // Tried making some code for this to find an optimal gray based both off the room palette, and fog color, for max readability.
         // (and to help the colorblind folks out)
@@ -58,7 +56,7 @@ internal static class PlayerGraphicsHooks
         {
             //Plugin.Logger.LogDebug("Ideal gray is darker than room fog color gray, lightening the gray even further.");
             float inverseLerp = Mathf.InverseLerp(0, roomFogColor.grayscale, idealGray.grayscale);
-            adjustmentIfTooCloseRatio = inverseLerp * visibilityLerpRatioModifierFullStrength * 1.5f; //- MR7: Multiply a bit more since we need to put in extra work to get out of the darker section.
+            adjustmentIfTooCloseRatio = inverseLerp * visibilityLerpRatioModifierFullStrength * 1.5f; //- MS7: Multiply a bit more since we need to put in extra work to get out of the darker section.
             idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio + adjustmentIfTooCloseRatio);
         }
         else

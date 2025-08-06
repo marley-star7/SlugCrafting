@@ -6,12 +6,13 @@ public static partial class Hooks
     {
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
+        ApplySlugcatHandHooks();
 
         ApplyPlayerCarryableItemHooks();
         ApplySpearHooks();
         ApplySporePlantHooks();
 
-        //ApplySparkHooks(); //-- MR7: Uneeded, disabled
+        //ApplySparkHooks(); //-- MS7: Uneeded, disabled
     }
 
     internal static void RemoveHooks()
@@ -20,6 +21,7 @@ public static partial class Hooks
 
         RemovePlayerHooks();
         RemovePlayerGraphicsHooks();
+        RemoveSlugcatHandHooks();
 
         RemovePlayerCarryableItemHooks();
         RemoveSpearHooks();
@@ -39,15 +41,16 @@ public static partial class Hooks
         On.Player.MaulingUpdate += PlayerHooks.Player_MaulingUpdate;
 
         On.Player.Grabbed += PlayerHooks.Player_Grabbed;
+        On.Player.HeavyCarry += PlayerHooks.Player_HeavyCarry;
         On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
 
         On.Player.SetMalnourished += PlayerHooks.Player_SetMalnourished;
 
         On.Creature.Violence += PlayerHooks.Creature_Violence;
 
-        MREvents.OnPlayerGrab += PlayerExtension.OnPlayerGrab;
-        MREvents.OnPlayerReleaseGrasp += PlayerExtension.OnPlayerReleaseGrasp;
-        MREvents.OnPlayerSwitchGrasp += PlayerExtension.OnPlayerSwitchGrasp;
+        MREvents.OnPlayerGrab += PlayerHooks.OnPlayerGrab;
+        MREvents.OnPlayerReleaseGrasp += PlayerHooks.OnPlayerReleaseGrasp;
+        MREvents.OnPlayerSwitchGrasp += PlayerHooks.OnPlayerSwitchGrasp;
     }
 
     private static void RemovePlayerHooks()
@@ -59,15 +62,16 @@ public static partial class Hooks
         On.Player.MaulingUpdate -= PlayerHooks.Player_MaulingUpdate;
 
         On.Player.Grabbed -= PlayerHooks.Player_Grabbed;
+        On.Player.HeavyCarry -= PlayerHooks.Player_HeavyCarry;
         On.Player.TerrainImpact -= PlayerHooks.Player_TerrainImpact;
 
         On.Player.SetMalnourished -= PlayerHooks.Player_SetMalnourished;
 
         On.Creature.Violence -= PlayerHooks.Creature_Violence;
 
-        MREvents.OnPlayerGrab -= PlayerExtension.OnPlayerGrab;
-        MREvents.OnPlayerReleaseGrasp -= PlayerExtension.OnPlayerReleaseGrasp;
-        MREvents.OnPlayerSwitchGrasp -= PlayerExtension.OnPlayerSwitchGrasp;
+        MREvents.OnPlayerGrab -= PlayerHooks.OnPlayerGrab;
+        MREvents.OnPlayerReleaseGrasp -= PlayerHooks.OnPlayerReleaseGrasp;
+        MREvents.OnPlayerSwitchGrasp -= PlayerHooks.OnPlayerSwitchGrasp;
     }
 
     // PLAYER GRAPHICS
@@ -88,6 +92,20 @@ public static partial class Hooks
 
         //On.PlayerGraphics.DrawSprites += PlayerGraphicsHooks.PlayerGraphics_DrawSprites;
         On.PlayerGraphics.ApplyPalette -= PlayerGraphicsHooks.PlayerGraphics_ApplyPalette;
+    }
+
+    // SLUGCAT HAND
+
+    private static void ApplySlugcatHandHooks()
+    {
+        On.SlugcatHand.EngageInMovement += SlugcatHandHooks.SlugcatHand_EngageInMovement;
+        On.SlugcatHand.Update += SlugcatHandHooks.SlugcatHand_Update;
+    }
+
+    private static void RemoveSlugcatHandHooks()
+    {
+        On.SlugcatHand.EngageInMovement -= SlugcatHandHooks.SlugcatHand_EngageInMovement;
+        On.SlugcatHand.Update -= SlugcatHandHooks.SlugcatHand_Update;
     }
 
     // PLAYER CARRYABLE ITEMS

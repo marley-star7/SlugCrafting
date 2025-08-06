@@ -95,7 +95,7 @@ sealed class Knife : Weapon
     public override void Thrown(Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
     {
         base.Thrown(thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
-        //-- MR7: The pitch for throwing knives is much smaller than spears, so it communicates itself as a knife and less like a spear.
+        //-- MS7: The pitch for throwing knives is much smaller than spears, so it communicates itself as a knife and less like a spear.
         room?.PlaySound(SoundID.Slugcat_Throw_Spear, base.firstChunk, false, 0.9f, UnityEngine.Random.Range(1.5f, 1.9f));
 
         SetRandomSpin();
@@ -152,6 +152,7 @@ sealed class Knife : Weapon
             if (throwDamageBonus > 0.9f && room.GetTile(room.GetTilePosition(stuckInChunk.pos) + throwDir).Terrain == Room.Tile.TerrainType.Solid && room.GetTile(stuckInChunk.pos).Terrain == Room.Tile.TerrainType.Air)
             {
                 stuckRotation = Custom.VecToDeg(rotation);
+                rotationSpeed = 0;
             }
             base.firstChunk.MoveWithOtherObject(eu, stuckInChunk, new Vector2(0f, 0f));
         }
@@ -160,6 +161,7 @@ sealed class Knife : Weapon
             stuckInChunkIndex = 0;
             stuckInAppendage = result.onAppendagePos;
             stuckRotation = Custom.VecToDeg(rotation) - Custom.VecToDeg(stuckInAppendage.appendage.OnAppendageDirection(stuckInAppendage));
+            rotationSpeed = 0;
         }
         if (room.BeingViewed)
         {
@@ -208,7 +210,7 @@ sealed class Knife : Weapon
 
             // Copied from source for how spears set their sound loop volume.
             soundLoop.Volume = Mathf.InverseLerp(5f, 15f, base.firstChunk.vel.magnitude);
-            //-- MR7: The pitch for throwing knives is much smaller than spears, so it communicates itself as a knife and less like a spear.
+            //-- MS7: The pitch for throwing knives is much smaller than spears, so it communicates itself as a knife and less like a spear.
             soundLoop.Pitch = 1.5f;
         }
         soundLoop.Update();
@@ -222,7 +224,7 @@ sealed class Knife : Weapon
             var grabberBodyChunk = grabber.mainBodyChunk;
 
             faceDirection = Mathf.Sign(graspChunk.pos.x - grabberBodyChunk.pos.x);
-            //-- MR7: Rotation when carried follows the grabbers body to the grasped chunk,
+            //-- MS7: Rotation when carried follows the grabbers body to the grasped chunk,
             // as to be sraight as if down the arm and to the wrist.
             rotation = (grabberBodyChunk.pos - graspChunk.pos).normalized;
             // Rotated slightly to orient on the hand.

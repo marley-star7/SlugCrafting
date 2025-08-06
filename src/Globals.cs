@@ -26,24 +26,27 @@ global using ImprovedInput;
 global using SlugBase;
 
 global using MRCustom;
+global using MRCustom.Events;
 global using MRCustom.Math;
 global using MRCustom.Animations;
+global using MRCustom.Physics;
 global using MRCustom.Extensions;
 global using MRCustom.Contexts;
 
 global using CompartmentalizedCreatureGraphics;
-global using CompartmentalizedCreatureGraphics.Core;
 global using CompartmentalizedCreatureGraphics.Cosmetics;
 global using CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 global using CompartmentalizedCreatureGraphics.Extensions;
 
+global using Fisobs.Properties;
+
+global using SlugCrafting.Core;
+global using SlugCrafting.CosmeticSprites;
 global using SlugCrafting.Scavenges;
 global using SlugCrafting.Crafts;
 global using SlugCrafting.Creatures;
-global using SlugCrafting.Items.Weapons;
 global using SlugCrafting.Items;
-global using SlugCrafting.Accessories;
-global using SlugCrafting.Cosmetics;
+global using SlugCrafting.Items.Weapons;
 global using SlugCrafting.Effects;
 
 global using Color = UnityEngine.Color;

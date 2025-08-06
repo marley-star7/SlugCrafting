@@ -6,7 +6,7 @@ namespace SlugCrafting.Items;
 sealed class AbstractLizardShell : AbstractPhysicalObject
 {
     public float health;
-    public float clampedHealth;
+    public float maxHealth;
 
     public Color shellColor;
     public CreatureTemplate.Type templateType;
@@ -19,29 +19,27 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
     public string headSprite3Head;
     public string headSprite4Eyes;
 
-    public float headBodyChunkRadius;
-    public float headBodyChunkMass;
+    // TODO: need to save and get the scaleX
+    public float scaleX = 1f;
+    public float scaleY = 1f;
+
+    // TODO: and this
+    public float jawOpenAngle = 90;
+    public float jawOpenMoveJawsApart = 30;
+
+    // TODO: and this
+    public float rad;
+    public float mass;
 
     private static Dictionary<CreatureTemplate.Type, AbstractObjectType> _creatureTemplateToShellAbstractObjectType = new()
     {
-        { CreatureTemplate.Type.GreenLizard, GreenLizardShellFisob.abstractObjectType },
-        { CreatureTemplate.Type.PinkLizard, PinkLizardShellFisob.abstractObjectType }
+        { CreatureTemplate.Type.GreenLizard, SlugCraftingEnums.AbstractObjectType.GreenLizardShell },
+        { CreatureTemplate.Type.PinkLizard, SlugCraftingEnums.AbstractObjectType.PinkLizardShell }
     };
-    public static AbstractObjectType GetAbstractObjectTypeForCreatureTemplate(CreatureTemplate.Type templateType)
-    {
-        if (_creatureTemplateToShellAbstractObjectType.ContainsKey(templateType))
-        {
-            return _creatureTemplateToShellAbstractObjectType[templateType];
-        }
-        else
-        {
-            return LizardShellFisob.abstractObjectType; // Default for lizards that don't have a specific shell type.
-        }
-    }
 
     public AbstractLizardShell(World world, CreatureTemplate.Type templateType, WorldCoordinate pos, EntityID ID)
-        : base(
-            world, GetAbstractObjectTypeForCreatureTemplate(templateType), null, pos, ID)
+    : base(
+        world, GetAbstractObjectTypeForCreatureTemplate(templateType), null, pos, ID)
     {
         this.templateType = templateType;
         var type = GetAbstractObjectTypeForCreatureTemplate(templateType);
@@ -51,19 +49,19 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
         if (LizardShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
             properties = LizardShellProperties.PropertiesOfTemplateType[templateType];
 
-        shellColor = properties.ShellColor();
+        shellColor = properties.defaultShellColor;
 
-        headSprite0Jaw = properties.HeadSprite0Jaw();
-        headSprite1LowerTeeth = properties.HeadSprite1LowerTeeth();
-        headSprite2UpperTeeth = properties.HeadSprite2UpperTeeth();
-        headSprite3Head = properties.HeadSprite3Head();
-        headSprite4Eyes = properties.HeadSprite4Eyes();
+        headSprite0Jaw = properties.headSprite0Jaw;
+        headSprite1LowerTeeth = properties.headSprite1LowerTeeth;
+        headSprite2UpperTeeth = properties.headSprite2UpperTeeth;
+        headSprite3Head = properties.headSprite3Head;
+        headSprite4Eyes = properties.headSprite4Eyes;
 
-        headBodyChunkRadius = properties.HeadBodyChunkRadius();
-        headBodyChunkMass = properties.HeadBodyChunkMass() * properties.MassModifier();
+        rad = properties.defaultHeadBodyChunkRadius;
+        mass = properties.defaultHeadBodyChunkMass * properties.massModifier;
 
-        health = properties.Health();
-        clampedHealth = properties.Health();
+        health = properties.maxHealth;
+        maxHealth = properties.maxHealth;
     }
 
     public override void Realize()
@@ -76,5 +74,21 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
     public override string ToString()
     {
         return this.SaveToString($"{shellColor}");
+    }
+
+    //
+    //-- MS7: My lovely seperater, you wouldn't seperate me from my seperator would you?
+    //
+
+    public static AbstractObjectType GetAbstractObjectTypeForCreatureTemplate(CreatureTemplate.Type templateType)
+    {
+        if (_creatureTemplateToShellAbstractObjectType.ContainsKey(templateType))
+        {
+            return _creatureTemplateToShellAbstractObjectType[templateType];
+        }
+        else
+        {
+            return LizardShellFisob.abstractObjectType; // Default for lizards that don't have a specific shell type.
+        }
     }
 }

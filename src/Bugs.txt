@@ -1,0 +1,2 @@
+Lizard Shell Helmet protections will free the player from the grasp, but still kill them when the lizard returns to den as if they were grabbed.
+

@@ -1,0 +1,20 @@
+{
+  "spriteNames": [
+    "ccgSlugcatEar"
+  ],
+  "spriteLayerGroups": [
+    {
+      "layerName": "Ear",
+      "startSpriteIndex": 0,
+      "endSpriteIndex": 0
+    }
+  ],
+  "anglePositions": [
+    [ 4, 4 ]
+  ],
+  "curl": 0.25,
+  "rad": 5,
+  "scaleX": -1,
+  "scaleY": 1,
+  "side": 1
+}

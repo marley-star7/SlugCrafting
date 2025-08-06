@@ -14,5 +14,6 @@ public static class Resources
 
         //-- COSMETICS
         Futile.atlasManager.LoadAtlas("atlases/greenLizardShellHelmet");
+        Futile.atlasManager.LoadAtlas("atlases/blueLizardShellHelmet");
     }
 }

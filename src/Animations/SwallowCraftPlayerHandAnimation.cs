@@ -2,19 +2,11 @@
 
 public class SwallowCraftPlayerHandAnimation : MRAnimation<Player>
 {
-    public SwallowCraftPlayerHandAnimation(float length)
-    {
-        this.Length = length;
-    }
-
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
     public override void Start(Player player)
     {
-        base.Start(player);
-
-        this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
         this.playerCraftingData = player.GetPlayerCraftingData();
     }
@@ -24,12 +16,12 @@ public class SwallowCraftPlayerHandAnimation : MRAnimation<Player>
 
     }
 
-    public override void Update(int animationTimer)
+    public override void Update(Player player, float animationTimer)
     {
 
     }
 
-    public override void GraphicsUpdate(int animationTimer)
+    public override void GraphicsUpdate(Player player, float animationTimer)
     {
         foreach (SlugcatHand hand in playerGraphics.hands)
         {

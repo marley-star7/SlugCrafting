@@ -12,9 +12,13 @@ using SlugCrafting.Scavenges;
 
 namespace SlugCrafting.Core;
 
-//-- MR7: I would move this somewhere else if I could think of a better spot.
+//-- MS7: I would move this somewhere else if I could think of a better spot.
 public static partial class Content
 {
+    //
+    //-- MRANIMATIONS
+    //
+
     //
     //-- FISOBS
     //
@@ -22,14 +26,17 @@ public static partial class Content
     internal static void RegisterSlugCraftingFisobs()
     {
         Fisobs.Core.Content.Register(new KnifeFisob());
-        Fisobs.Core.Content.Register(new LizardHideFisob());
-        Fisobs.Core.Content.Register(new StringFisob());
 
+        Fisobs.Core.Content.Register(new LizardHideFisob());
         Fisobs.Core.Content.Register(new LizardShellFisob());
+
         Fisobs.Core.Content.Register(new GreenLizardShellFisob());
         Fisobs.Core.Content.Register(new PinkLizardShellFisob());
 
         Fisobs.Core.Content.Register(new GreenLizardShellHelmetFisob());
+        Fisobs.Core.Content.Register(new BlueLizardShellHelmetFisob());
+
+        Fisobs.Core.Content.Register(new StringFisob());
 
         //Fisobs.Core.Content.Register(new DoubleSidedSpearFisob());
     }
@@ -68,7 +75,7 @@ public static partial class Content
     internal static void RegisterSlugCraftingCrafts()
     {
         //
-        //-MR7 TODO: can probably remove the "CraftIngredient" type and just search by abstract object?
+        //-MS7 TODO: can probably remove the "CraftIngredient" type and just search by abstract object?
         // Use craft result instead to decide wether something is consumed via an easy function, would definitely fit nicer.
         //
 
@@ -111,11 +118,11 @@ public static partial class Content
                          ));
                 },
 
-                craftTime = 40,
-                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.DoubleSwallowCraft,
-                handAnimation = new SwallowCraftPlayerHandAnimation(40)
+                animations = new Craft.Animation[]
                 {
-                }
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.DoubleSwallowCraft)
+                },
+                needBothHandsFree = true,
             }
         );
 
@@ -165,19 +172,10 @@ public static partial class Content
                     );
                 },
 
-                craftTime = 200,
-                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft,
-                handAnimation = new SmashIntoCraftPlayerHandAnimation(200)
+                animations = new Craft.Animation[]
                 {
-                    timeBetweenBeats = 20f,
-                    sinBeatingCurveStartRad = 0.7f,
-
-                    beatSound = SoundID.Spear_Bounce_Off_Wall,
-                    breakSound = SoundID.Spear_Fragment_Bounce,
-
-                    fullRiseHandOffsetPos = new Vector2(13f, 9f),
-                    fullDescentHandOffsetPos = new Vector2(-8f, -17f),
-                }
+                    new Craft.Animation(5, SlugCraftingEnums.PlayerHandAnimations.KnapSpear)
+                },
             }
         );
 
@@ -207,7 +205,7 @@ public static partial class Content
 
                 craftResult = (Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject) =>
                 {
-                    //- MR7 was desperately trying to do a better method of making double sided spears, and failed.
+                    //- MS7 was desperately trying to do a better method of making double sided spears, and failed.
 
                     /*
                     var origSpear = primaryIngredientObject as Spear;
@@ -269,9 +267,10 @@ public static partial class Content
                     player.SlugcatGrab(newSpear, player.FreeHand());
                 },
 
-                craftTime = 100,
-                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft, // TODO: CHANGE THIS TO BE VALID
-                handAnimation = new SharpenCraftPlayerHandAnimation(100)
+                animations = new Craft.Animation[]
+                {
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.ImpaleOnSpear)
+                },
             }
         );
 
@@ -308,13 +307,10 @@ public static partial class Content
                     crafter.ReleaseGrasp(1);
                 },
 
-                craftTime = 20,
-                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft,
-                handAnimation = new SmashIntoCraftPlayerHandAnimation(20)
+                animations = new Craft.Animation[]
                 {
-                    primaryHandWeaponSetRotation = new Vector2(1, 1).normalized,
-                    secondaryHandWeaponSetRotation = new Vector2(1, 1).normalized
-                }
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.ImpaleOnSpear)
+                },
             }
         );
 
@@ -353,9 +349,10 @@ public static partial class Content
                     player.SlugcatGrab(abstractStringTier.realizedObject, player.FreeHand());
                 },
 
-                craftTime = 20,
-                handAnimationIndex = SlugCraftingEnums.HandAnimationIndex.SmashIntoCraft,
-                handAnimation = new SmashIntoCraftPlayerHandAnimation(20)
+                animations = new Craft.Animation[]
+                {
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.SmashIntoCraft)
+                },
             }
         );
     }

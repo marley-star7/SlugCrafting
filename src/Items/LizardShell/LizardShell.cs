@@ -18,15 +18,23 @@ class LizardShell : PlayerCarryableItem, IDrawable
 
     public string[] HeadSprites;
 
+    private bool flipX = false;
+
     public Vector2 rotation;
     public Vector2 lastRotation;
 
-    public float jawRotation;
-    public float lastJawRotation;
+    public Vector2 jawRotation;
+    public Vector2 lastJawRotation;
 
-    public const float MaxJawRotation = 100f;
-    public const float JawOpenSensitivity = 20f;
-    public const float JawVelocityOverOpenSensitivity = 2.5f;
+    private Vector2 rotVel;
+
+    public float donned = 0;
+
+    public float jawOpenRatio = 0;
+    public const float jawOpenSensitivity = 20f;
+    public const float jawVelocityOverOpenSensitivity = 2.5f;
+
+    private bool facingRight;
 
     public readonly AbstractLizardShell abstractLizardShell;
     public LizardShell(AbstractLizardShell abstractPhysicalObject)
@@ -37,7 +45,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
         var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
 
         base.bodyChunks = new[] {
-                new BodyChunk(this, 0, pos, abstractLizardShell.headBodyChunkRadius, abstractLizardShell.headBodyChunkMass),
+                new BodyChunk(this, 0, pos, abstractLizardShell.rad, abstractLizardShell.mass),
             };
 
         // Cloth is made up of 3 small chunks to fake physics.
@@ -54,23 +62,25 @@ class LizardShell : PlayerCarryableItem, IDrawable
         rotation = Vector2.zero;
         lastRotation = rotation;
 
-        lastJawRotation = 0f;
-        jawRotation = 0f;
+        jawRotation = Vector2.zero;
+        lastJawRotation = jawRotation;
+
+        facingRight = abstractLizardShell.scaleX > 0;
 
         // Initialize HeadSprites to avoid nullability issues
         HeadSprites = new string[TotalSprites];
-        lizardShellColorGraphics = new LizardShellColorGraphics(effectColor);
+        lizardShellColorGraphics = new LizardShellColorGraphics(abstractLizardShell.shellColor);
     }
 
     private static float Rand => UnityEngine.Random.value;
     public void HitEffect(Vector2 impactVelocity)
     {
-        var sparkColor = lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.clampedHealth);
+        var sparkColor = lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.maxHealth);
 
         var num = UnityEngine.Random.Range(3, 8);
         for (int k = 0; k < num; k++)
         {
-            //-- MR7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
+            //-- MS7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
             Vector2 pos = firstChunk.pos + Custom.DegToVec(Rand * 360f) * 5f * Rand;
             Vector2 vel = -impactVelocity * -0.1f + Custom.DegToVec(Rand * 360f) * Mathf.Lerp(0.2f, 0.4f, Rand) * impactVelocity.magnitude;
             room.AddObject(new Spark(pos, vel, sparkColor, null, 10, 170));
@@ -82,12 +92,17 @@ class LizardShell : PlayerCarryableItem, IDrawable
     public void Shatter()
     {
         room.PlaySound(SoundID.Spear_Fragment_Bounce, firstChunk.pos, 0.35f, 2f);
+        for (int k = 0; k < 6; k++)
+        {
+            room.AddObject(new LizardShellFragment(firstChunk.pos, Custom.RNV() * Mathf.Lerp(5f, 15f, UnityEngine.Random.value), lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.maxHealth)));
+        }
         Destroy();
     }
 
     public override void PickedUp(Creature upPicker)
     {
-        room.PlaySound(SoundID.Spear_Fragment_Bounce, firstChunk);
+        room.PlaySound(SoundID.Lizard_Light_Terrain_Impact, firstChunk);
+        lizardShellColorGraphics.Flicker(20);
     }
 
     public override void HitByWeapon(Weapon weapon)
@@ -117,6 +132,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
         if (speed > 10)
         {
             room.PlaySound(SoundID.Spear_Fragment_Bounce, firstChunk);
+            lizardShellColorGraphics.Flicker(20);
         }
     }
 
@@ -130,11 +146,36 @@ class LizardShell : PlayerCarryableItem, IDrawable
 
     public override void Update(bool eu)
     {
-        base.Update(eu);
+        lastRotation = rotation;
+        lastJawRotation = jawRotation;
 
+        base.Update(eu);
         lizardShellColorGraphics.Update();
 
         var chunk = firstChunk;
+
+        rotation = Custom.DegToVec(Custom.VecToDeg(rotation) + rotVel.x);
+        jawRotation = Custom.DegToVec(Custom.VecToDeg(jawRotation) + rotVel.x);
+
+        // Jaw opens the more the velocity is against the current rotation of the head, 90 degrees same velocity makes jaw shut, opposite angle entirely jaw is full open.
+        jawOpenRatio = Math.Abs(
+            Mathf.Clamp(
+                Vector2.Dot(rotation, bodyChunks[0].vel)
+                - 0.6f,
+                -1 - chunk.vel.magnitude * abstractLizardShell.jawOpenAngle, // Jaw can open more if moving faster.
+                0)
+            );
+
+        /*
+        if (flipJaw && jawRotation > headRotation + 10)
+        {
+            jawRotation = headRotation + 10;
+        }
+        else if (!flipJaw && jawRotation < headRotation - 10)
+        {
+            jawRotation = headRotation - 10;
+        }
+        */
 
         // TODO: Get this scraping sound working damnit!
         /*
@@ -144,43 +185,86 @@ class LizardShell : PlayerCarryableItem, IDrawable
         }
         */
 
+        rotVel = Vector2.ClampMagnitude(rotVel, 50f);
+        rotVel *= Custom.LerpMap(rotVel.magnitude, 5f, 50f, 1f, 0.8f);
+
+        facingRight = Custom.VecToDeg(rotation) > 0;
+
+        bool flipJaw = abstractLizardShell.scaleX > 0 ^ flipX;
+
+        var isDonned = 0f;
+
         if (grabbedBy.Count > 0)
         {
             var grabber = grabbedBy[0].grabber;
 
-            // CUSTOM FUNNY MIMICK LIZARD SLUGCAT
-            if (grabber is Player && (grabber as Player).Sneak > 0.01f)
+            if (grabber is Player scug && scug.privSneak > 0.5f)
             {
-                // If the player is sneaking, we want to make sure the shell is facing the same direction as the player.
-                var scug = grabber as Player;
+                Vector2 faceDir = Custom.DegToVec(Custom.AimFromOneVectorToAnother(scug.bodyChunks[1].pos, scug.bodyChunks[0].pos));
 
-                float tillFullCrouch = Mathf.InverseLerp(0.5f, 0, scug.Sneak);
-                float tillFullUncrouch = Mathf.InverseLerp(0, 0.5f, scug.Sneak);
-                Vector2 scugAimDir = new Vector2(scug.ThrowDirection, 0);
+                isDonned = scug.privSneak;
 
-                if (scug.Sneak < 0.5f)
+                rotation = faceDir;
+
+                if (faceDir.x > 0 == abstractLizardShell.scaleX > 0)
                 {
-                    Vector2 faceDir = new Vector2(scug.ThrowDirection, 0);
-
-                    bodyChunks[0].pos = Vector2.Lerp(bodyChunks[0].pos, bodyChunks[0].pos + faceDir * 15, 0.3f); // Move into position.
+                    flipX = true;
                 }
-                bodyChunks[0].vel = Vector2.Lerp(bodyChunks[0].vel, Vector2.zero, 0.3f); // Move velocity to zero to prevent interference with da looks.
-                // Added extra position when determining rotation based off throw direction to ensure rotation is correct,
-                rotation = Vector2.Lerp(rotation, Custom.DirVec(grabber.mainBodyChunk.pos + scugAimDir * 2, chunk.pos), 0.3f);
+                else
+                {
+                    flipX = false;
+                }
             }
             else
             {
-                // TODO: make this work with rotation in front and behind the player.
-                rotation = Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos));
+                rotation = abstractLizardShell.scaleX < 0 ? Custom.RotateAroundOrigo(Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos)), 180) : Custom.PerpendicularVector(Custom.DirVec(chunk.pos, grabber.mainBodyChunk.pos));
                 rotation.y = Mathf.Abs(rotation.y);
+
+                flipX = false;
             }
         }
-        else
+        else if (firstChunk.ContactPoint.y < 0)
         {
-            rotation += 0.9f * Custom.DirVec(chunk.lastPos, chunk.pos) * Custom.Dist(chunk.lastPos, chunk.pos);
+            Vector2 b;
+
+            b = Custom.DegToVec(90f * (facingRight ? 1 : -1));
+
+            rotation = Vector2.Lerp(rotation, b, UnityEngine.Random.value);
+            rotVel *= UnityEngine.Random.value;
+        }
+        else if (Vector2.Distance(firstChunk.lastPos, firstChunk.pos) > 5f && rotVel.magnitude < 7f)
+        {
+            rotVel += Custom.RNV() * (Mathf.Lerp(7f, 25f, UnityEngine.Random.value) + firstChunk.vel.magnitude * 2f);
         }
 
-        //-- MR7: Lowkey I stole this from Fisobs CentiShields lol...
+        if (!Custom.DistLess(chunk.lastPos, chunk.pos, 3f) && room.GetTile(chunk.pos).Solid && !room.GetTile(chunk.lastPos).Solid)
+        {
+            var firstSolid = SharedPhysics.RayTraceTilesForTerrainReturnFirstSolid(room, room.GetTilePosition(chunk.lastPos), room.GetTilePosition(chunk.pos));
+            if (firstSolid != null)
+            {
+                FloatRect floatRect = Custom.RectCollision(chunk.pos, chunk.lastPos, room.TileRect(firstSolid.Value).Grow(2f));
+                chunk.pos = floatRect.GetCorner(FloatRect.CornerLabel.D);
+
+                if (floatRect.GetCorner(FloatRect.CornerLabel.B).x < 0f)
+                {
+                    chunk.vel.x = Mathf.Abs(chunk.vel.x) * 0.15f;
+                }
+                else if (floatRect.GetCorner(FloatRect.CornerLabel.B).x > 0f)
+                {
+                    chunk.vel.x = -Mathf.Abs(chunk.vel.x) * 0.15f;
+                }
+                else if (floatRect.GetCorner(FloatRect.CornerLabel.B).y < 0f)
+                {
+                    chunk.vel.y = Mathf.Abs(chunk.vel.y) * 0.15f;
+                }
+                else if (floatRect.GetCorner(FloatRect.CornerLabel.B).y > 0f)
+                {
+                    chunk.vel.y = -Mathf.Abs(chunk.vel.y) * 0.15f;
+                }
+            }
+        }
+
+        //-- MS7: Lowkey I stole this from Fisobs CentiShields lol...
         // It seems to be responsible for the ACTUAL collision causing the spear to bounce off, but haven't deciphered it well enough yet.
         if (!Custom.DistLess(chunk.lastPos, chunk.pos, 3f) && room.GetTile(chunk.pos).Solid && !room.GetTile(chunk.lastPos).Solid)
         {
@@ -209,20 +293,12 @@ class LizardShell : PlayerCarryableItem, IDrawable
             }
         }
 
-        lastRotation = rotation;
+        donned = Custom.LerpAndTick(donned, isDonned, 0.11f, 0.033333335f);
     }
 
     //
     // SPRITES
     //
-
-    public Color effectColor
-    {
-        get
-        {
-            return abstractLizardShell.shellColor;
-        }
-    }
 
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
@@ -257,6 +333,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
 
         Vector2 pos = Vector2.Lerp(base.firstChunk.lastPos, base.firstChunk.pos, timeStacker);
         Vector2 rot = Vector3.Slerp(lastRotation, rotation, timeStacker);
+        Vector2 jawRot = Vector3.Slerp(lastJawRotation, jawRotation, timeStacker);
 
         string headAngleNum = "0";
         if (Math.Abs(rotation.x) > 45f)
@@ -271,44 +348,29 @@ class LizardShell : PlayerCarryableItem, IDrawable
         //
 
         // Not sure what this "VecToDeg" is but it looks better than normal non-vector2 calculated rotations lol.
-        float headRotation = Custom.VecToDeg(rot);
+        float finalHeadRotation = Custom.VecToDeg(rot);
+        float finalJawRotation = Custom.VecToDeg(jawRot);
+                    // Jaw has maximum amount it can open.
+        finalJawRotation = -Mathf.Clamp(jawOpenRatio * abstractLizardShell.jawOpenMoveJawsApart, 0, abstractLizardShell.jawOpenAngle); ;
 
         float totalVel = Math.Abs(bodyChunks[0].vel.x) + Math.Abs(bodyChunks[0].vel.y);
-        // Jaw opens the more the velocity is against the current rotation of the head, 90 degrees same velocity makes jaw shut, opposite angle entirely jaw is full open.
-        float jawOpenRatio = Math.Abs(
-            Mathf.Clamp(
-                Vector2.Dot(rot, bodyChunks[0].vel)
-                - 0.6f,
-                -1 - totalVel * JawVelocityOverOpenSensitivity, // Jaw can open more if moving faster.
-                0)
-            );
-
-        // Save previous jaw rotation for next frame.
-        lastJawRotation = jawRotation;
-        // Jaw has maximum amount it can open.
-        float desiredJawRotation = -Mathf.Clamp(jawOpenRatio * JawOpenSensitivity, 0, MaxJawRotation);
-        jawRotation = Mathf.Lerp(lastJawRotation, headRotation + desiredJawRotation, 0.25f);
-
-        // Make sure the jaw doesn't rotate too far INSIDE of the head.
-        if (jawRotation > headRotation + 10)
-            jawRotation = headRotation + 10;
 
         // Make sure the rotation is between 0 and 360 degrees.
-        headRotation %= 360f;
-        jawRotation %= 360f;
+        finalHeadRotation %= 360f;
+        finalJawRotation %= 360f;
 
         //
         // ACTUAL UPDATING THE SPRITES
         //
 
-        var effectColor = lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.clampedHealth);
+        var effectColor = lizardShellColorGraphics.ShellColor(abstractLizardShell.health, abstractLizardShell.maxHealth);
         // HEAD SPRITES UPDATE
         for (int i = SpriteJawStart; i < TotalSprites; i++)
         {
             sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(HeadSprites[i].Insert(HeadSprites[i].Length - 2, headAngleNum));
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
-            sLeaser.sprites[i].rotation = headRotation;
+            sLeaser.sprites[i].rotation = finalHeadRotation;
             sLeaser.sprites[i].color = effectColor;
         }
 
@@ -321,7 +383,7 @@ class LizardShell : PlayerCarryableItem, IDrawable
             sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(HeadSprites[i].Insert(HeadSprites[i].Length - 2, headAngleNum));
             sLeaser.sprites[i].x = pos.x - camPos.x;
             sLeaser.sprites[i].y = pos.y - camPos.y;
-            sLeaser.sprites[i].rotation = jawRotation;
+            sLeaser.sprites[i].rotation = finalJawRotation;
             sLeaser.sprites[i].color = effectColor;
         }
 

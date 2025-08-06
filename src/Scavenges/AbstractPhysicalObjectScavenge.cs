@@ -34,7 +34,7 @@ public abstract class AbstractPhysicalObjectScavenge
 
     public bool requiresKnife = true;
 
-    public PlayerHandAnimationPlayer.HandAnimationIndex handAnimation;
+    public PlayerHandAnimationPlayer.AnimationIndex handAnimation;
 
     public AbstractPhysicalObjectScavenge(PhysicalObject owner)
     {

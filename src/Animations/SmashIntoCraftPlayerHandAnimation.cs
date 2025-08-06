@@ -53,6 +53,8 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
     /// </summary>
     public SoundID breakSound;
 
+    public bool flinchAndLookAway = false;
+
     private Queue<float> beatSoundTimes;
 
     private float extraBeatTime = 0f;
@@ -61,21 +63,13 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
-    public SmashIntoCraftPlayerHandAnimation(float length)
-    {
-        this.Length = length;
-    }
-
     public override void Start(Player player)
     {
-        base.Start(player);
-
-        this.owner = player;
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
         this.playerCraftingData = player.GetPlayerCraftingData();
 
-        extraBeatTime = Length % timeBetweenBeats;
-        numOfTimesToBeat = (Length - extraBeatTime) / timeBetweenBeats;
+        extraBeatTime = length % timeBetweenBeats;
+        numOfTimesToBeat = (length - extraBeatTime) / timeBetweenBeats;
 
         // Add the times that the beat sound will play lol.
         beatSoundTimes = new Queue<float>();
@@ -87,64 +81,74 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
         beatSoundTimes.Enqueue(timeBetweenBeats * numOfTimesToBeat + extraBeatTime);
     }
 
-    public override void Stop(Player owner)
+    public override void Stop(Player player)
     {
 
     }
 
-    public override void Update(int animTimer)
+    public override void Update(Player player, float animTimer)
     {
-        // Play da sounds when da sounds need to be played.
-        if (beatSoundTimes.Count >= 2 && beatSoundTimes.Peek() <= animTimer)
+		var playerCraftingData = player.GetPlayerCraftingData();
+		var playerGraphics = player.graphicsModule as PlayerGraphics;
+
+		if (playerGraphics == null)
+			return;
+
+		// Play da sounds when da sounds need to be played.
+		if (beatSoundTimes.Count >= 2 && beatSoundTimes.Peek() <= animTimer)
         {
             beatSoundTimes.Dequeue();
-            // Play the beat sound.
-            owner.room.PlaySound(beatSound, owner.firstChunk.pos);
-            owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 2500f, owner, 1f));
+			// Play the beat sound.
+			player.room.PlaySound(beatSound, player.firstChunk.pos);
+			player.room.InGameNoise(new InGameNoise(player.firstChunk.pos, 2500f, player, 1f));
 
-            //- MR7 Vibrate the spear if it is a spear for extra pizazz.
-            if (owner.grasps[0].grabbed is Spear)
+            //- MS7 Vibrate the spear if it is a spear for extra pizazz.
+            if (player.grasps[0].grabbed is Spear)
             {
-                //- MR7 Vibration goes down over course of the beat time.
+                //- MS7 Vibration goes down over course of the beat time.
                 // This is for thematics of mimicking the spear getting more shakey,
                 // As well as for gameplay reasons showing acting as a minor visual indicator on how close to break.
 
-                var vibrationMultiplierWithTime = Mathf.InverseLerp(0, Length, animTimer);
+                var vibrationMultiplierWithTime = Mathf.InverseLerp(0, length, animTimer);
                 vibrationMultiplierWithTime = 1 / vibrationMultiplierWithTime + 0.01f; // Inverse it so that it goes from 1 to 0 over time, prevent divison by zero.
                 vibrationMultiplierWithTime = Mathf.Clamp(vibrationMultiplierWithTime, 0.3f, 1f); // Clamp it to prevent it from going too low.
 
-                ((Spear)owner.grasps[0].grabbed).vibrate = (int)(10 * vibrationMultiplierWithTime);
+                ((Spear)player.grasps[0].grabbed).vibrate = (int)(10 * vibrationMultiplierWithTime);
             }
         }
         // If we are on our last sound, play the break sound instead.
         else if (beatSoundTimes.Count >= 1 && beatSoundTimes.Peek() <= animTimer)
         {
             beatSoundTimes.Dequeue();
-            // Final break sound which is much louder.
-            owner.room.PlaySound(breakSound, owner.firstChunk.pos);
-            owner.room.InGameNoise(new InGameNoise(owner.firstChunk.pos, 5000f, owner, 1f));
+			// Final break sound which is much louder.
+			player.room.PlaySound(breakSound, player.firstChunk.pos);
+			player.room.InGameNoise(new InGameNoise(player.firstChunk.pos, 5000f, player, 1f));
         }
 
-        // Look up and blink at the last break.
-        if (animTimer > Length - timeBeforeBreakEyesClose)
+        // Look down at the thing your smacking bruh.
+        if (flinchAndLookAway)
         {
-            playerGraphics.LookAtPoint(playerGraphics.drawPositions[0, 0] + fullRiseHandOffsetPos, 42069); // Hell yea
-            owner.eyesClosedTime = eyesCloseOnBreakLength;
-        }
-        else // Look down at the thing your smacking bruh.
-        {
+			playerGraphics.LookAtPoint(playerGraphics.drawPositions[0, 0] + fullRiseHandOffsetPos, 42069); // Hell yea
+			player.eyesClosedTime = eyesCloseOnBreakLength;
+		}
+        else
             playerGraphics.LookAtPoint(playerGraphics.drawPositions[0, 0] + fullDescentHandOffsetPos, 0.1f); // Very low interest, look at if there is nothing else.
-        }
     }
 
-    public override void GraphicsUpdate(int animTimer)
+    public override void GraphicsUpdate(Player player, float animTimer)
     {
-        int beatedObjectIndex = 0;
+		var playerCraftingData = player.GetPlayerCraftingData();
+		var playerGraphics = player.graphicsModule as PlayerGraphics;
+
+		if (playerGraphics == null)
+			return;
+
+		int beatedObjectIndex = 0;
         int beatingObjectIndex = 1;
 
         float timeThisBeat = timeBetweenBeats;
         // If we are on the last beat, add extra time.
-        bool isLastBeat = animTimer >= (Length - (timeBetweenBeats + extraBeatTime));
+        bool isLastBeat = animTimer >= (length - (timeBetweenBeats + extraBeatTime));
         if (isLastBeat)
             timeThisBeat += extraBeatTime;
 
@@ -182,7 +186,7 @@ public class SmashIntoCraftPlayerHandAnimation : MRAnimation<Player>
         beatingHand.pos = Vector2.Lerp(fullRiseHandPos, beatedHand.pos, beatingHandProgress);
         beatedHand.pos = Vector2.Lerp(fullDescentHandPos + directionBeating * beatingKnockback, fullDescentHandPos, beatedObjectKnockbackProgress);
 
-        //-- MR7 TODO: just move this stuff down here to a different animation? that copies the data from smashIntoCraft, to remove the miniscule overhead (but moreso set a standard).
+        //-- MS7 TODO: just move this stuff down here to a different animation? that copies the data from smashIntoCraft, to remove the miniscule overhead (but moreso set a standard).
         if (playerGraphics.player.grasps[0].grabbed is Weapon && primaryHandWeaponSetRotation != null)
         {
             var primaryHandWeapon = (Weapon)playerGraphics.player.grasps[0].grabbed;
