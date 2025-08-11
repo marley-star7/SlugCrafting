@@ -1,5 +1,4 @@
-﻿
-namespace SlugCrafting;
+﻿namespace SlugCrafting.Items;
 
 internal static class SpearHooks
 {
@@ -57,7 +56,9 @@ internal static class SpearHooks
         {
             orig(selfSpear, eu);
             selfSpear.AttachedSporePlantUpdate();
+            //selfSpear.BundledStickUpdate(eu);
         }
+
     }
 
     internal static void Spear_Thrown(On.Spear.orig_Thrown orig, Spear self, Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
@@ -102,7 +103,7 @@ internal static class SpearHooks
             }
             orig(self);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Custom.Logger.Error($"Error destroying spear: {e.Message}\n{e.StackTrace}");
         }

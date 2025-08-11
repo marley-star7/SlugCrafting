@@ -1,4 +1,6 @@
-﻿namespace SlugCrafting;
+﻿using SlugCrafting.Items.Weapons.Spear;
+
+namespace SlugCrafting;
 
 public static partial class Hooks
 {
@@ -8,6 +10,7 @@ public static partial class Hooks
         ApplyPlayerGraphicsHooks();
         ApplySlugcatHandHooks();
 
+        ApplyPhysicalObjectHooks();
         ApplyPlayerCarryableItemHooks();
         ApplySpearHooks();
         ApplySporePlantHooks();
@@ -23,6 +26,7 @@ public static partial class Hooks
         RemovePlayerGraphicsHooks();
         RemoveSlugcatHandHooks();
 
+        RemovePhysicalObjectHooks();
         RemovePlayerCarryableItemHooks();
         RemoveSpearHooks();
         RemoveSporePlantHooks();
@@ -106,6 +110,18 @@ public static partial class Hooks
     {
         On.SlugcatHand.EngageInMovement -= SlugcatHandHooks.SlugcatHand_EngageInMovement;
         On.SlugcatHand.Update -= SlugcatHandHooks.SlugcatHand_Update;
+    }
+
+    // PHYSICAL OBJECT
+
+    private static void ApplyPhysicalObjectHooks()
+    {
+        On.PhysicalObject.Update += PhysicalObjectHooks.PhysicalObject_Update;
+    }
+
+    private static void RemovePhysicalObjectHooks()
+    {
+        On.PhysicalObject.Update -= PhysicalObjectHooks.PhysicalObject_Update;
     }
 
     // PLAYER CARRYABLE ITEMS

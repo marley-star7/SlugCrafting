@@ -14,7 +14,7 @@ sealed class PinkLizardShellFisob : Fisob
         LizardShellProperties.PropertiesOfTemplateType[CreatureTemplate.Type.PinkLizard] = properties;
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.PinkLizardShell, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxID.PinkLizardShell, parent: MultiplayerUnlocks.SandboxUnlockID.PinkLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

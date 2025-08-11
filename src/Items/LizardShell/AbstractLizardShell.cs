@@ -88,7 +88,7 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
         }
         else
         {
-            return LizardShellFisob.abstractObjectType; // Default for lizards that don't have a specific shell type.
+            return SlugCraftingEnums.AbstractObjectType.LizardShell; // Default for lizards that don't have a specific shell type.
         }
     }
 }

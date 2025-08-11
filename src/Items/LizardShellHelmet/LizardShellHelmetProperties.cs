@@ -4,6 +4,8 @@ namespace SlugCrafting.Items;
 
 public class LizardShellHelmetProperties : ItemProperties
 {
+    public static Dictionary<AbstractPhysicalObject.AbstractObjectType, LizardShellHelmetProperties> typesProperties = new();
+
     public virtual LizardShellHelmet.SpriteInfo[] spritesInfo => new LizardShellHelmet.SpriteInfo[0];
     public virtual SpriteLayerGroup[] spriteLayerGroups => new SpriteLayerGroup[0];
     public virtual SpriteEffectGroup[] spriteEffectGroups => new SpriteEffectGroup[0];

@@ -1,6 +1,4 @@
-﻿using Fisobs.Properties;
-
-namespace SlugCrafting.Items.Weapons;
+﻿namespace SlugCrafting.Items.Weapons;
 
 sealed class KnifeProperties : ItemProperties
 {

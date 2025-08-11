@@ -38,8 +38,13 @@ global using CompartmentalizedCreatureGraphics.Cosmetics;
 global using CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 global using CompartmentalizedCreatureGraphics.Extensions;
 
+global using Fisobs.Core;
+global using Fisobs.Items;
 global using Fisobs.Properties;
+global using Fisobs.Sandbox;
 
+
+global using SlugCrafting;
 global using SlugCrafting.Core;
 global using SlugCrafting.CosmeticSprites;
 global using SlugCrafting.Scavenges;

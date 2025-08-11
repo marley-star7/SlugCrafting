@@ -10,10 +10,10 @@ internal static class PlayerCarryableHooks
         // BUNDLE UPDATES
         //
 
-        var selfItemCraftingData = selfItem.GetPlayerCarryableItemCraftingData();
+        var selfItemCraftingData = selfItem.GetPhysicalObjectCraftingData();
 
         //-- Other bundled items refrence the firsts position.
-        if (selfItemCraftingData.bundle == null || selfItemCraftingData.bundle.firstItem == selfItem)
+        if (selfItemCraftingData.bundle == null || selfItemCraftingData.bundle.firstItem.realizedObject == selfItem)
             return;
 
         //
@@ -24,8 +24,8 @@ internal static class PlayerCarryableHooks
         selfItem.forbiddenToPlayer = 1;
         // If the item is not the first item in the bundle, then update its position to match the first item.
         var firstItem = selfItemCraftingData.bundle.firstItem;
-        selfItem.firstChunk.pos = firstItem.firstChunk.pos; // TODO: need to add bundle offset.
-        selfItem.firstChunk.vel = firstItem.firstChunk.vel;
+        selfItem.firstChunk.pos = firstItem.realizedObject.firstChunk.pos; // TODO: need to add bundle offset.
+        selfItem.firstChunk.vel = firstItem.realizedObject.firstChunk.vel;
     }
 
 }

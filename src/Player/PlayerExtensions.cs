@@ -35,6 +35,8 @@ public class PlayerCraftingData
     public bool physicalCraftingEnabled = false;
 
     public int craftAnimationIndex = 0;
+    public int craftAnimationsTotalTimesLooped = 0;
+
     public int knifeGraspUsed = -1;
     public int creatureGraspUsed = -1;
 
@@ -55,12 +57,16 @@ public class PlayerCraftingData
         var craft = currentPossibleCraft.Value;
         var currentCraftAnimation = craft.animations[craftAnimationIndex];
 
+        craftAnimationsTotalTimesLooped++;
+
+        Plugin.LogDebug($"totalAnimationLoops: {craft.totalAnimationLoops}, loops: {timesLooped}, {isPhysicalCrafting}, {loopedAnimation == currentCraftAnimation.animation}");
+
         if (isPhysicalCrafting && loopedAnimation == currentCraftAnimation.animation)
         {
-            if (timesLooped >= craft.totalAnimationLoops)
+            if (craftAnimationsTotalTimesLooped >= craft.totalAnimationLoops)
                 player.CompletePhysicalCraft(craft);
-            else if (timesLooped > currentCraftAnimation.loopsInAnimation)
-                craftAnimationIndex++;
+            else if (timesLooped >= currentCraftAnimation.loopsInAnimation)
+                player.ContinueToNextCraftAnimation();
         }
     }
 }
@@ -105,52 +111,91 @@ public static class PlayerCraftingExtensions
         return null;
     }
 
-    // --- Bundling Logic ---
-    public static void BundleGrabUpdate(this Player selfPlayer, bool eu)
+    private static void TryEquipAccessory(this Player player)
     {
-        if (!selfPlayer.JustPressed(ImprovedInput.PlayerKeybind.Grab))
-            return;
-
-        //-- MS7: TODO: TEMP FUNCTIONALITY FOR TESTING, LATER HAVE DIFFERENT WAY OF EQUIPPING.
-        if (selfPlayer.grasps[0] != null && selfPlayer.grasps[0].grabbed is IEquippable accessoryItem)
+        if (player.grasps[0]?.grabbed is IEquippable accessory)
         {
-            accessoryItem.Equip(selfPlayer);
+            accessory.Equip(player); // TODO: Replace with proper equipping logic later
         }
+    }
 
-        //-- MS7: Prioritize items in the primary hand first for checks, following the standard of primary item's being the focus for interaction.
-        // As alternate into primary gives for the least amount of button presses only when need an item on demand to be used immediately from a bundle,
-        // (which can be mitigated via just having an empty hand mean that the bundle is always pulled from into it.)
-        //-- Otherwise in cases like a backpack, where you are interacting with that first item, and pulling out of it, it being in the primary, pulling into alternate,
-        // since it has other interaction is best. Which you then will likely throw the backpack on your back again or on the ground if is an emergency.
+    private static void HandleBundlingLogic(Player player, PlayerCarryableItem primaryItem)
+    {
+        var secondaryHand = player.grasps[1];
 
-        if (selfPlayer.grasps[0] != null && selfPlayer.grasps[0].grabbed is PlayerCarryableItem)
+        // Case: Secondary hand is empty → pop from primary's bundle
+        if (secondaryHand == null)
         {
-            var primaryHandItem = selfPlayer.grasps[0].grabbed as PlayerCarryableItem;
-            //-- MS7: First look to add Item to second hand's bundle if second hand has item and is bundleable.
-            // If second hand empty, pop an item from the primary hand's bundle to put in alternate.
-
-            if (selfPlayer.grasps[1] != null && selfPlayer.grasps[1].grabbed is PlayerCarryableItem) // Both Hands Have Items
+            AbstractPhysicalObject? itemToGrab = null;
+            if (primaryItem is IHaveVisibleItemContainerCycler primaryItemContainerCycler && primaryItemContainerCycler.itemContainer.HasItemBundleInSlot(primaryItemContainerCycler.visibleItemContainerCycler.currentlyTargetedSlot))
             {
-                var secondaryHandItem = selfPlayer.grasps[1].grabbed as PlayerCarryableItem;
-
-                if (primaryHandItem.CanBundleWith(secondaryHandItem))
-                    secondaryHandItem.AddItemToBundle(primaryHandItem);
-                else //-- MS7: Just switch grasps instead, for quality of life.
-                    selfPlayer.SwitchHands();
+                itemToGrab = primaryItemContainerCycler.visibleItemContainerCycler.PopItemFromTargetedSlot();
             }
             else
             {
-                if (primaryHandItem.GetBundle() != null)
-                    selfPlayer.SlugcatGrab(primaryHandItem.PopItemFromBundle(), selfPlayer.FreeHand());
+                var bundle = primaryItem.GetBundle();
+                if (bundle != null)
+                    itemToGrab = bundle.PopItem();
+            }
+
+            if (itemToGrab.realizedObject == null)
+                itemToGrab.RealizeInRoom();
+
+            if (itemToGrab != null)
+                player.SlugcatGrab(itemToGrab.realizedObject, player.FreeHand());
+
+            return;
+        }
+
+        // Case: Both hands have items
+        if (secondaryHand.grabbed is PlayerCarryableItem secondaryItem)
+        {
+            if (secondaryItem is IHaveVisibleItemContainerCycler secondaryItemContainerCycler)
+            {
+                secondaryItemContainerCycler.visibleItemContainerCycler.PutItemInTargetedSlot(primaryItem.abstractPhysicalObject);
+            }
+            else if (primaryItem.GetBundle().TryAddItem(primaryItem.abstractPhysicalObject)) { }
+            else
+            {
+                player.SwitchHands(); // Fallback: Swap items
             }
         }
-        //-- MS7: Only if primary hand is empty, do we fall back on checking the secondary hand for a bundle to pull from.
-        else if (selfPlayer.grasps[1] != null && selfPlayer.grasps[1].grabbed is PlayerCarryableItem)
-        {
-            var secondaryHandItem = selfPlayer.grasps[1].grabbed as PlayerCarryableItem;
+    }
 
-            selfPlayer.SlugcatGrab(secondaryHandItem.PopItemFromBundle(), selfPlayer.FreeHand());
+    private static void TryPopItemFromSecondaryAndGrab(Player player, PlayerCarryableItem secondaryItem)
+    {
+        var itemToGrab = secondaryItem.GetBundle().PopItem();
+        if (itemToGrab != null)
+        {
+            player.SlugcatGrab(itemToGrab.realizedObject, player.FreeHand());
         }
+    }
+
+    // --- Bundling Logic ---
+    internal static void WhileInputAlternateUsePressed(this Player player)
+    {
+        // Early exit if grab key not pressed
+        if (!player.JustPressed(ImprovedInput.PlayerKeybind.Grab))
+            return;
+
+        // Temporary equip logic (for testing)
+        TryEquipAccessory(player);
+
+        // Prioritize primary hand interactions
+        if (player.grasps[0]?.grabbed is PlayerCarryableItem primaryItem)
+        {
+            HandleBundlingLogic(player, primaryItem);
+        }
+        // Fallback to secondary hand if primary is empty
+        else if (player.grasps[1]?.grabbed is PlayerCarryableItem secondaryItem)
+        {
+            TryPopItemFromSecondaryAndGrab(player, secondaryItem);
+        }
+    }
+
+    internal static void OnInputAlternateUseJustReleased(this Player player)
+    {
+
     }
 
     // --- Crafting Logic ---
@@ -175,6 +220,15 @@ public static class PlayerCraftingExtensions
         return true;
     }
 
+    public static void ContinueToNextCraftAnimation(this Player self)
+    {
+        var playerSCData = self.GetPlayerCraftingData();
+
+        playerSCData.craftAnimationIndex++;
+        var nextCraftAnimation = playerSCData.currentPossibleCraft.Value.animations[playerSCData.craftAnimationIndex].animation;
+        self.GetHandAnimationPlayer().Play(nextCraftAnimation);
+    }
+
     private static void PhysicalCraftEnded(this Player self)
     {
         var playerSlugCraftingData = self.GetPlayerCraftingData();
@@ -182,6 +236,7 @@ public static class PlayerCraftingExtensions
         // RESET TIMER FOR NEXT CRAFT.
         playerSlugCraftingData.craftTimer = 0;
         playerSlugCraftingData.craftAnimationIndex = 0;
+        playerSlugCraftingData.craftAnimationsTotalTimesLooped = 0;
     }
 
     public static void CheckGraspsForPossiblePhysicalCraft(this Player player)

@@ -1,14 +1,4 @@
-﻿using RWCustom;
-using UnityEngine;
-
-using MRCustom;
-
-using SlugCrafting.Items;
-using SlugCrafting.Items.Weapons;
-using SlugCrafting.Animations;
-using SlugCrafting.Crafts;
-using SlugCrafting.Core;
-using SlugCrafting.Scavenges;
+﻿using SlugCrafting.Items.Weapons.Spear;
 
 namespace SlugCrafting.Core;
 
@@ -27,16 +17,19 @@ public static partial class Content
     {
         Fisobs.Core.Content.Register(new KnifeFisob());
 
+        Fisobs.Core.Content.Register(new SpiderSilkStringFisob());
+        Fisobs.Core.Content.Register(new LanternMouseStringFisob());
+        Fisobs.Core.Content.Register(new CordFisob());
+
         Fisobs.Core.Content.Register(new LizardHideFisob());
-        Fisobs.Core.Content.Register(new LizardShellFisob());
 
         Fisobs.Core.Content.Register(new GreenLizardShellFisob());
         Fisobs.Core.Content.Register(new PinkLizardShellFisob());
 
+        Fisobs.Core.Content.Register(new LizardHideBackpackFisob());
+
         Fisobs.Core.Content.Register(new GreenLizardShellHelmetFisob());
         Fisobs.Core.Content.Register(new BlueLizardShellHelmetFisob());
-
-        Fisobs.Core.Content.Register(new StringFisob());
 
         //Fisobs.Core.Content.Register(new DoubleSidedSpearFisob());
     }
@@ -48,7 +41,7 @@ public static partial class Content
     internal static void RegisterSlugCraftingItemBundlesProperties()
     {
         SlugCrafting.Core.Content.RegisterItemBundleProperties(
-            StringFisob.abstractObjectType,
+            SlugCraftingEnums.AbstractObjectType.LanternMouseString,
             new ItemBundleProperties
             (
                 3
@@ -71,6 +64,14 @@ public static partial class Content
     //
     //-- CRAFTS
     //
+
+    public static void DefaultTieObjectToCordCraftResult(Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject)
+    {
+        var objectToTie = (PhysicalObject)primaryIngredientObject;
+        var cordObject = (CordItem)secondaryIngredientObject;
+
+        cordObject.TieObject(objectToTie.abstractPhysicalObject, 0, 0);
+    }
 
     internal static void RegisterSlugCraftingCrafts()
     {
@@ -120,7 +121,8 @@ public static partial class Content
 
                 animations = new Craft.Animation[]
                 {
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.DoubleSwallowCraft)
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.BiteStruggleNutLeftHand),
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.DoubleSwallow)
                 },
                 needBothHandsFree = true,
             }
@@ -174,7 +176,9 @@ public static partial class Content
 
                 animations = new Craft.Animation[]
                 {
-                    new Craft.Animation(5, SlugCraftingEnums.PlayerHandAnimations.KnapSpear)
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.KnapSpearFirstHit),
+                    new Craft.Animation(5, SlugCraftingEnums.PlayerHandAnimations.KnapSpearLoop),
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.KnapSpearBreak)
                 },
             }
         );
@@ -301,58 +305,64 @@ public static partial class Content
                     var spear = (Spear)primaryIngredientObject;
                     var sporePlant = (SporePlant)secondaryIngredientObject;
 
-                    spear.AttachSporePlant(sporePlant);
-
-                    //-- Drop the spore plant.
-                    crafter.ReleaseGrasp(1);
+                    spear.AttachPhysicalObject(sporePlant);
                 },
 
                 animations = new Craft.Animation[]
                 {
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.ImpaleOnSpear)
+                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.KnapSpearBreak)
                 },
+            }
+        );
+
+        // --- String Tying Crafts List ---
+
+        var defaultCordTieCraftAnimations = new Craft.Animation[]
+        {
+            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.DoubleSwallow)
+        };
+
+        SlugCrafting.Core.Content.RegisterCraft(
+            new Craft()
+            {
+                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Lantern),
+                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
+
+                craftResult = DefaultTieObjectToCordCraftResult,
+                animations = defaultCordTieCraftAnimations
             }
         );
 
         SlugCrafting.Core.Content.RegisterCraft(
             new Craft()
             {
-                primaryIngredient = new CraftIngredient()
-                {
-                    type = AbstractPhysicalObject.AbstractObjectType.Lantern,
-                },
-                secondaryIngredient = new CraftIngredient()
-                {
-                    type = StringFisob.abstractObjectType,
-                },
+                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.ScavengerBomb),
+                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
 
-                craftResult = (Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject) =>
-                {
-                    crafter.RemoveGrabbedObject(1); // Remove the string object.
-                    var objectToTie = (PhysicalObject)primaryIngredientObject;
+                craftResult = DefaultTieObjectToCordCraftResult,
+                animations = defaultCordTieCraftAnimations
+            }
+        );
 
-                    //-- Create the new object tie.
-                    var abstractStringTier = new AbstractStringTiedItem(
-                        crafter.room.world,
-                        crafter.coord,
-                        crafter.room.game.GetNewID()
-                    );
+        SlugCrafting.Core.Content.RegisterCraft(
+            new Craft()
+            {
+                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
+                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
 
-                    //-- Realize it.
-                    crafter.room.abstractRoom.AddEntity(abstractStringTier);
-                    abstractStringTier.RealizeInRoom();
+                craftResult = DefaultTieObjectToCordCraftResult,
+                animations = defaultCordTieCraftAnimations
+            }
+        );
 
-                    var stringTier = (StringTiedItem)abstractStringTier.realizedObject;
-                    stringTier.AttachToObject(objectToTie.abstractPhysicalObject, 0);
+        SlugCrafting.Core.Content.RegisterCraft(
+            new Craft()
+            {
+                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Rock),
+                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
 
-                    var player = (Player)crafter;
-                    player.SlugcatGrab(abstractStringTier.realizedObject, player.FreeHand());
-                },
-
-                animations = new Craft.Animation[]
-                {
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.SmashIntoCraft)
-                },
+                craftResult = DefaultTieObjectToCordCraftResult,
+                animations = defaultCordTieCraftAnimations
             }
         );
     }

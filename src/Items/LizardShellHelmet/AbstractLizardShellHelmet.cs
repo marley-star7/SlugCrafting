@@ -4,14 +4,20 @@ namespace SlugCrafting.Items;
 
 public class AbstractLizardShellHelmet : AbstractPhysicalObject
 {
-    public LizardShellHelmetProperties properties;
-
     public Color shellColor;
     public float health;
 
-    public AbstractLizardShellHelmet(World world, AbstractObjectType type, LizardShellHelmetProperties properties, WorldCoordinate pos, EntityID ID) : base(world, type, null, pos, ID)
+    public LizardShellHelmetProperties GetPropertiesForType(AbstractObjectType type)
     {
-        this.properties = properties;
+        if (LizardShellHelmetProperties.typesProperties.TryGetValue(type, out var properties))
+            return properties;
+        else
+            return new LizardShellHelmetProperties();
+    }
+
+    public AbstractLizardShellHelmet(World world, AbstractObjectType type, WorldCoordinate pos, EntityID ID) : base(world, type, null, pos, ID)
+    {
+        LizardShellHelmetProperties properties = GetPropertiesForType(type);
 
         this.shellColor = properties.defaultShellColor;
         this.health = properties.maxHealth;
@@ -20,6 +26,9 @@ public class AbstractLizardShellHelmet : AbstractPhysicalObject
     public override void Realize()
     {
         base.Realize();
+
+        LizardShellHelmetProperties properties = GetPropertiesForType(type);
+
         if (realizedObject == null)
             realizedObject = new LizardShellHelmetItem(this, new LizardShellHelmet(this, properties));
     }

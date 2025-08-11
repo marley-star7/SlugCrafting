@@ -1,8 +1,6 @@
-﻿// TODO: work further on the hand animation system, set up adding animation events and such.
-// TODO: there will be both animationTimeEvents and animationLoopEvents
-// loops will run on specific loops points of an animation, or some sort of better terminology, like the end of a saw or on point of impact when hitting spear.
-// Time animationevents work on a specific time, likely can do that implementation later actually.
-// TODO: need to set up so that animations for crafts are an array of animations, that play in order for how many loops, and their speed, that way can transfer between them nicely.
+﻿// TODO: make item bundles specifically an abstraction of containers, and containers have the functionality for moving between em, 
+// TODO: rename container to PhysicalObjectContainer, and then StorageContainer, ItemBundle, etc, that way can move between containers easily.
+// TODO: each container has a lead object, which is the only one with collision.
 
 namespace SlugCrafting;
 

@@ -10,9 +10,7 @@ namespace SlugCrafting.Items;
 /// </summary>
 sealed class LizardShellFisob : Fisob
 {
-    public static readonly AbstractPhysicalObject.AbstractObjectType abstractObjectType = new("LizardShell", true);
-
-    public LizardShellFisob() : base(abstractObjectType)
+    public LizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.LizardShell)
     {
 
     }

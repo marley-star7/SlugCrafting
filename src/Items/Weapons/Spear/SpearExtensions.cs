@@ -1,14 +1,10 @@
 ﻿namespace SlugCrafting.Items.Weapons;
 
+// TODO: look into abstractobjectSticks, might be exactly what you need built into base game
+
 public class SpearCraftingData
 {
-    //
-    // HARPOON DATA
-    //
-
-    public bool isHarpoon;
-
-    public HarpoonRope harpoonRope;
+    public float distancePastCordConnectionDistanceForDislodge = 25f;
 
     //
     // DOUBLE SIDED DATA
@@ -63,8 +59,17 @@ public static class SpearExtensions
     // ATTACHED ITEMS UPDATE
     //
 
-    public static void AttachSporePlant(this Spear spear, SporePlant sporePlant)
+    public static void AttachPhysicalObject(this Spear spear, PhysicalObject sporePlant)
     {
+        // Cannot have two sticks at once, spore plant must release it's grabs.
+        sporePlant.grabbedBy[0].Release();
+        for (int i = 0; i < sporePlant.abstractPhysicalObject.stuckObjects.Count; i++)
+        {
+            sporePlant.abstractPhysicalObject.stuckObjects[i].Deactivate();
+        }
+        new BundledItemStick(spear.abstractPhysicalObject, sporePlant.abstractPhysicalObject);
+
+        /*
         var SpearCraftingData = spear.GetSpearCraftingData();
         if (SpearCraftingData.sporePlant != null)
         {
@@ -74,6 +79,7 @@ public static class SpearExtensions
 
         SpearCraftingData.sporePlant = sporePlant;
         sporePlant.GetSporePlantCraftingData().stuckInSpear = spear;
+        */
     }
 
     public static void UnattachSporePlant(this Spear spear)
@@ -335,7 +341,7 @@ public static class SpearExtensions
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    spear.room.AddObject(new WaterDrip(result.collisionPoint, -spear.firstChunk.vel * UnityEngine.Random.value * 0.5f + Custom.DegToVec(360f * UnityEngine.Random.value) * spear.firstChunk.vel.magnitude * UnityEngine.Random.value * 0.5f, waterColor: false));
+                    spear.room.AddObject(new WaterDrip(result.collisionPoint, -spear.firstChunk.vel * Random.value * 0.5f + Custom.DegToVec(360f * Random.value) * spear.firstChunk.vel.magnitude * Random.value * 0.5f, waterColor: false));
                 }
             }
         }

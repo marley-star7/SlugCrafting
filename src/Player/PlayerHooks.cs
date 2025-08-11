@@ -116,9 +116,7 @@ internal static class PlayerHooks
         // Probably just holding both hands higher up,
 
         //-- MS7: Do not pickup items if holding alt use, since it could interfere with keybinds.
-        if (selfPlayer.IsCrafter() && selfPlayer.IsPressed(Inputs.AlternateUse))
-            selfPlayer.BundleGrabUpdate(eu);
-        else
+        if (!selfPlayer.IsPressed(Inputs.AlternateUse))
             orig(selfPlayer, eu);
     }
 
@@ -132,6 +130,9 @@ internal static class PlayerHooks
             sCData.craftTimer++;
         }
 
+        // --- Bundle Inputs Stuff ---
+        // TODO: this,
+
         // --- Scavenge Inputs Stuff ---
         if (player.JustPressed(Inputs.Scavenge))
             player.OnInputScavengeJustPressed();
@@ -140,13 +141,21 @@ internal static class PlayerHooks
         else if (player.JustReleased(Inputs.Scavenge))
             player.OnInputScavengeJustReleased();
 
-        // --- Crafts Inputs Stuff ---
-        if (player.JustPressed(Inputs.Craft))
-            player.OnInputCraftJustPressed();
-        else if (player.IsPressed(Inputs.Craft))
-            player.WhileInputCraftPressed();
-        else if (player.JustReleased(Inputs.Craft))
-            player.OnInputCraftJustReleased();
+        if (player.CanPhysicalCraft())
+        {
+            // --- Crafts Inputs Stuff ---
+            if (player.JustPressed(Inputs.Craft))
+                player.OnInputCraftJustPressed();
+            else if (player.IsPressed(Inputs.Craft))
+                player.WhileInputCraftPressed();
+            else if (player.JustReleased(Inputs.Craft))
+                player.OnInputCraftJustReleased();
+        }
+
+        if (player.IsPressed(Inputs.AlternateUse))
+            player.WhileInputAlternateUsePressed();
+        else if (player.JustReleased(Inputs.AlternateUse))
+            player.OnInputAlternateUseJustReleased();
 
         orig(player, eu);
     }

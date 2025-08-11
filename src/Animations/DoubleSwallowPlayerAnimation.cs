@@ -1,31 +1,24 @@
 ﻿namespace SlugCrafting.Animations;
 
-public class SwallowCraftPlayerHandAnimation : MRAnimation<Player>
+public class DoubleSwallowPlayerAnimation : SwallowPlayerAnimation
 {
-    protected PlayerGraphics playerGraphics;
-    protected PlayerCraftingData playerCraftingData;
-
-    public override void Start(Player player)
-    {
-        this.playerGraphics = (PlayerGraphics)player.graphicsModule;
-        this.playerCraftingData = player.GetPlayerCraftingData();
-    }
-
-    public override void Stop(Player player)
-    {
-
-    }
-
     public override void Update(Player player, float animationTimer)
     {
-
+        base.Update(player, animationTimer);
     }
 
     public override void GraphicsUpdate(Player player, float animationTimer)
     {
+
+        var playerGraphics = player.graphicsModule as PlayerGraphics;
         foreach (SlugcatHand hand in playerGraphics.hands)
         {
             hand.pos = Vector2.Lerp(hand.pos, playerGraphics.drawPositions[0, 0], animationTimer / 25f);
+        }
+
+        if (animationTimer > 30)
+        {
+            playerGraphics.blink = 5;
         }
 
         float animationProgress = Mathf.InverseLerp(0f, 110f, animationTimer);

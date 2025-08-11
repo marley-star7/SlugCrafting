@@ -11,8 +11,10 @@ sealed class GreenLizardShellHelmetFisob : Fisob
 
     public GreenLizardShellHelmetFisob() : base(SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet)
     {
+        LizardShellHelmetProperties.typesProperties.Add(SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet, properties);
+
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.GreenLizardShellHelmet, parent: MultiplayerUnlocks.SandboxUnlockID.Slugcat, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxID.GreenLizardShellHelmet, parent: MultiplayerUnlocks.SandboxUnlockID.GreenLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
@@ -25,7 +27,7 @@ sealed class GreenLizardShellHelmetFisob : Fisob
             parsedData = new string[2];
         }
 
-        var result = new AbstractLizardShellHelmet(world, SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet, properties, saveData.Pos, saveData.ID);
+        var result = new AbstractLizardShellHelmet(world, SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet, saveData.Pos, saveData.ID);
 
         if (MarColorExtensions.TryParse(parsedData[0], out var shellColorParsed))
             result.shellColor = shellColorParsed;

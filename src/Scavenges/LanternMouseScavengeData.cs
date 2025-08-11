@@ -11,7 +11,7 @@ public class LanternMouseScavengeData : CreatureScavengeData
         ScavengeSpots = new Dictionary<ScavengeSpot, AbstractPhysicalObjectScavenge>()
         {
             {
-                new ScavengeSpot(0, 0, 0), new StringScavenge(mouse)
+                new ScavengeSpot(0, 0, 0), new LanternMouseStringScavenge(mouse)
                 {
                     scavengeTime = 50,
                     handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthScavenge,
