@@ -1,3 +1,4 @@
+
 namespace SlugCrafting;
 
 internal static class PlayerHooks
@@ -210,6 +211,8 @@ internal static class PlayerHooks
         void CheckGraspsForScavengeKnifeOrCreature(in int graspNum)
         {
             var grasp = player.grasps[graspNum];
+            if (grasp == null || grasp.grabbedChunk == null)
+                return;
 
             // CREATURE CHECKING
             // Grabbed chunk takes priority first, because can be shared with item and creature.
@@ -242,6 +245,11 @@ internal static class PlayerHooks
             if (grasp.grabbed != null && grasp.grabbed is Knife)
                 playerSlugCraftingData.knifeGraspUsed = graspNum;
         }
+    }
+
+    internal static bool Player_CanIPickThisUp(On.Player.orig_CanIPickThisUp orig, Player self, PhysicalObject obj)
+    {
+        return orig(self, obj);
     }
 
     //

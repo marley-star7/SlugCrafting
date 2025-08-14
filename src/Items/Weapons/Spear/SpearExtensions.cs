@@ -38,12 +38,6 @@ public class SpearCraftingData
     {
         spearRef = new WeakReference<Spear>(spear);
     }
-    
-    //
-    // ATTACHED ITEM DATA
-    //
-
-    public SporePlant? sporePlant = null;
 }
 
 // TODO: later implement the more complex skewer functionality, for now this works ig.
@@ -59,39 +53,14 @@ public static class SpearExtensions
     // ATTACHED ITEMS UPDATE
     //
 
-    public static void AttachPhysicalObject(this Spear spear, PhysicalObject sporePlant)
+    public static void ImpalePhysicalObject(this Spear spear, PhysicalObject physicalObject)
     {
-        // Cannot have two sticks at once, spore plant must release it's grabs.
-        sporePlant.grabbedBy[0].Release();
-        for (int i = 0; i < sporePlant.abstractPhysicalObject.stuckObjects.Count; i++)
-        {
-            sporePlant.abstractPhysicalObject.stuckObjects[i].Deactivate();
-        }
-        new BundledItemStick(spear.abstractPhysicalObject, sporePlant.abstractPhysicalObject);
+        physicalObject.grabbedBy[0].Release();
+        new AbstractPhysicalObject.ImpaledOnSpearStick(spear.abstractPhysicalObject, physicalObject.abstractPhysicalObject, 0, 0);
 
-        /*
-        var SpearCraftingData = spear.GetSpearCraftingData();
-        if (SpearCraftingData.sporePlant != null)
-        {
-            Plugin.LogMessage($"Spear {spear.abstractSpear.ID} already has a spore plant attached, cannot attach another one.");
-            return; // Already has a spore plant attached.
-        }
-
-        SpearCraftingData.sporePlant = sporePlant;
-        sporePlant.GetSporePlantCraftingData().stuckInSpear = spear;
-        */
-    }
-
-    public static void UnattachSporePlant(this Spear spear)
-    {
-        var SpearCraftingData = spear.GetSpearCraftingData();
-        var sporePlant = SpearCraftingData.sporePlant;
-
-        if (sporePlant == null)
-            return;
-
-        SpearCraftingData.sporePlant = null;
-        sporePlant.GetSporePlantCraftingData().stuckInSpear = null;
+        //-- So player cannot pickup the spore plant from the spear.
+        if (physicalObject is Weapon weapon)
+            weapon.forbiddenToPlayer = 10;
     }
 
     /*
@@ -122,54 +91,50 @@ public static class SpearExtensions
     }
     */
 
-    public static void AttachedSporePlantUpdate(this Spear spear)
+    public static void ImpaledPhysicalObjectUpdate(this Spear spear, bool eu)
     {
         var SpearCraftingData = spear.GetSpearCraftingData();
 
-        if (SpearCraftingData.sporePlant == null)
-            return;
-
-        var sporePlant = SpearCraftingData.sporePlant;
-
-        //
-        // Make spore plant follow the spear.
-        //
-
-        var posAdjustmentUpSpear = spear.rotation * 8f;
-
-        sporePlant.firstChunk.lastPos = spear.firstChunk.lastPos + posAdjustmentUpSpear;
-        sporePlant.firstChunk.pos = spear.firstChunk.pos + posAdjustmentUpSpear;
-
-        sporePlant.rotation = spear.rotation;
-        sporePlant.lastRotation = spear.lastRotation;
-
-        sporePlant.firstChunk.vel = spear.firstChunk.vel;
-
-        //-- So player cannot pickup the spore plant from the spear.
-        sporePlant.forbiddenToPlayer = 10;
-
         //- MS7: I threw this in the update function because for some reason otherwise the collision keeps changing on the spore plant to collide with spear.
         // I would like to do this a nicer way, but too lazy to find out how.
-        sporePlant.CollideWithObjects = false;
-        sporePlant.CollideWithTerrain = false;
-        sporePlant.GoThroughFloors = true;
+        for (int i = 0; i < spear.abstractPhysicalObject.stuckObjects.Count; i++)
+        {
+            if (spear.abstractPhysicalObject.stuckObjects[i] is not AbstractPhysicalObject.ImpaledOnSpearStick impaledObjectStick)
+                continue;
 
-        if (spear.stuckInObject != null || spear.stuckInWall != null)
-        {
-            sporePlant.Pacified = false;
-        }
-        else
-        {
-            sporePlant.Pacified = true;
-        }
+            var impaledObject = impaledObjectStick.B;
+            var realizedImpaledObject = impaledObject.realizedObject;
 
-        if (sporePlant.Pacified)
-        {
-            sporePlant.ChangeCollisionLayer(2);
-        }
-        else
-        {
-            sporePlant.ChangeCollisionLayer(sporePlant.DefaultCollLayer);
+            if (realizedImpaledObject == null)
+                continue;
+
+            var posAdjustmentUpSpear = spear.rotation * 8f;
+
+            realizedImpaledObject.firstChunk.MoveFromOutsideMyUpdate(eu, spear.firstChunk.pos + posAdjustmentUpSpear);
+            realizedImpaledObject.firstChunk.vel *= 0f;
+
+            realizedImpaledObject.CollideWithTerrain = false;
+            realizedImpaledObject.canBeHitByWeapons = false; // Ms7: The godsend line that makes it allll possible, without this your object WILL collide.
+
+            realizedImpaledObject.GoThroughFloors = true;
+
+            if (realizedImpaledObject is Weapon impaledWeapon)
+            {
+                impaledWeapon.forbiddenToPlayer = 1;
+                impaledWeapon.rotation = spear.rotation;
+
+                if (impaledWeapon is SporePlant impaledSporePlant)
+                {
+                    if (spear.stuckInObject != null || spear.stuckInWall != null)
+                    {
+                        impaledSporePlant.Pacified = false;
+                    }
+                    else
+                    {
+                        impaledSporePlant.Pacified = true;
+                    }
+                }
+            }
         }
     }
     

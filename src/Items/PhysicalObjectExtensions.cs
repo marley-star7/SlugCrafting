@@ -21,6 +21,13 @@ public static class PhysicalObjectCraftingExtensions
 
     public static PhysicalObjectCraftingData GetPhysicalObjectCraftingData(this PhysicalObject physicalObject) => craftingDataConditionalWeakTable.GetValue(physicalObject, _ => new PhysicalObjectCraftingData(physicalObject));
 
+    /*
+    public static bool IsInContainer(this PhysicalObject self)
+    {
+        return false;
+    }
+    */
+
     public static void BundledStickUpdate(this PhysicalObject self, bool isEvenUpdate)
     {
         // MS7: To make sure recursion doesn't occur, this only runs on even updates.
@@ -32,16 +39,28 @@ public static class PhysicalObjectCraftingExtensions
         {
             Plugin.LogDebug(self.abstractPhysicalObject.stuckObjects[i].GetType());
 
-            if (self.abstractPhysicalObject.stuckObjects[i] is not BundledItemStick bundledItemStick)
+            if (self.abstractPhysicalObject.stuckObjects[i] is BundledItemStick bundledItemStick)
+            {
+                var realizedStuckObject = bundledItemStick.B.realizedObject;
+
+                if (realizedStuckObject != null && realizedStuckObject.room == self.room)
+                {
+                    realizedStuckObject.firstChunk.MoveFromOutsideMyUpdate(isEvenUpdate, self.firstChunk.pos);
+                    realizedStuckObject.firstChunk.vel *= 0f;
+                }
+            }
+        }
+    }
+
+    public static void UpdateSetRotationForImpaledSpearStick(this PhysicalObject self, ref Vector2? setRotation)
+    {
+        for (int i = 0; i < self.abstractPhysicalObject.stuckObjects.Count; i++)
+        {
+            if (self.abstractPhysicalObject.stuckObjects[i] is not AbstractPhysicalObject.ImpaledOnSpearStick impaledOnSpearStick)
                 continue;
 
-            var realizedStuckObject = bundledItemStick.B.realizedObject;
-
-            if (realizedStuckObject != null && realizedStuckObject.room == self.room)
-            {
-                realizedStuckObject.firstChunk.MoveFromOutsideMyUpdate(isEvenUpdate, self.firstChunk.pos);
-                realizedStuckObject.firstChunk.vel *= 0f;
-            }
+            setRotation = (impaledOnSpearStick.A.realizedObject as Spear).rotation;
+            break;
         }
     }
 

@@ -2,11 +2,13 @@
 
 public class VisibleItemContainerCycler
 {
-    public ItemContainer itemContainer;
+    private ItemContainer _itemContainer;
+
+    public bool targetedItemVisible;
 
     public VisibleItemContainerCycler(ItemContainer itemContainer)
     {
-        this.itemContainer = itemContainer;
+        this._itemContainer = itemContainer;
     }
 
     public int currentlyTargetedSlot;
@@ -15,7 +17,7 @@ public class VisibleItemContainerCycler
     {
         currentlyTargetedSlot++;
 
-        if (currentlyTargetedSlot == itemContainer.slots.Length)
+        if (currentlyTargetedSlot == _itemContainer.slots.Length)
             currentlyTargetedSlot = 0;
     }
 
@@ -24,32 +26,40 @@ public class VisibleItemContainerCycler
         currentlyTargetedSlot--;
 
         if (currentlyTargetedSlot == -1)
-            currentlyTargetedSlot = itemContainer.slots.Length - 1;
+            currentlyTargetedSlot = _itemContainer.slots.Length - 1;
     }
 
     public AbstractPhysicalObject? PopItemFromTargetedSlot()
     {
-        return itemContainer.PopItemFromSlot(currentlyTargetedSlot);
+        return _itemContainer.PopItemFromSlot(currentlyTargetedSlot);
     }
 
-    public void GetItemBundleInTargetedSlot()
+    public bool HasItemInTargetedSlot()
     {
-        itemContainer.GetItemBundleInSlot(currentlyTargetedSlot);
+        return _itemContainer.HasItemInSlot(currentlyTargetedSlot);
     }
 
     public void PutItemInTargetedSlot(AbstractPhysicalObject abstractPhysicalObject)
     {
-        itemContainer.PutItemInSlot(abstractPhysicalObject, currentlyTargetedSlot);
+        if (!HasItemInTargetedSlot())
+        {
+            if (targetedItemVisible)
+                _itemContainer.PutItemInSlot(abstractPhysicalObject, currentlyTargetedSlot);
+            else
+                _itemContainer.PutItemInSlotAndAbstractize(abstractPhysicalObject, currentlyTargetedSlot);
+        }
     }
 
-    public void UpdateShowTargetedSlotItemBundle(Vector2 pos)
+    public void UpdateShowTargetedSlotItem(Vector2 pos, Vector2 rotation)
     {
-        var currentlyTargtedBundle = itemContainer.GetItemBundleInSlot(currentlyTargetedSlot);
+        var currentlyTargtedItem = _itemContainer.GetItemInSlot(currentlyTargetedSlot);
 
-        if (currentlyTargtedBundle == null)
+        if (currentlyTargtedItem == null)
             return;
 
-        if (!currentlyTargtedBundle.isRealized)
-            currentlyTargtedBundle.RealizeInRoom();
+        if (currentlyTargtedItem.realizedObject == null)
+            currentlyTargtedItem.RealizeInRoom();
+
+        currentlyTargtedItem.realizedObject.firstChunk.pos = pos;
     }
 }

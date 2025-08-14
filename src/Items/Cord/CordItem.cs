@@ -51,6 +51,8 @@ public class CordItem : PlayerCarryableItem, IDrawable
     /// </summary>
     public const float cordGraphicsRestSpeed = 0.5f;
 
+    public Vector2[] ropePos = new Vector2[2];
+
     public float swallowed;
 
     public Color cordColor;
@@ -80,17 +82,28 @@ public class CordItem : PlayerCarryableItem, IDrawable
         };
         mRLinePhysics.SetPartsRadius(properties.thickness);
         this.properties = properties;
+
+        /*
+        rope = new Rope(room, firstChunk.pos, firstChunk.pos, properties.thickness)
+        {
+            totalLength = totalCordLength,
+        };
+        */
     }
 
     public override void PlaceInRoom(Room placeRoom)
     {
         base.PlaceInRoom(placeRoom);
+        //rope.room = placeRoom;
+        //rope.Reset();
         mRLinePhysics.ResetParts();
     }
 
     public override void NewRoom(Room newRoom)
     {
         base.NewRoom(newRoom);
+        //rope.room = newRoom;
+        //rope.Reset();
         mRLinePhysics.ResetParts();
     }
 
@@ -211,6 +224,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
                 ChangeMode(Mode.FirstEndTiedAndSecondEndGrabbed);
 
                 mRLinePhysics.forceSetPartPositions[cordEndsMRLinePhysicsPartIndexes[1]] = firstChunk.pos;
+                ropePos[1] = firstChunk.pos;
 
                 if (bodyChunkConnections.Length > 0)
                 {
@@ -285,8 +299,10 @@ public class CordItem : PlayerCarryableItem, IDrawable
                 UntieObject(i);
 
             mRLinePhysics.forceSetPartPositions[cordEndsMRLinePhysicsPartIndexes[i]] = currentTiedObject.realizedObject.bodyChunks[abstractCord.tiedObjectBodyChunkIndexes[i]].pos;
+            ropePos[i] = currentTiedObject.realizedObject.bodyChunks[abstractCord.tiedObjectBodyChunkIndexes[i]].pos;
         }
 
+        //rope.Update(ropePos[0], ropePos[1]);
         mRLinePhysics.Update();
     }
 

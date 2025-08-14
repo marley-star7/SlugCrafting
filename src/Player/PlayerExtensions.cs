@@ -10,6 +10,8 @@ public class PlayerCraftingData
     private float _craftTimer;
 
     // --- Properties ---
+    public Creature.Grasp containerViewGrasp;
+
     public List<Accessory> accessories { get; } = new();
     public Dictionary<Accessory.EquipRegion, Accessory> equipRegionAccessories { get; } = new();
     public float[] accessoriesMass { get; } = new float[2] { 0, 0 };
@@ -119,55 +121,97 @@ public static class PlayerCraftingExtensions
         }
     }
 
-    private static void HandleBundlingLogic(Player player, PlayerCarryableItem primaryItem)
+    private static bool TryPopItemFromContainerCyclerAndGrab(this Player player, VisibleItemContainerCycler containerCycler)
+    {
+        if (!containerCycler.HasItemInTargetedSlot())
+            return false;
+
+        var abstractItemToGrab = containerCycler.PopItemFromTargetedSlot();
+        if (abstractItemToGrab == null)
+            return false;
+
+        if (abstractItemToGrab.realizedObject == null)
+        {
+            abstractItemToGrab.pos = player.coord;
+            player.room.abstractRoom.AddEntity(abstractItemToGrab);
+            abstractItemToGrab.pos = player.abstractCreature.pos;
+            abstractItemToGrab.RealizeInRoom();
+        }
+
+        player.SlugcatGrab(abstractItemToGrab.realizedObject, player.FreeHand());
+
+        return true;
+    }
+
+    private static void HandleBundlingLogic(Player player)
     {
         var secondaryHand = player.grasps[1];
 
-        // Case: Secondary hand is empty → pop from primary's bundle
-        if (secondaryHand == null)
+        // Prioritize primary hand interactions
+        if (player.grasps[0]?.grabbed is PlayerCarryableItem primaryItem)
         {
-            AbstractPhysicalObject? itemToGrab = null;
-            if (primaryItem is IHaveVisibleItemContainerCycler primaryItemContainerCycler && primaryItemContainerCycler.itemContainer.HasItemBundleInSlot(primaryItemContainerCycler.visibleItemContainerCycler.currentlyTargetedSlot))
+            // Case: Secondary hand is empty → pop from primary's bundle
+            if (secondaryHand == null)
             {
-                itemToGrab = primaryItemContainerCycler.visibleItemContainerCycler.PopItemFromTargetedSlot();
-            }
-            else
-            {
+                AbstractPhysicalObject? itemToGrab = null;
+                if (primaryItem is IHaveVisibleItemContainerCycler primaryItemContainerCycler && player.TryPopItemFromContainerCyclerAndGrab(primaryItemContainerCycler.visibleItemContainerCycler))
+                    return;
+
                 var bundle = primaryItem.GetBundle();
                 if (bundle != null)
                     itemToGrab = bundle.PopItem();
+
+                if (itemToGrab != null)
+                {
+                    if (itemToGrab.realizedObject == null)
+                    {
+                        itemToGrab.RealizeInRoom();
+                    }
+
+                    if (itemToGrab.realizedObject != null)
+                        player.SlugcatGrab(itemToGrab.realizedObject, player.FreeHand());
+                }
+
+                return;
             }
 
-            if (itemToGrab.realizedObject == null)
-                itemToGrab.RealizeInRoom();
-
-            if (itemToGrab != null)
-                player.SlugcatGrab(itemToGrab.realizedObject, player.FreeHand());
-
-            return;
+            // Case: Both hands have items
+            if (secondaryHand.grabbed is PlayerCarryableItem secondaryItem)
+            {
+                if (secondaryItem is IHaveVisibleItemContainerCycler secondaryItemContainerCycler)
+                {
+                    secondaryItemContainerCycler.visibleItemContainerCycler.PutItemInTargetedSlot(primaryItem.abstractPhysicalObject);
+                }
+                else if (primaryItem.GetBundle() != null && primaryItem.GetBundle().TryAddItem(primaryItem.abstractPhysicalObject)) { }
+                else
+                {
+                    player.SwitchHands(); // Fallback: Swap items
+                }
+            }
         }
-
-        // Case: Both hands have items
-        if (secondaryHand.grabbed is PlayerCarryableItem secondaryItem)
+        // Case only right hand has item
+        else if (player.grasps[1]?.grabbed is PlayerCarryableItem secondaryItem)
         {
-            if (secondaryItem is IHaveVisibleItemContainerCycler secondaryItemContainerCycler)
-            {
-                secondaryItemContainerCycler.visibleItemContainerCycler.PutItemInTargetedSlot(primaryItem.abstractPhysicalObject);
-            }
-            else if (primaryItem.GetBundle().TryAddItem(primaryItem.abstractPhysicalObject)) { }
-            else
-            {
-                player.SwitchHands(); // Fallback: Swap items
-            }
+            TryPopItemFromSecondaryAndGrab(player, secondaryItem);
         }
     }
 
     private static void TryPopItemFromSecondaryAndGrab(Player player, PlayerCarryableItem secondaryItem)
     {
-        var itemToGrab = secondaryItem.GetBundle().PopItem();
-        if (itemToGrab != null)
+        AbstractPhysicalObject? itemToGrab = null;
+        if (secondaryItem is IHaveVisibleItemContainerCycler secondaryItemContainerCycler && secondaryItemContainerCycler.itemContainer.HasItemInSlot(secondaryItemContainerCycler.visibleItemContainerCycler.currentlyTargetedSlot))
         {
-            player.SlugcatGrab(itemToGrab.realizedObject, player.FreeHand());
+            itemToGrab = secondaryItemContainerCycler.visibleItemContainerCycler.PopItemFromTargetedSlot();
+        }
+        else
+        {
+            /*
+            var itemToGrab = secondaryItem.GetBundle().PopItem();
+            if (itemToGrab != null)
+            {
+                player.SlugcatGrab(itemToGrab.realizedObject, player.FreeHand());
+            }
+            */
         }
     }
 
@@ -181,16 +225,7 @@ public static class PlayerCraftingExtensions
         // Temporary equip logic (for testing)
         TryEquipAccessory(player);
 
-        // Prioritize primary hand interactions
-        if (player.grasps[0]?.grabbed is PlayerCarryableItem primaryItem)
-        {
-            HandleBundlingLogic(player, primaryItem);
-        }
-        // Fallback to secondary hand if primary is empty
-        else if (player.grasps[1]?.grabbed is PlayerCarryableItem secondaryItem)
-        {
-            TryPopItemFromSecondaryAndGrab(player, secondaryItem);
-        }
+        HandleBundlingLogic(player);
     }
 
     internal static void OnInputAlternateUseJustReleased(this Player player)

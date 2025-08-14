@@ -2,30 +2,30 @@
 
 internal static class PlayerCarryableHooks
 {
-    internal static void PlayerCarryableItem_Update(On.PlayerCarryableItem.orig_Update orig, PlayerCarryableItem selfItem, bool eu)
+    internal static void PlayerCarryableItem_Update(On.PlayerCarryableItem.orig_Update orig, PlayerCarryableItem self, bool eu)
     {
-        orig(selfItem, eu);
+        orig(self, eu);
 
-        //
-        // BUNDLE UPDATES
-        //
+        var stackedWithOtherObject = false;
+        for (int i = 0; i < self.abstractPhysicalObject.stuckObjects.Count; i++)
+        {
+            // MS7: The Object impaled / bundled should not pick-uppable, nor should they collide.
+            var currentObjectStick = self.abstractPhysicalObject.stuckObjects[i];
+            if (currentObjectStick.B != self.abstractPhysicalObject || currentObjectStick is not AbstractPhysicalObject.ImpaledOnSpearStick && currentObjectStick is not BundledItemStick)
+                continue;
 
-        var selfItemCraftingData = selfItem.GetPhysicalObjectCraftingData();
-
-        //-- Other bundled items refrence the firsts position.
-        if (selfItemCraftingData.bundle == null || selfItemCraftingData.bundle.firstItem.realizedObject == selfItem)
-            return;
-
-        //
-        // ITEM POSITIONING FOR OTHER THAN FIRST
-        //
-
-        // Should only be able to grab the first item in a bundle.
-        selfItem.forbiddenToPlayer = 1;
-        // If the item is not the first item in the bundle, then update its position to match the first item.
-        var firstItem = selfItemCraftingData.bundle.firstItem;
-        selfItem.firstChunk.pos = firstItem.realizedObject.firstChunk.pos; // TODO: need to add bundle offset.
-        selfItem.firstChunk.vel = firstItem.realizedObject.firstChunk.vel;
+            stackedWithOtherObject = true;
+            break;
+        }
+        if (stackedWithOtherObject)
+        {
+            self.forbiddenToPlayer = 1;
+            self.firstChunk.collideWithObjects = false;
+        }
+        else
+        {
+            self.firstChunk.collideWithObjects = true;
+        }
     }
 
 }

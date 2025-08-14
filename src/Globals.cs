@@ -31,6 +31,7 @@ global using MRCustom.Math;
 global using MRCustom.Animations;
 global using MRCustom.Physics;
 global using MRCustom.Extensions;
+global using MRCustom.Extensions.Creatures;
 global using MRCustom.Contexts;
 
 global using CompartmentalizedCreatureGraphics;

@@ -54,7 +54,9 @@ public static class SlugCraftingEnums
     {
         public static PlayerHandAnimationPlayer.AnimationIndex DoubleSwallow = new PlayerHandAnimationPlayer.AnimationIndex("DoubleSwallow", true);
         public static PlayerHandAnimationPlayer.AnimationIndex SmashIntoCraft = new PlayerHandAnimationPlayer.AnimationIndex("SmashIntoCraft", true);
-        public static PlayerHandAnimationPlayer.AnimationIndex SawBackForthScavenge = new PlayerHandAnimationPlayer.AnimationIndex("SawBackForthScavenge", true);
+
+        public static PlayerHandAnimationPlayer.AnimationIndex SawBackForthUsingLeftHand = new PlayerHandAnimationPlayer.AnimationIndex("SawBackForthUsingLeftHand", true);
+        public static PlayerHandAnimationPlayer.AnimationIndex SawBackForthUsingRightHand = new PlayerHandAnimationPlayer.AnimationIndex("SawBackForthUsingRightHand", true);
 
         public static PlayerHandAnimationPlayer.AnimationIndex BiteStruggleNutLeftHand = new PlayerHandAnimationPlayer.AnimationIndex("BiteStruggleNutLeftHand", true);
         public static PlayerHandAnimationPlayer.AnimationIndex BiteStruggleNutRightHand = new PlayerHandAnimationPlayer.AnimationIndex("BiteStruggleNutRightHand", true);
@@ -73,6 +75,7 @@ public static class SlugCraftingEnums
                 }
             );
 
+            // --- Knap Spear Animations --- //
             var knapSpearFirstHitAnimation = new BashObjectPlayerAnimation()
             {
                 length = 21,
@@ -85,7 +88,6 @@ public static class SlugCraftingEnums
                 fullDescentHandOffsetPos = new Vector2(-8f, -17f),
             };
             knapSpearFirstHitAnimation.AddSignalEvent(BashObjectPlayerAnimation.impactSignalEvent, AnimationSignalEvents.OnKnapSpearImpact);
-
             PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(KnapSpearFirstHit, knapSpearFirstHitAnimation);
 
             var knapSpearAnimation = new BashObjectPlayerAnimation()
@@ -100,7 +102,6 @@ public static class SlugCraftingEnums
                 fullDescentHandOffsetPos = new Vector2(-8f, -17f),
             };
             knapSpearAnimation.AddSignalEvent(BashObjectPlayerAnimation.impactSignalEvent, AnimationSignalEvents.OnKnapSpearImpact);
-
             PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(KnapSpearLoop, knapSpearAnimation);
 
             var knapSpearBreakAnimation = new BashObjectPlayerAnimation()
@@ -115,8 +116,9 @@ public static class SlugCraftingEnums
                 fullDescentHandOffsetPos = new Vector2(-8f, -17f),
             };
             knapSpearBreakAnimation.AddSignalEvent(BashObjectPlayerAnimation.impactSignalEvent, AnimationSignalEvents.OnKnapSpearBreakImpact);
-
             PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(KnapSpearBreak, knapSpearBreakAnimation);
+
+            // --- Bite Struggle --- //
 
             var biteStruggleNutLeftHandAnimation = new BiteStruggleAnimation()
             {
@@ -133,6 +135,21 @@ public static class SlugCraftingEnums
             };
             biteStruggleNutRightHandAnimation.AddSignalEvent(biteStruggleNutRightHandAnimation.animationFinishedSignalEvent, AnimationSignalEvents.OnBiteStruggleNutFinish);
             PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(BiteStruggleNutRightHand, biteStruggleNutRightHandAnimation);
+
+            // --- Saw Animations --- //
+
+            var sawBackForthUsingLeftHandAnimation = new SawBackForthScavengePlayerHandAnimation(1)
+            {
+                length = 60,
+            };
+            PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(SawBackForthUsingLeftHand, sawBackForthUsingLeftHandAnimation);
+
+            var sawBackForthUsingRightHandAnimation = new SawBackForthScavengePlayerHandAnimation(0)
+            {
+                length = 60,
+            };
+            PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(SawBackForthUsingRightHand, sawBackForthUsingRightHandAnimation);
+
             /*
             PlayerHandAnimationPlayer.defaultPlayerHandAnimationLibrary.RegisterAnimation(ImpaleOnSpear,
                 new SmashIntoCraftPlayerHandAnimation()

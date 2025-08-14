@@ -51,6 +51,7 @@ public class LizardShellHelmetItem : PlayerCarryableItem, IDrawable, IEquippable
     public void Equip(Player wearer)
     {
         new LizardShellHelmetAccessory(wearer, lizardShellHelmet);
+        this.Destroy();
     }
 
     public override void Update(bool eu)

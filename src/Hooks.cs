@@ -1,6 +1,4 @@
-﻿using SlugCrafting.Items.Weapons.Spear;
-
-namespace SlugCrafting;
+﻿namespace SlugCrafting;
 
 public static partial class Hooks
 {
@@ -12,6 +10,10 @@ public static partial class Hooks
 
         ApplyPhysicalObjectHooks();
         ApplyPlayerCarryableItemHooks();
+        ApplyLanternHooks();
+        ApplySlimeMoldHooks();
+
+        ApplyWeaponHooks();
         ApplySpearHooks();
         ApplySporePlantHooks();
 
@@ -28,13 +30,17 @@ public static partial class Hooks
 
         RemovePhysicalObjectHooks();
         RemovePlayerCarryableItemHooks();
+        RemoveLanternHooks();
+        RemoveSlimeMoldHooks();
+
+        RemoveWeaponHooks();
         RemoveSpearHooks();
         RemoveSporePlantHooks();
 
         //RemoveSparkHooks();
     }
 
-    // PLAYER HOOKS
+    // Player
 
     private static void ApplyPlayerHooks()
     {
@@ -44,6 +50,7 @@ public static partial class Hooks
         On.Player.EatMeatUpdate += PlayerHooks.Player_EatMeatUpdate;
         On.Player.MaulingUpdate += PlayerHooks.Player_MaulingUpdate;
 
+        On.Player.CanIPickThisUp += PlayerHooks.Player_CanIPickThisUp;
         On.Player.Grabbed += PlayerHooks.Player_Grabbed;
         On.Player.HeavyCarry += PlayerHooks.Player_HeavyCarry;
         On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
@@ -65,6 +72,7 @@ public static partial class Hooks
         On.Player.EatMeatUpdate -= PlayerHooks.Player_EatMeatUpdate;
         On.Player.MaulingUpdate -= PlayerHooks.Player_MaulingUpdate;
 
+        On.Player.CanIPickThisUp -= PlayerHooks.Player_CanIPickThisUp;
         On.Player.Grabbed -= PlayerHooks.Player_Grabbed;
         On.Player.HeavyCarry -= PlayerHooks.Player_HeavyCarry;
         On.Player.TerrainImpact -= PlayerHooks.Player_TerrainImpact;
@@ -78,7 +86,7 @@ public static partial class Hooks
         MREvents.OnPlayerSwitchGrasp -= PlayerHooks.OnPlayerSwitchGrasp;
     }
 
-    // PLAYER GRAPHICS
+    // PlayerGraphics
 
     private static void ApplyPlayerGraphicsHooks()
     {
@@ -98,7 +106,7 @@ public static partial class Hooks
         On.PlayerGraphics.ApplyPalette -= PlayerGraphicsHooks.PlayerGraphics_ApplyPalette;
     }
 
-    // SLUGCAT HAND
+    // SlugcatHand
 
     private static void ApplySlugcatHandHooks()
     {
@@ -112,19 +120,23 @@ public static partial class Hooks
         On.SlugcatHand.Update -= SlugcatHandHooks.SlugcatHand_Update;
     }
 
-    // PHYSICAL OBJECT
+    // PhysicalObject
 
     private static void ApplyPhysicalObjectHooks()
     {
+        On.PhysicalObject.HitByWeapon += PhysicalObjectHooks.PhysicalObject_HitByWeapon;
+        On.PhysicalObject.Collide += PhysicalObjectHooks.PhysicalObject_Collide;
         On.PhysicalObject.Update += PhysicalObjectHooks.PhysicalObject_Update;
     }
 
     private static void RemovePhysicalObjectHooks()
     {
+        On.PhysicalObject.HitByWeapon -= PhysicalObjectHooks.PhysicalObject_HitByWeapon;
+        On.PhysicalObject.Collide -= PhysicalObjectHooks.PhysicalObject_Collide;
         On.PhysicalObject.Update -= PhysicalObjectHooks.PhysicalObject_Update;
     }
 
-    // PLAYER CARRYABLE ITEMS
+    // PlayerCarryableItem
 
     private static void ApplyPlayerCarryableItemHooks()
     {
@@ -135,8 +147,48 @@ public static partial class Hooks
     {
         On.PlayerCarryableItem.Update -= PlayerCarryableHooks.PlayerCarryableItem_Update;
     }
+    
+    // Lantern
 
-    // SPEAR
+    private static void ApplyLanternHooks()
+    {
+        On.Lantern.Update += LanternHooks.Lantern_Update;
+    }
+
+    private static void RemoveLanternHooks()
+    {
+        On.Lantern.Update -= LanternHooks.Lantern_Update;
+    }
+
+    // SlimeMold
+
+    private static void ApplySlimeMoldHooks()
+    {
+        On.SlimeMold.Update += SlimeMoldHooks.SlimeMold_Update;
+    }
+
+    private static void RemoveSlimeMoldHooks()
+    {
+        On.SlimeMold.Update -= SlimeMoldHooks.SlimeMold_Update;
+    }
+
+    private static void ApplyWeaponHooks()
+    {
+        On.Weapon.AddToContainer += WeaponHooks.Weapon_AddToContainer;
+
+        On.Weapon.HitSomething += WeaponHooks.Weapon_HitSomething;
+        On.Weapon.Update += WeaponHooks.Update;
+    }
+
+    private static void RemoveWeaponHooks()
+    {
+        On.Weapon.AddToContainer -= WeaponHooks.Weapon_AddToContainer;
+
+        On.Weapon.HitSomething -= WeaponHooks.Weapon_HitSomething;
+        On.Weapon.Update -= WeaponHooks.Update;
+    }
+
+    // Spear
 
     private static void ApplySpearHooks()
     {
@@ -171,7 +223,7 @@ public static partial class Hooks
         On.UpdatableAndDeletable.Destroy -= SpearHooks.Spear_Destroy;
     }
 
-    // SPORE PLANT
+    // SporePlant
 
     private static void ApplySporePlantHooks()
     {
@@ -187,7 +239,7 @@ public static partial class Hooks
         On.SporePlant.DrawSprites -= SporePlantHooks.SporePlant_DrawSprites;
     }
 
-    // SPARK
+    // Spark
 
     private static void ApplySparkHooks()
     {

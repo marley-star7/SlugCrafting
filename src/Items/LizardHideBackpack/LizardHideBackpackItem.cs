@@ -6,20 +6,20 @@ namespace SlugCrafting.Items;
 public class LizardHideBackpackItem : PlayerCarryableItem, IDrawable, IHaveVisibleItemContainerCycler, IHavePlayerAlternateUse
 {
     public AbstractLizardHideBackpack abstractLizardHideBackpack;
-    public LizardHideBackpack lizardHideBackpack;
+    protected LizardHideBackpack _lizardHideBackpack;
 
     public Vector2 lastRotation;
     public Vector2 rotation;
 
     public Vector2 rotVel;
 
-    public ItemContainer itemContainer => lizardHideBackpack.itemContainer;
-    public VisibleItemContainerCycler visibleItemContainerCycler => lizardHideBackpack.itemContainerCycler;
+    public ItemContainer itemContainer => _lizardHideBackpack.itemContainer;
+    public VisibleItemContainerCycler visibleItemContainerCycler => _lizardHideBackpack.itemContainerCycler;
 
     public LizardHideBackpackItem(AbstractLizardHideBackpack abstractPhysicalObject, LizardHideBackpack lizardHideBackpack) : base(abstractPhysicalObject)
     {
         this.abstractLizardHideBackpack = abstractPhysicalObject;
-        this.lizardHideBackpack = lizardHideBackpack;
+        this._lizardHideBackpack = lizardHideBackpack;
 
         var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
 
@@ -47,6 +47,12 @@ public class LizardHideBackpackItem : PlayerCarryableItem, IDrawable, IHaveVisib
         base.Update(eu);
 
         UpdateRotation();
+
+        if (grabbedBy.Count > 0 && grabbedBy[0].grabber is Player player)
+        {
+            visibleItemContainerCycler.targetedItemVisible = true;
+            visibleItemContainerCycler.UpdateShowTargetedSlotItem(firstChunk.pos, rotation);
+        }
     }
 
     private void StorePreviousStates()

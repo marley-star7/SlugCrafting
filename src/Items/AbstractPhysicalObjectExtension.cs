@@ -6,6 +6,8 @@ public class AbstractPhysicalObjectCraftingData
 
     public AbstractCord? tiedCord;
 
+    public ItemContainer? storedInContainer;
+
     public AbstractPhysicalObjectCraftingData(AbstractPhysicalObject abstractPhysicalObject)
     {
         abstractPhysicalObjectRef = new WeakReference<AbstractPhysicalObject>(abstractPhysicalObject);

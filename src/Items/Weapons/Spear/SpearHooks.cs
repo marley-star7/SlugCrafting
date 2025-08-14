@@ -33,17 +33,17 @@ internal static class SpearHooks
         switch (spearData.sidedMode)
         {
             case SpearCraftingData.SidedMode.SingleSided:
-                NormalUpdate();
+                NormalUpdate(eu);
                 break;
 
             case SpearCraftingData.SidedMode.DoubleSidedFront:
-                NormalUpdate();
+                NormalUpdate(eu);
 
                 var backSpear = spearData.oppositeSidedSpear;
                 backSpear.DoubleSidedSpearBackUpdate(eu);
                 backSpear.DoubleSidedSpearBackSkewerUpdate(eu);
 
-                backSpear.AttachedSporePlantUpdate();
+                backSpear.ImpaledPhysicalObjectUpdate(eu);
 
                 break;
 
@@ -52,10 +52,10 @@ internal static class SpearHooks
                 break;
         }
 
-        void NormalUpdate()
+        void NormalUpdate(bool eu)
         {
             orig(selfSpear, eu);
-            selfSpear.AttachedSporePlantUpdate();
+            selfSpear.ImpaledPhysicalObjectUpdate(eu);
             //selfSpear.BundledStickUpdate(eu);
         }
 
@@ -64,11 +64,6 @@ internal static class SpearHooks
     internal static void Spear_Thrown(On.Spear.orig_Thrown orig, Spear self, Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
     {
         orig(self, thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
-
-        var harpoonRope = new HarpoonRope(self)
-        {
-            grasp = thrownBy.grasps[0],
-        };
     }
 
     internal static void Spear_LodgeInCreature(On.Spear.orig_LodgeInCreature_CollisionResult_bool orig, Spear selfSpear, SharedPhysics.CollisionResult result, bool eu)
@@ -184,10 +179,6 @@ internal static class SpearHooks
         void NormalUpdate()
         {
             orig(self, sLeaser, rCam, timeStacker, camPos);
-            if (spearData.sporePlant != null)
-            {
-                //rCam.MoveObjectToInternalContainer(spearData.sporePlant, self, -1);
-            }
         }
     }
 }

@@ -14,7 +14,7 @@ public class LanternMouseScavengeData : CreatureScavengeData
                 new ScavengeSpot(0, 0, 0), new LanternMouseStringScavenge(mouse)
                 {
                     scavengeTime = 50,
-                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
                     requiresKnife = false, // LanternMouse can scavenge without a knife
                 }
             },

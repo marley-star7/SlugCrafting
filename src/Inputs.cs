@@ -16,7 +16,7 @@ public static class Inputs
             Inputs.AlternateUse = PlayerKeybind.Get(alternateUseId);
 
         if (Inputs.AlternateUse == null)
-            Inputs.AlternateUse = PlayerKeybind.Register(alternateUseId, Plugin.NAME, "AlternateUse", KeyCode.C, KeyCode.Joystick1Button3); // TODO: might not be the right keybind... like at all lol, looking for same as special
+            Inputs.AlternateUse = PlayerKeybind.Register(alternateUseId, Plugin.NAME, "AlternateUse", KeyCode.S, KeyCode.Joystick1Button3); // TODO: might not be the right keybind... like at all lol, looking for same as special
 
         if (Inputs.Scavenge == null)
             Inputs.Scavenge = PlayerKeybind.Get(inputScavengeId);

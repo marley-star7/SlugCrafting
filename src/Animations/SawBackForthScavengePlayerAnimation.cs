@@ -9,6 +9,13 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
     /// </summary>
     public float timeBetweenSaws = 20f;
 
+    public int knifeHand = 0;
+
+    public SawBackForthScavengePlayerHandAnimation(int knifeHand)
+    {
+        this.knifeHand = knifeHand;
+    }
+
     public override void Start(Player player)
     {
 
@@ -33,8 +40,8 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
             return;
 
         // TODO: spawn the sparks and stuff that occasionanly fly off corpse
-        var scavengingChunk = player.grasps[playerCraftingData.creatureGraspUsed].grabbedChunk;
-        var graspedSaw = player.grasps[playerCraftingData.knifeGraspUsed].grabbed;
+        var scavengingChunk = player.grasps[PlayerCraftingExtensions.GetOtherGrasp(knifeHand)].grabbedChunk;
+        var graspedSaw = player.grasps[knifeHand].grabbed;
 
         //
         // SAW MOTION X CALCULATION
@@ -62,17 +69,15 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
         //
 
         var sawMotionPos = new Vector2(sawMotionPosX, sawMotionPosY);
-        playerGraphics.hands[playerCraftingData.knifeGraspUsed].reachingForObject = true;
-        playerGraphics.hands[playerCraftingData.knifeGraspUsed].absoluteHuntPos = sawMotionPos;
+        playerGraphics.hands[knifeHand].reachingForObject = true;
+        playerGraphics.hands[knifeHand].absoluteHuntPos = sawMotionPos;
 
         //
         // SET KNIFE ROTATION
         //
 
-        if (graspedSaw is Knife)
+        if (graspedSaw is Weapon graspedWeapon)
         {
-            var graspedKnife = graspedSaw as Knife;
-
             // Flip if the grabber is facing left.
             float knifeAnimRotationX;
             if (graspedSaw.firstChunk.pos.x < playerGraphics.player.mainBodyChunk.pos.x)
@@ -85,7 +90,7 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
             float knifeAnimRotationY = Custom.DirVec(playerGraphics.player.mainBodyChunk.pos, sawMotionPos).y;
             knifeAnimRotationY += 40 * knifeFlipDir; // Rotate it a bit back to make it look like a saw.
 
-            graspedKnife.setRotation = new Vector2(knifeAnimRotationX, knifeAnimRotationY);
+            graspedWeapon.setRotation = new Vector2(knifeAnimRotationX, knifeAnimRotationY);
         }
     }
 }

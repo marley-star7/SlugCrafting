@@ -13,13 +13,13 @@ public class GreenLizardScavengeData : CreatureScavengeData
             { new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard)
                 {
                     scavengeTime = 200,
-                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthScavenge,
+                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
                 }
             },
             { new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    handAnimation =  SlugCraftingEnums.PlayerHandAnimations.SawBackForthScavenge,
+                    handAnimation =  SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
                 }
             },
         };
