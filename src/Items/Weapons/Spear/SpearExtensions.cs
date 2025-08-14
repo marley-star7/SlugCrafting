@@ -48,7 +48,6 @@ public static class SpearExtensions
 
     public static SpearCraftingData GetSpearCraftingData(this Spear physicalObject) => craftingDataConditionalWeakTable.GetValue(physicalObject, _ => new SpearCraftingData(physicalObject));
 
-
     //
     // ATTACHED ITEMS UPDATE
     //

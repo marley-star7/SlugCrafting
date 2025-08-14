@@ -65,22 +65,18 @@
 		</Reference>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Items\LandMine\" />
-	  <Folder Include="Items\Weapons\SporePlantSpear\" />
-	  <Folder Include="Scripts\" />
-	</ItemGroup>
-
 	<!-- PostBuild Target -->
 	<Target Name="GenerateMod" AfterTargets="PostBuildEvent">
 		<!-- Delete old plugin DLLs -->
 		<ItemGroup>
 			<RemovePlugins Include="../slugcrafting/plugins/*.dll" />
+			<RemovePlugins Include="../slugcrafting/plugins/*.pdb" />
 		</ItemGroup>
 		<Delete Files="@(RemovePlugins)" />
 
 		<!-- Copy main mod DLL to plugins -->
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="../slugcrafting/plugins/" />
+		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="../slugcrafting/plugins/" />
 
 		<!-- Copy dependencies (e.g., System.Text.Json) to libs -->
 		<ItemGroup>

@@ -7,7 +7,7 @@ public static class SlugCraftingEnums
 {
     public static readonly SlugcatStats.Name Crafter = new(nameof(Crafter), false);
 
-    public class AbstractObjectType
+    public static class AbstractObjectType
     {
         public static readonly AbstractPhysicalObject.AbstractObjectType Knife = new("Knife", true);
         
@@ -29,7 +29,7 @@ public static class SlugCraftingEnums
         public static readonly AbstractPhysicalObject.AbstractObjectType KingVultureSpear = new("KingVultureSpear", true);
     }
 
-    public class SandboxID
+    public static class SandboxID
     {
         public static readonly MultiplayerUnlocks.SandboxUnlockID Knife = new("Knife", true);
 
@@ -50,7 +50,7 @@ public static class SlugCraftingEnums
         public static readonly MultiplayerUnlocks.SandboxUnlockID KingVultureSpear = new("KingVultureSpear", true);
     }
 
-    public class PlayerHandAnimations
+    public static class PlayerHandAnimations
     {
         public static PlayerHandAnimationPlayer.AnimationIndex DoubleSwallow = new PlayerHandAnimationPlayer.AnimationIndex("DoubleSwallow", true);
         public static PlayerHandAnimationPlayer.AnimationIndex SmashIntoCraft = new PlayerHandAnimationPlayer.AnimationIndex("SmashIntoCraft", true);
@@ -161,5 +161,24 @@ public static class SlugCraftingEnums
             );
             */
         }
+    }
+
+    public static class CraftAnimationSets
+    {
+        public static Craft.Animation[] DefaultSawBackForthUsingLeftHandAnimations = new Craft.Animation[]
+        {
+            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand)
+        };
+        public static Craft.Animation[] DefaultSawBackForthUsingRightHandAnimations = new Craft.Animation[]
+        {
+            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingRightHand)
+        };
+    }
+
+    public static class CraftIngredients
+    {
+        public static CraftIngredient Knife = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Knife);
+
+        public static CraftIngredient GreenLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.GreenLizard);
     }
 }

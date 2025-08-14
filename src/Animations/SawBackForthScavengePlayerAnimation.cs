@@ -50,7 +50,7 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
         var sawMotionPosX = scavengingChunk.pos.x;
 
         // Saw will align back and forth from center based off the scavenge timer.
-        var sawAlignmentFromCenterX = MarMathf.InverseLerpNegToPos(0, timeBetweenSaws, playerCraftingData.scavengeTimer %= timeBetweenSaws);
+        var sawAlignmentFromCenterX = MarMathf.InverseLerpNegToPos(0, timeBetweenSaws, animationTimer %= timeBetweenSaws);
 
         // Saw motion X then moves back and forth the chunks rad based off timer.
         sawMotionPosX += sawAlignmentFromCenterX * scavengingChunk.rad;
@@ -61,7 +61,7 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
 
         var sawMotionPosY = scavengingChunk.pos.y + scavengingChunk.rad; // Starts at top of body chunk
 
-        var sawProgress = Mathf.InverseLerp(0, playerCraftingData.currentTargetedScavenge.scavengeTime, playerCraftingData.scavengeTimer);
+        var sawProgress = Mathf.InverseLerp(0, length, animationTimer);
         sawMotionPosY -= sawProgress * scavengingChunk.rad * 2; // Slowly moves down to bottom of body chunk.
 
         //

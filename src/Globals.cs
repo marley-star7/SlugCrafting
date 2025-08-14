@@ -48,7 +48,6 @@ global using Fisobs.Sandbox;
 global using SlugCrafting;
 global using SlugCrafting.Core;
 global using SlugCrafting.CosmeticSprites;
-global using SlugCrafting.Scavenges;
 global using SlugCrafting.Crafts;
 global using SlugCrafting.Creatures;
 global using SlugCrafting.Items;

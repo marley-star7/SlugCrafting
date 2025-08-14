@@ -1,7 +1,6 @@
 ﻿using RWCustom;
 using UnityEngine;
 
-using SlugCrafting.Scavenges;
 using SlugCrafting.Crafts;
 using SlugCrafting.Items;
 
@@ -19,7 +18,7 @@ public static partial class Content
     /// Second is the non-dominant (or secondary) ingredient.
     /// A dictionary is used for optimized lookup
     /// </summary>
-    public static readonly Dictionary<(AbstractPhysicalObject.AbstractObjectType, AbstractPhysicalObject.AbstractObjectType), Craft> Crafts = new();
+    public static readonly Dictionary<(CraftIngredient?, CraftIngredient?), Craft> Crafts = new();
 
     /// <summary>
     /// Register a new craft to the crafting system.
@@ -32,18 +31,15 @@ public static partial class Content
     /// <param name="newCraft"></param>
     public static void RegisterCraft(Craft newCraft)
     {
-        var ingredientTuple = (newCraft.primaryIngredient.type, newCraft.secondaryIngredient.type);
+        var ingredientTuple = (newCraft.primaryIngredient, newCraft.secondaryIngredient);
 
         if (Crafts.ContainsKey(ingredientTuple))
             Crafts[ingredientTuple] = newCraft;
         else
             Crafts.Add(ingredientTuple, newCraft);
 
-        var craftPrimaryIngredient = new CraftIngredient(newCraft.primaryIngredient.type);
-        var craftSecondaryIngredient = new CraftIngredient(newCraft.secondaryIngredient.type);
-
-        RegisterCraftUsingIngredient(craftPrimaryIngredient, newCraft);
-        RegisterCraftUsingIngredient(craftSecondaryIngredient, newCraft);
+        RegisterCraftUsingIngredient(newCraft.primaryIngredient, newCraft);
+        RegisterCraftUsingIngredient(newCraft.secondaryIngredient, newCraft);
     }
 
     internal static void RegisterCraftUsingIngredient(CraftIngredient craftIngredient, Craft craft)
@@ -63,7 +59,7 @@ public static partial class Content
     /// The dynamic dictionary of crafts using a specific object type,
     /// Important saved and updated to improve performance during runtime real time questionaires for crafting.
     /// </summary>
-    public static readonly Dictionary<AbstractPhysicalObject.AbstractObjectType, HashSet<ShelterCraft>> ShelterCraftsUsingObjectType = new();
+    public static readonly Dictionary<CraftIngredient, HashSet<ShelterCraft>> ShelterCraftsUsingObjectType = new();
 
     /// <summary>
     /// Register a new craft to the crafting system.
@@ -80,7 +76,7 @@ public static partial class Content
         foreach (var ingredient in newCraft.ingredients)
         {
             // Search for the ingredient type in dictionary
-            if (ShelterCraftsUsingObjectType.TryGetValue(ingredient.type, out HashSet<ShelterCraft> crafts))
+            if (ShelterCraftsUsingObjectType.TryGetValue(ingredient, out HashSet<ShelterCraft> crafts))
             {
                 if (!crafts.Contains(newCraft))
                     crafts.Add(newCraft);
@@ -88,7 +84,7 @@ public static partial class Content
             else
             {
                 // If the ingredient type is not found, create a new Hashet for that ingredient containing the craft, and add it to the dictionary.
-                ShelterCraftsUsingObjectType[ingredient.type] = crafts = new HashSet<ShelterCraft>()
+                ShelterCraftsUsingObjectType[ingredient] = crafts = new HashSet<ShelterCraft>()
                 {
                     newCraft
                 };
@@ -101,7 +97,7 @@ public static partial class Content
         for (int i = 0; i < craft.ingredients.Length; i++)
         {
             // Check if the ingredient type is in the object types.
-            if (craft.ingredients[i].type == objectType)
+            if (craft.ingredients[i].objectType == objectType)
             {
                 return true;
             }
@@ -122,18 +118,7 @@ public static partial class Content
         return true;
     }
 
-    public static HashSet<ShelterCraft> GetShelterCraftsForObjectType(AbstractPhysicalObject.AbstractObjectType objectType)
-    {
-        if (ShelterCraftsUsingObjectType.TryGetValue(objectType, out HashSet<ShelterCraft> crafts))
-        {
-            return crafts;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
+    /*
     public static HashSet<ShelterCraft> GetSheterCraftsForObjectTypes(AbstractPhysicalObject.AbstractObjectType[] objectTypes)
     {
         var craftsContainingAllObjectTypes = new HashSet<ShelterCraft>();
@@ -178,11 +163,13 @@ public static partial class Content
 
         return craftsContainingAllObjectTypes;
     }
+    */
 
     //
-    // SCAVENGING
+    // Ms7: Old functionality when scavenges were still functionally seperate from crafts.
     //
 
+    /*
     public static readonly Dictionary<CreatureTemplate.Type, Type> CreatureScavengeTypes = new Dictionary<CreatureTemplate.Type, Type>();
 
     /// <summary>
@@ -225,6 +212,7 @@ public static partial class Content
         Plugin.LogDebug($"No scavenge data registered for creature type: {creatureType}");
         return null;
     }
+    */
 
     //
     // ITEM BUNDLES
@@ -236,4 +224,30 @@ public static partial class Content
     {
         ItemsBundleProperties[type] = properties;
     }
+
+    //
+    // HELPER FUNCTIONS
+    //
+
+    // -- Ms7: DISABLED! Do it manually, because abstractobject construction can sometimes change between types.
+    /*
+    public static Action<Creature, PhysicalObject, PhysicalObject> CreateConsumeBothItemsRealizeObjectTypeCraftResult(
+    AbstractPhysicalObject.AbstractObjectType objectType)
+    {
+        return (crafter, primary, secondary) =>
+        {
+            crafter.RemoveGrabbedObject(0);
+            crafter.RemoveGrabbedObject(1);
+
+            var player = (crafter as Player);
+            player.RealizeAndGrab(new AbstractPhysicalObject(
+                crafter.room.world,
+                objectType,
+                null,
+                crafter.coord,
+                crafter.room.game.GetNewID()
+            ));
+        };
+    }
+    */
 }

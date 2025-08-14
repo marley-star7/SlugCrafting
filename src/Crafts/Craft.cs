@@ -7,14 +7,22 @@ namespace SlugCrafting.Crafts
     {
         /// <summary>
         /// The AbstractObjectType of the ingredient.
+        /// Set as AbstractObjectType.Creature if you wish to make the ingredient for a creature.
         /// </summary>
-        public AbstractPhysicalObject.AbstractObjectType type;
+        public AbstractPhysicalObject.AbstractObjectType objectType;
+        /// <summary>
+        /// If this craft ingredient is a creature, the type of that creature.
+        /// </summary>
+        public CreatureTemplate.Type? creatureType;
+        /// <summary>
+        /// The required body chunk to hold for the craft, useful for specifying in creatures.
+        /// </summary>
+        public int bodyChunkIndex;
 
-        public CraftIngredient(
-            AbstractPhysicalObject.AbstractObjectType type
-        )
+        public CraftIngredient(AbstractPhysicalObject.AbstractObjectType objectType, int bodyChunkIndex = 0, CreatureTemplate.Type creatureType = null)
         {
-            this.type = type;
+            this.objectType = objectType;
+            this.creatureType = creatureType;
         }
     }
 

@@ -46,16 +46,4 @@ public static partial class Content
             )
         );
     }
-
-    //
-    //-- SCAVENGES
-    //
-
-    internal static void RegisterSlugCraftingScavenges()
-    {
-        //-- SCAVENGE DATA
-        SlugCrafting.Core.Content.RegisterScavengeData(CreatureTemplate.Type.GreenLizard, typeof(GreenLizardScavengeData));
-        SlugCrafting.Core.Content.RegisterScavengeData(CreatureTemplate.Type.PinkLizard, typeof(PinkLizardScavengeData));
-        SlugCrafting.Core.Content.RegisterScavengeData(CreatureTemplate.Type.LanternMouse, typeof(LanternMouseScavengeData));
-    }
 }

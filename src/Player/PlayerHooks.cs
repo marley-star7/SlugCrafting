@@ -134,15 +134,6 @@ internal static class PlayerHooks
         }
 
         // --- Bundle Inputs Stuff ---
-        // TODO: this,
-
-        // --- Scavenge Inputs Stuff ---
-        if (player.JustPressed(Inputs.Scavenge))
-            player.ScavengeInputStart();
-        else if (player.IsPressed(Inputs.Scavenge))
-            player.ScavengeInputUpdate();
-        else if (player.JustReleased(Inputs.Scavenge))
-            player.ScavengeInputRelease();
 
         if (player.CanPhysicalCraft())
         {
@@ -172,7 +163,6 @@ internal static class PlayerHooks
         // Cancel the physical craft if we have one.
         player.CancelPhysicalCraft();
         player.CheckGraspsForPossiblePhysicalCraft();
-        player.CheckGraspsForPossibleScavenge();
     }
 
     internal static void OnPlayerReleaseGrasp(this Player player, int grasp)
@@ -182,7 +172,6 @@ internal static class PlayerHooks
         if (grasp <= 1) // Only check for the first two grasps for a release, if so there is obviously no possible craft currently.
         {
             playerSlugCraftingData.currentPossibleCraft = null;
-            playerSlugCraftingData.currentTargetedScavenge = null;
         }
 
         // Update the current possible crafts
@@ -191,13 +180,7 @@ internal static class PlayerHooks
 
     internal static void OnPlayerGrab(Player player, PhysicalObject grabbedObj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
     {
-        var playerSlugCraftingData = player.GetPlayerCraftingData();
-
-        player.CheckGraspsForPossibleScavenge();
-
-        // If the other hand is not empty, check for possible craft.
-        if (player.grasps[MarPlayerExtensions.GetOtherGrasp(graspUsed)] != null)
-            playerSlugCraftingData.currentPossibleCraft = player.GetGraspsPhysicalCraft();
+        player.CheckGraspsForPossiblePhysicalCraft();
     }
 
     internal static bool Player_CanIPickThisUp(On.Player.orig_CanIPickThisUp orig, Player self, PhysicalObject obj)
