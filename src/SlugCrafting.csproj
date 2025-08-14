@@ -65,11 +65,6 @@
 		</Reference>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Items\LandMine\" />
-	  <Folder Include="Scripts\" />
-	</ItemGroup>
-
 	<!-- PostBuild Target -->
 	<Target Name="GenerateMod" AfterTargets="PostBuildEvent">
 		<!-- Delete old plugin DLLs -->

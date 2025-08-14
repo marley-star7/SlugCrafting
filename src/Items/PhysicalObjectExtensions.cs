@@ -37,8 +37,6 @@ public static class PhysicalObjectCraftingExtensions
 
         for (int i = 0; i < self.abstractPhysicalObject.stuckObjects.Count; i++)
         {
-            Plugin.LogDebug(self.abstractPhysicalObject.stuckObjects[i].GetType());
-
             if (self.abstractPhysicalObject.stuckObjects[i] is BundledItemStick bundledItemStick)
             {
                 var realizedStuckObject = bundledItemStick.B.realizedObject;

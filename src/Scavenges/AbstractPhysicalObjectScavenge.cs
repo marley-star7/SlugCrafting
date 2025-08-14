@@ -34,7 +34,8 @@ public abstract class AbstractPhysicalObjectScavenge
 
     public bool requiresKnife = true;
 
-    public PlayerHandAnimationPlayer.AnimationIndex handAnimation;
+    public PlayerHandAnimationPlayer.AnimationIndex animationLeftHand;
+    public PlayerHandAnimationPlayer.AnimationIndex animationRightHand;
 
     public AbstractPhysicalObjectScavenge(PhysicalObject owner)
     {
@@ -49,4 +50,14 @@ public abstract class AbstractPhysicalObjectScavenge
     /// </summary>
     /// <returns></returns>
     public abstract AbstractPhysicalObject Scavenge();
+
+    /// <summary>
+    /// Returns the animation designated to a creature being in a specific grasp index.
+    /// </summary>
+    /// <param name="graspIndex"></param>
+    /// <returns></returns>
+    public PlayerHandAnimationPlayer.AnimationIndex GetAnimationForCreatureInGraspIndex(int graspIndex)
+    {
+        return graspIndex == 1 ? animationLeftHand : animationRightHand;
+    }
 }

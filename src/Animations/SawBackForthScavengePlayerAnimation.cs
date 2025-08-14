@@ -40,7 +40,7 @@ public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
             return;
 
         // TODO: spawn the sparks and stuff that occasionanly fly off corpse
-        var scavengingChunk = player.grasps[PlayerCraftingExtensions.GetOtherGrasp(knifeHand)].grabbedChunk;
+        var scavengingChunk = player.grasps[MarPlayerExtensions.GetOtherGrasp(knifeHand)].grabbedChunk;
         var graspedSaw = player.grasps[knifeHand].grabbed;
 
         //

@@ -11,6 +11,8 @@ public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
     protected PlayerGraphics playerGraphics;
     protected PlayerCraftingData playerCraftingData;
 
+    public int knifeGraspIndex;
+
     public override void Start(Player player)
     {
         this.playerGraphics = (PlayerGraphics)player.graphicsModule;
@@ -65,8 +67,8 @@ public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
         //
 
         var sawMotionPos = new Vector2(sawMotionPosX, sawMotionPosY);
-        playerGraphics.hands[playerCraftingData.knifeGraspUsed].reachingForObject = true;
-        playerGraphics.hands[playerCraftingData.knifeGraspUsed].absoluteHuntPos = sawMotionPos;
+        playerGraphics.hands[knifeGraspIndex].reachingForObject = true;
+        playerGraphics.hands[knifeGraspIndex].absoluteHuntPos = sawMotionPos;
 
         //
         // SET KNIFE ROTATION

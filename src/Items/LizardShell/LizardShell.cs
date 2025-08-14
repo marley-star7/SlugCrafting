@@ -15,7 +15,6 @@ namespace SlugCrafting.Items
 
         public AbstractLizardShell abstractLizardShell;
         public LizardShellColorGraphics lizardShellColorGraphics;
-        public RotationStrategy RotationStrategy;
 
         public Vector2 rotation;
         public Vector2 lastRotation;

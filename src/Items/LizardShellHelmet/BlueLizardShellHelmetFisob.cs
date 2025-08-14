@@ -2,6 +2,7 @@
 using Fisobs.Items;
 using Fisobs.Properties;
 using Fisobs.Sandbox;
+using MRCustom.Json;
 
 namespace SlugCrafting.Items;
 
@@ -29,7 +30,7 @@ sealed class BlueLizardShellHelmetFisob : Fisob
 
         var result = new AbstractLizardShellHelmet(world, SlugCraftingEnums.AbstractObjectType.BlueLizardShellHelmet, saveData.Pos, saveData.ID);
 
-        if (MarColorExtensions.TryParse(parsedData[0], out var shellColorParsed))
+        if (MRJson.TryParseColor(parsedData[0], out var shellColorParsed))
             result.shellColor = shellColorParsed;
 
         if (float.TryParse(parsedData[0], out var healthParsed))

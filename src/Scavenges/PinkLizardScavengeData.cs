@@ -14,21 +14,24 @@ public class PinkLizardScavengeData : CreatureScavengeData
             { new ScavengeSpot(0, 0, 0), new LizardShellScavenge(lizard)
                 {
                     scavengeTime = 200,
-                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
+                    animationLeftHand = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
+                    animationRightHand = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingRightHand,
                 }
             },
             // Body Index is 1
             { new ScavengeSpot(1, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
+                    animationLeftHand = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
+                    animationRightHand = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingRightHand,
                 }
             },
             // Body Index is 1
             { new ScavengeSpot(2, 0, 0), new LizardHideScavenge(lizard)
                 {
                     scavengeTime = 100,
-                    handAnimation = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
+                    animationLeftHand = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand,
+                    animationRightHand = SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingRightHand,
                 }
             },
         };

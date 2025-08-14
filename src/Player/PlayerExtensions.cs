@@ -5,42 +5,43 @@ namespace SlugCrafting;
 
 public class PlayerCraftingData
 {
-    // --- Fields ---
-    private float _scavengeTimer;
-    private float _craftTimer;
-
-    // --- Properties ---
     public Creature.Grasp containerViewGrasp;
 
-    public List<Accessory> accessories { get; } = new();
-    public Dictionary<Accessory.EquipRegion, Accessory> equipRegionAccessories { get; } = new();
-    public float[] accessoriesMass { get; } = new float[2] { 0, 0 };
-    public ScavengeSpot? currentTargetedScavengeSpot { get; set; }
-    public AbstractPhysicalObjectScavenge? currentTargetedScavenge { get; set; }
-    public Craft? currentPossibleCraft { get; set; }
-    public WeakReference<Player> playerRef { get; }
+    private Dictionary<Accessory.EquipRegion, Accessory> _equipRegionAccessories = new();
+    public Dictionary<Accessory.EquipRegion, Accessory> equipRegionAccessories { get => _equipRegionAccessories; }
 
+    public List<Accessory> accessories { get; } = new();
+
+    public float[] accessoriesMass { get; } = new float[2] { 0, 0 };
+
+    public ScavengeSpot? currentTargetedScavengeSpot { get; set; }
+
+    public AbstractPhysicalObjectScavenge? currentTargetedScavenge { get; set; }
+
+    public Craft? currentPossibleCraft { get; set; }
+
+    private float _scavengeTimer;
     public float scavengeTimer
     {
         get => _scavengeTimer;
         set => _scavengeTimer = value;
     }
 
+    private float _craftTimer;
     public float craftTimer
     {
         get => _craftTimer;
         set => _craftTimer = value;
     }
 
+    public int craftAnimationIndex = 0;
+    public int craftAnimationsTotalTimesLooped = 0;
+
     public bool isPhysicalCrafting => _craftTimer > 0;
 
     public bool physicalCraftingEnabled = false;
 
-    public int craftAnimationIndex = 0;
-    public int craftAnimationsTotalTimesLooped = 0;
-
-    public int knifeGraspUsed = -1;
-    public int creatureGraspUsed = -1;
+    public WeakReference<Player> playerRef { get; }
 
     public PlayerCraftingData(Player player)
     {
@@ -91,9 +92,6 @@ public static class PlayerCraftingExtensions
     public static bool CanPhysicalCraft(this Player player) => player.GetPlayerCraftingData().physicalCraftingEnabled;
 
     // --- Grasping Utilities ---
-    public static int GetOtherGrasp(int grasp) =>
-        grasp == 0 ? 1 : 0;
-
     public static Craft? GetGraspsPhysicalCraft(this Player player)
     {
         var craftingData = player.GetPlayerCraftingData();
@@ -234,7 +232,7 @@ public static class PlayerCraftingExtensions
     }
 
     // --- Crafting Logic ---
-    private static bool CanPerformCraft(Player self, Craft craft)
+    public static bool CanPerformCraftInCurrentAnimation(this Player self, Craft craft)
     {
         if (craft.bodyModeRequirement == Craft.BodyModeRequirements.Stand && !(self.bodyMode == Player.BodyModeIndex.Stand || self.bodyMode == Player.BodyModeIndex.Default))
             return false;
@@ -279,7 +277,7 @@ public static class PlayerCraftingExtensions
         player.GetPlayerCraftingData().currentPossibleCraft = player.GetGraspsPhysicalCraft();
     }
 
-    internal static void OnInputCraftJustPressed(this Player player)
+    internal static void CraftInputStart(this Player player)
     {
         player.CheckGraspsForPossiblePhysicalCraft();
 
@@ -294,7 +292,7 @@ public static class PlayerCraftingExtensions
         animationPlayer.Play(currentAnim);
     }
 
-    internal static void WhileInputCraftPressed(this Player player)
+    internal static void CraftInputUpdate(this Player player)
     {
         var sCData = player.GetPlayerCraftingData();
         var animationPlayer = player.GetHandAnimationPlayer();
@@ -304,26 +302,25 @@ public static class PlayerCraftingExtensions
 
         var craft = sCData.currentPossibleCraft.Value;
 
-        if (CanPerformCraft(player, craft))
+        if (player.CanPerformCraftInCurrentAnimation(craft))
         {
             player.swallowAndRegurgitateCounter = 0;
             sCData.craftTimer++;
         }
     }
 
-    internal static void OnInputCraftJustReleased(this Player player)
+    internal static void CraftInputRelease(this Player self)
     {
-        var sCData = player.GetPlayerCraftingData();
-        if (sCData.currentPossibleCraft == null) 
+        var selfCData = self.GetPlayerCraftingData();
+        if (selfCData.currentPossibleCraft == null) 
                 return;
 
-        var animationPlayer = player.GetHandAnimationPlayer();
-        var craft = sCData.currentPossibleCraft.Value;
-        var wouldBeAnim = craft.animations[sCData.craftAnimationIndex].animation;
-
+        var animationPlayer = self.GetHandAnimationPlayer();
+        var craft = selfCData.currentPossibleCraft.Value;
+        var wouldBeAnim = craft.animations[selfCData.craftAnimationIndex].animation;
 
         animationPlayer.Stop(wouldBeAnim);
-        player.PhysicalCraftEnded();
+        self.PhysicalCraftEnded();
     }
 
     public static void CompletePhysicalCraft(this Player self, Craft craft)
@@ -353,59 +350,144 @@ public static class PlayerCraftingExtensions
         self.PhysicalCraftEnded();
     }
 
+    // TODO: can probably just make scavenges crafts internally, i mean they function the same way lol, and this way you can craft with a creature.
     // --- Scavenging ---
-    internal static void OnInputScavengeJustPressed(this Player self)
+    public static void CheckGraspsForPossibleScavenge(this Player self)
     {
+        var selfSCData = self.GetPlayerCraftingData();
 
-    }
-
-    internal static void WhileInputScavengePressed(this Player self)
-    {
-        var playerSCData = self.GetPlayerCraftingData();
-
-        if (playerSCData.creatureGraspUsed != -1)
+        // MS7: Check primary hand first.
+        for (int graspNum = 0; graspNum <= 1; graspNum++)
         {
-            var currentScavenge = playerSCData.currentTargetedScavenge;
+            var grasp = self.grasps[graspNum];
+            if (grasp == null || grasp.grabbedChunk == null)
+                continue;
 
-            if (currentScavenge != null
-                && currentScavenge.canScavenge == true
-                && (!currentScavenge.requiresKnife || playerSCData.knifeGraspUsed != -1)
-                )
+            if (grasp.grabbedChunk.owner is Creature)
             {
-                playerSCData.scavengeTimer++;
+                // Get the first available scavenge spot from the grabbed chunk as the currently targeted scavenge.
+                var creatureScavengeData = ((Creature)grasp.grabbed).GetScavengeData();
+                if (creatureScavengeData == null)
+                    continue;
 
-                // Cooldown before scavenge starts.
-                if (playerSCData.scavengeTimer < 10)
-                    return;
+                var scavengeSpot = new ScavengeSpot(grasp.grabbedChunk.index, 0, 0);
+                var scavenge = creatureScavengeData.GetScavenge(scavengeSpot);
 
-                currentScavenge.scavengeTime--;
+                // If the grabbed scavenging spot or already scavenged, then search for one that isn't.
+                if (scavengeSpot == null || scavenge.canScavenge == false)
+                    creatureScavengeData.GetNearestValidScavenge(scavengeSpot);
 
-                if (currentScavenge.scavengeTime <= 0)
-                    CompleteScavenge(self, currentScavenge);
+                // DISABLED
+                // If we found a new valid scavenge spot diff from orig, grab that one's chunk instead.
+                // self.grasps[graspedPhysicalObjectGraspIndex].chunkGrabbed = scavengeSpot.bodyChunkIndex;
+                //
+
+                selfSCData.currentTargetedScavenge = scavenge;
             }
         }
     }
 
-    internal static void OnInputScavengeJustReleased(this Player self)
+    /// <summary>
+    /// Returns the first grasp index holding a knife, prioritizes primary hand first.
+    /// Returns -1 if no grasp was found.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public static int GetKnifeGraspIndex(this Player player)
     {
-        var playerSCData = self.GetPlayerCraftingData();
-        playerSCData.scavengeTimer = 0; // Reset the timer to craft if not pressing craft.
+        for (int graspNum = 0; graspNum <= 1; graspNum++)
+        {
+            if (player.grasps[graspNum] == null
+                || player.grasps[graspNum].grabbed is not Knife graspedKnife)
+                continue;
+
+            return graspNum;
+        }
+
+        return -1;
     }
 
-    public static void CompleteScavenge(this Player self, AbstractPhysicalObjectScavenge scavenge)
+    /// <summary>
+    /// Returns the first grasp holding a knife, prioritizes primary hand first.
+    /// Returns null if no grasp was found.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public static Creature.Grasp GetKnifeGrasp(this Player player)
     {
-        var playerSlugCraftingData = self.GetPlayerCraftingData();
+        int knifeGrasp = GetKnifeGraspIndex(player);
+        if (knifeGrasp == -1)
+            return null;
+        else
+            return player.grasps[knifeGrasp];
+    }
+
+    public static bool CanPerformScavengeInCurrentAnimation(this Player player, AbstractPhysicalObjectScavenge scavenge)
+    {
+        return true;
+    }
+
+    internal static void ScavengeInputStart(this Player player)
+    {
+        var playerSCData = player.GetPlayerCraftingData();
+
+        var currentScavenge = playerSCData.currentTargetedScavenge;
+        var knifeGraspIndex = player.GetKnifeGraspIndex();
+
+        if (currentScavenge == null
+            || currentScavenge.canScavenge == false
+            || (currentScavenge.requiresKnife && knifeGraspIndex != -1)
+            )
+            return;
+
+        var creatureGraspIndex = MarPlayerExtensions.GetOtherGrasp(knifeGraspIndex);
+        var scavengeCurrentAnimationIndex = currentScavenge.GetAnimationForCreatureInGraspIndex(creatureGraspIndex);
+
+        player.GetHandAnimationPlayer().Play(scavengeCurrentAnimationIndex);
+    }
+
+    internal static void ScavengeInputUpdate(this Player self)
+    {
+        var playerSCData = self.GetPlayerCraftingData();
+        var currentScavenge = playerSCData.currentTargetedScavenge;
+
+        if (currentScavenge == null)
+            return;
+
+        playerSCData.scavengeTimer++;
+
+        if (currentScavenge.scavengeTime <= 0)
+            CompleteScavenge(self, currentScavenge);
+    }
+
+    internal static void ScavengeInputRelease(this Player self)
+    {
+        var playerSCData = self.GetPlayerCraftingData();
+
+        if (playerSCData.currentTargetedScavenge == null)
+            return;
+
+        playerSCData.scavengeTimer = 0; // Reset the timer to craft if not pressing craft.
+
+        var creatureGraspIndex = MarPlayerExtensions.GetOtherGrasp(self.GetKnifeGraspIndex());
+        var scavengeCurrentAnimationIndex = playerSCData.currentTargetedScavenge.GetAnimationForCreatureInGraspIndex(creatureGraspIndex);
+        self.GetHandAnimationPlayer().Stop(scavengeCurrentAnimationIndex);
+    }
+
+    public static void CompleteScavenge(this Player player, AbstractPhysicalObjectScavenge scavenge)
+    {
+        var playerSlugCraftingData = player.GetPlayerCraftingData();
 
         AbstractPhysicalObject scavengedAbstractObject = scavenge.Scavenge();
 
-        // GRAB OBJECT IF WE SCAVENGED ANYTHING
+        // Grab object if we scavenged anything.
         if (scavengedAbstractObject != null)
         {
-            self.room.abstractRoom.AddEntity(scavengedAbstractObject);
+            player.room.abstractRoom.AddEntity(scavengedAbstractObject);
             scavengedAbstractObject.RealizeInRoom();
 
-            self.ReleaseGrasp(playerSlugCraftingData.creatureGraspUsed);
-            self.SlugcatGrab(scavengedAbstractObject.realizedObject, self.FreeHand());
+            player.ReleaseGrasp(MarPlayerExtensions.GetOtherGrasp(player.GetKnifeGraspIndex()));
+            player.SlugcatGrab(scavengedAbstractObject.realizedObject, player.FreeHand());
             playerSlugCraftingData.scavengeTimer = 0; // Reset the timer
         }
     }

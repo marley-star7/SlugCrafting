@@ -1,4 +1,6 @@
 
+using System.Security.Policy;
+
 namespace SlugCrafting;
 
 internal static class PlayerHooks
@@ -136,21 +138,21 @@ internal static class PlayerHooks
 
         // --- Scavenge Inputs Stuff ---
         if (player.JustPressed(Inputs.Scavenge))
-            player.OnInputScavengeJustPressed();
+            player.ScavengeInputStart();
         else if (player.IsPressed(Inputs.Scavenge))
-            player.WhileInputScavengePressed();
+            player.ScavengeInputUpdate();
         else if (player.JustReleased(Inputs.Scavenge))
-            player.OnInputScavengeJustReleased();
+            player.ScavengeInputRelease();
 
         if (player.CanPhysicalCraft())
         {
             // --- Crafts Inputs Stuff ---
             if (player.JustPressed(Inputs.Craft))
-                player.OnInputCraftJustPressed();
+                player.CraftInputStart();
             else if (player.IsPressed(Inputs.Craft))
-                player.WhileInputCraftPressed();
+                player.CraftInputUpdate();
             else if (player.JustReleased(Inputs.Craft))
-                player.OnInputCraftJustReleased();
+                player.CraftInputRelease();
         }
 
         if (player.IsPressed(Inputs.AlternateUse))
@@ -170,6 +172,7 @@ internal static class PlayerHooks
         // Cancel the physical craft if we have one.
         player.CancelPhysicalCraft();
         player.CheckGraspsForPossiblePhysicalCraft();
+        player.CheckGraspsForPossibleScavenge();
     }
 
     internal static void OnPlayerReleaseGrasp(this Player player, int grasp)
@@ -177,17 +180,9 @@ internal static class PlayerHooks
         var playerSlugCraftingData = player.GetPlayerCraftingData();
 
         if (grasp <= 1) // Only check for the first two grasps for a release, if so there is obviously no possible craft currently.
+        {
             playerSlugCraftingData.currentPossibleCraft = null;
-
-        // Reset the scavenge data if we released the grasp.
-        if (grasp == playerSlugCraftingData.creatureGraspUsed)
-        {
-            playerSlugCraftingData.creatureGraspUsed = -1;
             playerSlugCraftingData.currentTargetedScavenge = null;
-        }
-        else if (grasp == playerSlugCraftingData.knifeGraspUsed)
-        {
-            playerSlugCraftingData.knifeGraspUsed = -1;
         }
 
         // Update the current possible crafts
@@ -198,53 +193,11 @@ internal static class PlayerHooks
     {
         var playerSlugCraftingData = player.GetPlayerCraftingData();
 
-        CheckGraspsForScavengeKnifeOrCreature(graspUsed);
+        player.CheckGraspsForPossibleScavenge();
 
         // If the other hand is not empty, check for possible craft.
-        if (player.grasps[PlayerCraftingExtensions.GetOtherGrasp(graspUsed)] != null)
+        if (player.grasps[MarPlayerExtensions.GetOtherGrasp(graspUsed)] != null)
             playerSlugCraftingData.currentPossibleCraft = player.GetGraspsPhysicalCraft();
-
-        //
-        // SCAVENGING ITEMS CHECK
-        //
-
-        void CheckGraspsForScavengeKnifeOrCreature(in int graspNum)
-        {
-            var grasp = player.grasps[graspNum];
-            if (grasp == null || grasp.grabbedChunk == null)
-                return;
-
-            // CREATURE CHECKING
-            // Grabbed chunk takes priority first, because can be shared with item and creature.
-            if (grasp.grabbedChunk.owner is Creature)
-            {
-                playerSlugCraftingData.creatureGraspUsed = graspNum;
-
-                // Get the first available scavenge spot from the grabbed chunk as the currently targeted scavenge.
-                var creatureScavengeData = ((Creature)player.grasps[playerSlugCraftingData.creatureGraspUsed].grabbed).GetScavengeData();
-                if (creatureScavengeData != null)
-                {
-                    var scavengeSpot = new ScavengeSpot(player.grasps[graspNum].grabbedChunk.index, 0, 0);
-                    var scavenge = creatureScavengeData.GetScavenge(scavengeSpot);
-
-                    // If the grabbed scavenging spot or already scavenged, then search for one that isn't.
-                    if (scavengeSpot == null || scavenge.canScavenge == false)
-                        creatureScavengeData.GetNearestValidScavenge(scavengeSpot);
-
-                    // DISABLED
-                    // If we found a new valid scavenge spot diff from orig, grab that one's chunk instead.
-                    // self.grasps[graspedPhysicalObjectGraspIndex].chunkGrabbed = scavengeSpot.bodyChunkIndex;
-                    //
-
-                    playerSlugCraftingData.currentTargetedScavenge = scavenge;
-                }
-            }
-
-            // ITEM CHECKING
-            // Grabbed knife overrides grabbed chunk if detected then.
-            if (grasp.grabbed != null && grasp.grabbed is Knife)
-                playerSlugCraftingData.knifeGraspUsed = graspNum;
-        }
     }
 
     internal static bool Player_CanIPickThisUp(On.Player.orig_CanIPickThisUp orig, Player self, PhysicalObject obj)
