@@ -201,7 +201,7 @@ public static partial class Content
             var instance = (CreatureScavengeData)Activator.CreateInstance(scavengeDataType, creature);
             return instance;
         }
-        // Return default Lizard Scavenge Data if no specific lizard type is registered.
+        // Return default Lizard Scavenge MagneticState if no specific lizard type is registered.
         if (creature.Template.IsLizard)
         {
             Plugin.LogDebug($"No specific scavenge data registered for lizard type: {creatureType}, using default LizardScavengeData.");

@@ -18,6 +18,8 @@ public static partial class Hooks
         ApplySporePlantHooks();
 
         //ApplySparkHooks(); //-- MS7: Uneeded, disabled
+
+        WeaponsExtInit.WeaponsExtInit.Init();
     }
 
     internal static void RemoveHooks()

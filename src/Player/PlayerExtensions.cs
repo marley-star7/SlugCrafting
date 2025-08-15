@@ -76,7 +76,7 @@ public class PlayerCraftingData
 
 public static class PlayerCraftingExtensions
 {
-    // --- Crafting Data Management ---
+    // --- Crafting MagneticState Management ---
     private static readonly ConditionalWeakTable<Player, PlayerCraftingData> _craftingDataTable = new();
 
     public static PlayerCraftingData GetPlayerCraftingData(this Player player) =>

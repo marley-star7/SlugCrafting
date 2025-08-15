@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace SlugCrafting.Items.Weapons;
 
-public class KingVultureSpear : Spear
+public class KingVultureSpear : Spear, WeaponsExtInit.IWeaponExtension
 {
+    public bool IsMagnetic => true;
+
     public AbstractKingVultureSpear abstractKingVultureSpear;
 
     public Vector2[,] chunkPoints = new Vector2[2, 3];
