@@ -107,7 +107,7 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
     }
     */
 
-    public virtual bool OnSpearHitWearer(Spear spear, SharedPhysics.CollisionResult result, bool eu)
+    public virtual bool PreSpearHitWearer(Spear spear, SharedPhysics.CollisionResult result, bool eu)
     {
         return true;
     }
@@ -117,17 +117,17 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
 
     }
 
-    public virtual void OnWearerGrabbed(Creature.Grasp grasp)
+    public virtual void PostWearerGrabbed(Creature.Grasp grasp)
     {
 
     }
 
-    public virtual void OnWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
+    public virtual void PostWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
     {
-        throw new NotImplementedException();
+
     }
 
-    public virtual void OnWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk)
+    public virtual void PostWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk)
     {
 
     }
@@ -141,6 +141,11 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
         this._sLeaser = sLeaser;
     }
 
+    public void PostWearerInitiateSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam)
+    {
+
+    }
+
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         this._sLeaser = sLeaser;
@@ -151,7 +156,7 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
         }
     }
 
-    public virtual void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public virtual void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
 
     }
@@ -161,7 +166,7 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
         this._sLeaser = sLeaser;
     }
 
-    public virtual void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
+    public virtual void PostWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
 
     }

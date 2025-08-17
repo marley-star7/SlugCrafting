@@ -11,8 +11,6 @@ sealed class PinkLizardShellFisob : Fisob
 
     public PinkLizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.PinkLizardShell)
     {
-        LizardShellProperties.PropertiesOfTemplateType[CreatureTemplate.Type.PinkLizard] = properties;
-
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
         RegisterUnlock(SlugCraftingEnums.SandboxID.PinkLizardShell, parent: MultiplayerUnlocks.SandboxUnlockID.PinkLizard, data: 0);
     }

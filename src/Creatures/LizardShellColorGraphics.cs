@@ -37,7 +37,7 @@ public class LizardShellColorGraphics
     public void DrawSpritesUpdate()
     {
         //-- flicker code stolen from source.
-        if (flicker > sourceCodeLizardsFlickerThreshold)
+        if (flicker > 0)
         {
             flickerColor =  Random.value;
         }
@@ -87,7 +87,7 @@ public class LizardShellColorGraphics
     //-- MS7: Copied from source "HeadColor".
     public Color ShellColor(in float health, in float maxHealth)
     {
-        if (whiteFlicker > sourceCodeLizardsWhiteFlickerThreshold)
+        if (whiteFlicker > 0)
         {
             return new Color(1f, 1f, 1f);
         }
@@ -105,14 +105,14 @@ public class LizardShellColorGraphics
             flicker = sourceCodeLizardsFlickerThreshold;
     }
 
-    public void Flicker(int fl = 20)
+    public void Flicker(int fl = 10)
     {
         if (fl > flicker)
             flicker = fl;
     }
 
 
-    public void WhiteFlicker(int fl = 30)
+    public void WhiteFlicker(int fl = 15)
     {
         if (fl > whiteFlicker)
             whiteFlicker = fl;

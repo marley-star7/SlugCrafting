@@ -4,6 +4,11 @@ namespace SlugCrafting.Items;
 
 class PinkLizardShellProperties : LizardShellProperties
 {
+    public PinkLizardShellProperties() : base(CreatureTemplate.Type.PinkLizard)
+    {
+
+    }
+
     public override Color defaultShellColor => Color.magenta;
 
     public override string headSprite0Jaw => "LizardJaw0.0";

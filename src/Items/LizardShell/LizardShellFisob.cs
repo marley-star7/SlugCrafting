@@ -23,7 +23,7 @@ sealed class LizardShellFisob : Fisob
         return result;
     }
 
-    public static readonly LizardShellProperties properties = new();
+    public static readonly LizardShellProperties properties = new(null);
 
     public override ItemProperties Properties(PhysicalObject forObject)
     {

@@ -29,7 +29,7 @@ internal static class PlayerHooks
 
         for (int i = 0; i < self.GetPlayerCraftingData().accessories.Count; i++)
         {
-            self.GetPlayerCraftingData().accessories[i].OnWearerGrabbed(grasp);
+            self.GetPlayerCraftingData().accessories[i].PostWearerGrabbed(grasp);
         }
     }
 
@@ -49,7 +49,7 @@ internal static class PlayerHooks
 
         for (int i = 0; i < self.GetPlayerCraftingData().accessories.Count; i++)
         {
-            self.GetPlayerCraftingData().accessories[i].OnWearerTerrainImpact(self, chunkIndex, direction, speed, firstContact);
+            self.GetPlayerCraftingData().accessories[i].PostWearerTerrainImpact(self, chunkIndex, direction, speed, firstContact);
         }
     }
 

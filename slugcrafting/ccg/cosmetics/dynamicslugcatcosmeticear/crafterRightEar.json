@@ -9,7 +9,7 @@
       "endSpriteIndex": 0
     }
   ],
-  "anglePositions": [
+  "spriteAnglePositions": [
     [ 4, 4 ]
   ],
   "curl": 0.25,

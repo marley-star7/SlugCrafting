@@ -23,6 +23,14 @@ public class AbstractLizardShellHelmet : AbstractPhysicalObject
         this.health = properties.maxHealth;
     }
 
+    public AbstractLizardShellHelmet(AbstractLizardShell abstractLizardShell, AbstractObjectType type, EntityID ID) : base(abstractLizardShell.world, type, null, abstractLizardShell.pos, ID)
+    {
+        LizardShellHelmetProperties properties = GetPropertiesForType(type);
+
+        this.shellColor = abstractLizardShell.shellColor;
+        this.health = properties.maxHealth;
+    }
+
     public override void Realize()
     {
         base.Realize();

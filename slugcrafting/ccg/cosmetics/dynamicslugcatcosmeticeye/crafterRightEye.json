@@ -7,7 +7,7 @@
       "endSpriteIndex": 0
     }
   ],
-  "anglePositions": [
+  "spriteAnglePositions": [
     [ -2, 1 ],
     [ -1, 2 ],
     [ 3, 3 ],
