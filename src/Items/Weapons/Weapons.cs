@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WeaponsExtInit 
 {
+    /*
     public static class WeaponMagnetic
     {
         static ConditionalWeakTable<PhysicalObject, MagneticState> dataTable = new ConditionalWeakTable<PhysicalObject, MagneticState>();
@@ -55,6 +56,7 @@ namespace WeaponsExtInit
             return true;
         }
     }
+    */
 
     public class WeaponsExtInit
     {

@@ -24,9 +24,9 @@ namespace WeaponsExtInit
                     //The worm always has a gras place, but shold make sure if exits
                     if (self.worm.grasps[0] != null)
                     {
-                        if(WeaponMagnetic.GetOrCreateValueManual(self.worm.grasps[0].grabbed) is { IsMagnetic: true })
+                        if(WeaponExtHelper.Magnetic(self.worm.grasps[0].grabbed))
                         {
-                            //UnityEngine.Debug.Log($"[Crafter] The object gras is not magnetic: {self.worm.grasps[0].grabbed}");
+                            UnityEngine.Debug.Log($"[Crafter] The object gras is not magnetic: {self.worm.grasps[0].grabbed}");
                             self.worm.LoseAllGrasps();
                         }
                     }
