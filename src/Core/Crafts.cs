@@ -64,29 +64,29 @@ public static partial class Content
     /// <summary>
     /// Register a new craft to the crafting system.
     /// </summary>
-    /// <param name="newCraft"></param>
+    /// <param name="newShelterCraft"></param>
     /// <exception cref="ArgumentException"></exception>
-    public static void RegisterShelterCraft(ShelterCraft newCraft)
+    public static void RegisterShelterCraft(ShelterCraft newShelterCraft)
     {
-        if (ShelterCrafts.Contains(newCraft))
-            throw new ArgumentException($"Craft already registered: {newCraft}");
+        if (ShelterCrafts.Contains(newShelterCraft))
+            throw new ArgumentException($"Craft already registered: {newShelterCraft}");
         else
-            ShelterCrafts.Add(newCraft);
+            ShelterCrafts.Add(newShelterCraft);
 
-        foreach (var ingredient in newCraft.ingredients)
+        foreach (var ingredient in newShelterCraft.ingredients)
         {
             // Search for the ingredient type in dictionary
             if (ShelterCraftsUsingObjectType.TryGetValue(ingredient, out HashSet<ShelterCraft> crafts))
             {
-                if (!crafts.Contains(newCraft))
-                    crafts.Add(newCraft);
+                if (!crafts.Contains(newShelterCraft))
+                    crafts.Add(newShelterCraft);
             }
             else
             {
                 // If the ingredient type is not found, create a new Hashet for that ingredient containing the craft, and add it to the dictionary.
                 ShelterCraftsUsingObjectType[ingredient] = crafts = new HashSet<ShelterCraft>()
                 {
-                    newCraft
+                    newShelterCraft
                 };
             }
         }

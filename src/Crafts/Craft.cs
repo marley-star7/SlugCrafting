@@ -3,13 +3,14 @@ using SlugCrafting.Animations;
 
 namespace SlugCrafting.Crafts
 {
+    // TODO: Ms7: maybe rename to CraftObject or CraftRecipeObject and allow it to be used when referencing the resulting item as well for ui.
     public struct CraftIngredient
     {
         /// <summary>
         /// The AbstractObjectType of the ingredient.
         /// Set as AbstractObjectType.Creature if you wish to make the ingredient for a creature.
         /// </summary>
-        public AbstractPhysicalObject.AbstractObjectType objectType;
+        public AbstractPhysicalObject.AbstractObjectType? objectType;
         /// <summary>
         /// If this craft ingredient is a creature, the type of that creature.
         /// </summary>
@@ -19,9 +20,10 @@ namespace SlugCrafting.Crafts
         /// </summary>
         public int bodyChunkIndex;
 
-        public CraftIngredient(AbstractPhysicalObject.AbstractObjectType objectType, int bodyChunkIndex = 0, CreatureTemplate.Type creatureType = null)
+        public CraftIngredient(AbstractPhysicalObject.AbstractObjectType objectType, int bodyChunkIndex = 0, CreatureTemplate.Type? creatureType = null)
         {
             this.objectType = objectType;
+            this.bodyChunkIndex = bodyChunkIndex;
             this.creatureType = creatureType;
         }
     }
@@ -100,14 +102,14 @@ namespace SlugCrafting.Crafts
             this.craftResult = craftResult;
         }
 
-        private static bool DefaultValidation(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) { return true; }
+        private static bool DefaultValidation(in Craft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) { return true; }
 
         /// <summary>
         /// Return true if the ingredient is valid.
         /// </summary>
         /// <param name="physicalObject"></param>
         /// <returns></returns>
-        public delegate bool ValidateIngredients(in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject);
+        public delegate bool ValidateIngredients(in Craft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject);
 
         public ValidateIngredients _ingredientValidation;
         /// <summary>

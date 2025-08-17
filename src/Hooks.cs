@@ -4,9 +4,13 @@ public static partial class Hooks
 {
     internal static void ApplyHooks()
     {
+        ProcessManagerHooks.ApplyHooks();
+
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
         ApplySlugcatHandHooks();
+
+        ApplyRegionStateHooks();
 
         ApplyPhysicalObjectHooks();
         ApplyPlayerCarryableItemHooks();
@@ -22,11 +26,15 @@ public static partial class Hooks
 
     internal static void RemoveHooks()
     {
+        ProcessManagerHooks.RemoveHooks();
+
         On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
 
         RemovePlayerHooks();
         RemovePlayerGraphicsHooks();
         RemoveSlugcatHandHooks();
+
+        RemoveRegionStateHooks();
 
         RemovePhysicalObjectHooks();
         RemovePlayerCarryableItemHooks();
@@ -118,6 +126,16 @@ public static partial class Hooks
     {
         On.SlugcatHand.EngageInMovement -= SlugcatHandHooks.SlugcatHand_EngageInMovement;
         On.SlugcatHand.Update -= SlugcatHandHooks.SlugcatHand_Update;
+    }
+
+    private static void ApplyRegionStateHooks()
+    {
+        On.RegionState.AdaptRegionStateToWorld += RegionStateHooks.RegionState_AdaptRegionStateToWorld;
+    }
+
+    private static void RemoveRegionStateHooks()
+    {
+        On.RegionState.AdaptRegionStateToWorld -= RegionStateHooks.RegionState_AdaptRegionStateToWorld;
     }
 
     // PhysicalObject

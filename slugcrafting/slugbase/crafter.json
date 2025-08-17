@@ -5,7 +5,7 @@
 	"features": {
 		"color": "cccccc",
 		"walk_speed": 1.1,
-		"climb_speed": 1,
+		"climb_speed": 1.1,
 		"tunnel_speed": 1,
 		"throw_skill": 0,
 		"custom_colors": [
@@ -20,6 +20,9 @@
 				"arena": [ "0E0202", "623109", "890A3B", "FFFFFF" ]
 			}
 		],
-		"start_room": "SI_S04"
+		"start_room": "SI_S04",
+		"karma": 5,
+		"the_mark": true,
+		"auto_grab_batflies": false
 	}
 }

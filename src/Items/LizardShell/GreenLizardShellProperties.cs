@@ -5,6 +5,11 @@ namespace SlugCrafting.Items;
 // TODO: these are not right, need to get the correct default values from the game.
 class GreenLizardShellProperties : LizardShellProperties
 {
+    public GreenLizardShellProperties() : base(CreatureTemplate.Type.GreenLizard)
+    {
+
+    }
+
     public override Color defaultShellColor => Color.green; // Green color
 
     public override string headSprite0Jaw => "LizardJaw0.0";
@@ -17,4 +22,9 @@ class GreenLizardShellProperties : LizardShellProperties
     public override float defaultHeadBodyChunkMass => 0.7f;
 
     public override float maxHealth => 5f;
+
+    public override void Grabability(Player player, ref Player.ObjectGrabability grabability)
+    {
+        grabability = Player.ObjectGrabability.TwoHands;
+    }
 }

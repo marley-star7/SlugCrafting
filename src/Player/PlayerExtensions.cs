@@ -96,6 +96,9 @@ public static class PlayerCraftingExtensions
             AbstractPhysicalObject.AbstractObjectType graspObjectType = grasp.grabbed.abstractPhysicalObject.type;
             CreatureTemplate.Type? graspCreatureTemplateType = null;
 
+            if (grasp.grabbed is Creature grabbedGreature)
+                graspCreatureTemplateType = grabbedGreature.Template.type;
+
             return new CraftIngredient(graspObjectType, grasp.grabbedChunk.index, graspCreatureTemplateType);
         }
         return null;
@@ -111,7 +114,7 @@ public static class PlayerCraftingExtensions
         CraftIngredient? secondaryIngredient = player.GetCraftIngredientInGrasp(1);
 
         if (Core.Content.Crafts.TryGetValue((primaryIngredient, secondaryIngredient), out var craft) &&
-            craft.ingredientValidation(player.grasps[0].grabbed, player.grasps[1].grabbed))
+            craft.ingredientValidation(craft, player, player.grasps[0].grabbed, player.grasps[1].grabbed))
         {
             return craft;
         }
@@ -292,8 +295,15 @@ public static class PlayerCraftingExtensions
         if (sCData.currentPossibleCraft == null)
             return;
 
-        var animationPlayer = player.GetHandAnimationPlayer();
         var craft = sCData.currentPossibleCraft.Value;
+
+#if DEBUG
+        Plugin.LogDebug($"-- Player starting craft! --");
+        Plugin.LogDebug($"Primary ingredient: {craft.primaryIngredient.objectType} {craft.primaryIngredient.creatureType} | chunk: {craft.primaryIngredient.bodyChunkIndex}");
+        Plugin.LogDebug($"Secondary ingredient: {craft.secondaryIngredient.objectType} {craft.secondaryIngredient.creatureType} | chunk: {craft.secondaryIngredient.bodyChunkIndex}");
+#endif
+
+        var animationPlayer = player.GetHandAnimationPlayer();
         var currentAnim = craft.animations[sCData.craftAnimationIndex].animation;
 
         animationPlayer.Play(currentAnim);

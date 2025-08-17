@@ -13,7 +13,15 @@ public class LizardShellProperties : ItemProperties
     /// Dictionary of all the corresponding properties for each lizard template type.
     /// Add to this when adding a custom lizard type to the dictionary for it to be recognized.
     /// </summary>
-    public static Dictionary<CreatureTemplate.Type, LizardShellProperties> PropertiesOfTemplateType = new();
+    public readonly static Dictionary<CreatureTemplate.Type, LizardShellProperties> PropertiesOfTemplateType = new();
+
+    public LizardShellProperties(CreatureTemplate.Type? lizardType)
+    {
+        if (lizardType == null)
+            lizardType = CreatureTemplate.Type.LizardTemplate;
+
+        PropertiesOfTemplateType.Add(lizardType, this);
+    }
 
     public virtual Color defaultShellColor { get => new(0.5f, 0.5f, 0.5f); }
 

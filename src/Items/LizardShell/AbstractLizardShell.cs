@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SlugCrafting.Items;
 
-sealed class AbstractLizardShell : AbstractPhysicalObject
+public class AbstractLizardShell : AbstractPhysicalObject
 {
     public float health;
     public float maxHealth;
@@ -42,12 +42,14 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
         world, GetAbstractObjectTypeForCreatureTemplate(templateType), null, pos, ID)
     {
         this.templateType = templateType;
-        var type = GetAbstractObjectTypeForCreatureTemplate(templateType);
 
-        LizardShellProperties properties = LizardShellFisob.properties;
+        // TODO: later make the fisobs just use the stats from the lizardtemplatetype stuff.
 
+        LizardShellProperties properties;
         if (LizardShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
             properties = LizardShellProperties.PropertiesOfTemplateType[templateType];
+        else
+            properties = LizardShellFisob.properties;
 
         shellColor = properties.defaultShellColor;
 
@@ -64,26 +66,32 @@ sealed class AbstractLizardShell : AbstractPhysicalObject
         maxHealth = properties.maxHealth;
     }
 
-    public AbstractLizardShell(Creature lizard) : base(lizard.room.world, GetAbstractObjectTypeForCreatureTemplate(lizard.Template.type), null, lizard.coord, lizard.room.game.GetNewID())
+    public AbstractLizardShell(Lizard lizard) : base(lizard.room.world, GetAbstractObjectTypeForCreatureTemplate(lizard.Template.type), null, lizard.coord, lizard.room.game.GetNewID())
     {
         var lizardGraphics = lizard.graphicsModule as LizardGraphics;
         var sLeaser = lizard.graphicsModule.GetGraphicsModuleCCGData().sLeaser;
 
-        // Copy all the data of the lizard to the scavenged shell.
-        shellColor = lizardGraphics.effectColor;
-        rad = lizard.firstChunk.rad;
+        this.templateType = lizard.Template.type;
 
-        //-- MS7 Reduce the mass of the head chunk to make it ACTUALLY carryable lol (green liz especially), dw the mass still matters.
-        // However, the choice of lizard shells (green liz especially) still being so heavy was purposeful decision on my end,
-        // Acting as a balance decision that getting to bring a shell to work with is harder the heavier,
-        // often requiring baiting of the lizard or some other means, since green lizard armor for example is so good.
-        mass = lizard.firstChunk.mass * 0.3f;
+        LizardShellProperties properties;
+        if (LizardShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
+            properties = LizardShellProperties.PropertiesOfTemplateType[templateType];
+        else
+            properties = LizardShellFisob.properties;
+
+        shellColor = properties.defaultShellColor;
 
         headSprite0Jaw = sLeaser.sprites[lizardGraphics.SpriteHeadStart].element.name;
         headSprite1LowerTeeth = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 1].element.name;
         headSprite2UpperTeeth = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 2].element.name;
         headSprite3Head = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].element.name;
         headSprite4Eyes = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 4].element.name;
+
+        rad = lizard.firstChunk.rad;
+        mass = lizard.firstChunk.mass * 0.25f; // -- Ms7: Copy the mass, but make it a little more bearable lol.
+
+        health = properties.maxHealth;
+        maxHealth = properties.maxHealth;
     }
 
     public override void Realize()

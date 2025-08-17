@@ -11,18 +11,18 @@ public class LizardShellHelmet
         public float scaleX;
         public float scaleY;
         public float rotation;
-        public string angle;
+        public string spriteAngle;
         public float lookDirX;
         public float lookDirY;
 
-        public DrawSpritesContext(float posX, float posY, float scaleX, float scaleY, float rotation, string angle, float lookDirX, float lookDirY)
+        public DrawSpritesContext(float posX, float posY, float scaleX, float scaleY, float rotation, string spriteAngle, float lookDirX, float lookDirY)
         {
             this.posX = posX;
             this.posY = posY;
             this.scaleX = scaleX;
             this.scaleY = scaleY;
             this.rotation = rotation;
-            this.angle = angle;
+            this.spriteAngle = spriteAngle;
             this.lookDirX = lookDirX;
             this.lookDirY = lookDirY;
         }
@@ -133,7 +133,7 @@ public class LizardShellHelmet
         owner.room.InGameNoise(new InGameNoise(impactChunk.pos, noiseStrength, owner, 1f));
         int sparkNum = (int)Random.Range(vol * 2, vol * 7);
 
-        lizardShellColorGraphics.WhiteFlicker((int)(speed * 1f));
+        //lizardShellColorGraphics.Flicker((int)Mathf.Max(speed * 0.3f, 30));
         SpawnSparks(owner, impactChunk.pos, direction * speed, sparkNum);
     }
 
@@ -157,15 +157,18 @@ public class LizardShellHelmet
         if (sLeaser == null)
             return;
 
+        int scaleX = drawContext.spriteAngle.StartsWith("-") ? -1 : 1;
+        var spriteAngle = GraphicsModuleCCGExtensions.GetSymmetricalAngleFromAsymmetrical(drawContext.spriteAngle);
+
         //-- Loop through and update all sprites behind the head + in front of face match the face sprites sprite.
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
             sLeaser.sprites[i].x = drawContext.posX + drawContext.lookDirX * spritesInfo[i].distanceFromHeadModifier;
             sLeaser.sprites[i].y = drawContext.posY + drawContext.lookDirY * spritesInfo[i].distanceFromHeadModifier;
-            sLeaser.sprites[i].scaleX = drawContext.scaleX;
+            sLeaser.sprites[i].scaleX = scaleX;
             sLeaser.sprites[i].scaleY = drawContext.scaleY;
             sLeaser.sprites[i].rotation = drawContext.rotation;
-            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(spritesInfo[i].name + drawContext.angle);
+            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(spritesInfo[i].name + spriteAngle);
         }
 
         var effectColor = lizardShellColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth);

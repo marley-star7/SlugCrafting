@@ -51,7 +51,7 @@ public class LizardShellHelmetAccessory : Accessory
     }
 
     //-- MS7: Have to run the code in here for blocking spear hits thanks to downpour and base game code.
-    public override bool OnSpearHitWearer(Spear spear, SharedPhysics.CollisionResult result, bool eu)
+    public override bool PreSpearHitWearer(Spear spear, SharedPhysics.CollisionResult result, bool eu)
     {
         if (result.chunk.index != wearingBodyChunkIndex)
             return true; // The spear acts as normal if not hit the armored chunk.
@@ -111,7 +111,7 @@ public class LizardShellHelmetAccessory : Accessory
         lizardShellHelmet.DoDeflectEffects(wearer.bodyChunks[wearingBodyChunkIndex], violenceContext.hitChunk.pos, directionAndMomentum, violenceContext.damage, violenceContext.stunBonus);
     }
 
-    public override void OnWearerTerrainImpact(Player player, int chunkIndex, IntVector2 direction, float speed, bool firstContact)
+    public override void PostWearerTerrainImpact(Player player, int chunkIndex, IntVector2 direction, float speed, bool firstContact)
     {
         var impactChunk = wearer.bodyChunks[chunkIndex];
         var directionVec2 = new Vector2(direction.x, direction.y);
@@ -127,7 +127,7 @@ public class LizardShellHelmetAccessory : Accessory
         lizardShellHelmet.DoTerrainImpactEffects(impactChunk, directionVec2, speed, firstContact);
     }
 
-    public override void OnWearerGrabbed(Creature.Grasp grasp)
+    public override void PostWearerGrabbed(Creature.Grasp grasp)
     {
         //
         // Check if this attack was a grab on our wearing chunk, if so we free ourselves from it.
@@ -169,7 +169,7 @@ public class LizardShellHelmetAccessory : Accessory
         }
     }
 
-    public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         var playerGraphics = (PlayerGraphics)wearer.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
@@ -187,14 +187,14 @@ public class LizardShellHelmetAccessory : Accessory
             playerGraphicsCCGData.BaseHeadSprite.x, playerGraphicsCCGData.BaseHeadSprite.y,
             playerGraphicsCCGData.BaseFaceSprite.scaleX, playerGraphicsCCGData.BaseFaceSprite.scaleY,
             playerGraphicsCCGData.faceRotationTimeStacked,
-            playerGraphicsCCGData.faceAngle,
+            playerGraphicsCCGData.faceSpriteAngleAsymmetrical,
             lookDirX, lookDirY
         );
 
         lizardShellHelmet.DrawSprites(sLeaser, rCam, timeStacker, camPos, context);
     }
 
-    public override void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
+    public override void PostWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
         lizardShellHelmet.ApplyPalette(_sLeaser, rCam, palette);
     }

@@ -179,6 +179,31 @@ public static class SlugCraftingEnums
     {
         public static CraftIngredient Knife = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Knife);
 
+        public static CraftIngredient GreenLizardShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.GreenLizardShell);
+        public static CraftIngredient PinkLizardShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.PinkLizardShell);
+
         public static CraftIngredient GreenLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.GreenLizard);
+        public static CraftIngredient GreenLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.GreenLizard);
+
+        public static CraftIngredient PinkLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.PinkLizard);
+        public static CraftIngredient PinkLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.PinkLizard);
+
+        public static CraftIngredient BlueLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.BlueLizard);
+        public static CraftIngredient BlueLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.BlueLizard);
+
+        public static CraftIngredient WhiteLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.WhiteLizard);
+        public static CraftIngredient WhiteLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.WhiteLizard);
+
+        public static CraftIngredient YellowLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.YellowLizard);
+        public static CraftIngredient YellowLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.YellowLizard);
+
+        public static CraftIngredient BlackLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.BlackLizard);
+        public static CraftIngredient BlackLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.BlackLizard);
+
+        public static CraftIngredient RedLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.RedLizard);
+        public static CraftIngredient RedLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.RedLizard);
+
+        public static CraftIngredient CyanLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.CyanLizard);
+        public static CraftIngredient CyanLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.CyanLizard);
     }
 }
