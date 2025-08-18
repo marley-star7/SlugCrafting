@@ -80,14 +80,6 @@ internal static class RainWorldGameHooks
                 ILLabel beforeKarmaLadderScreenIf = cursor.DefineLabel();
                 cursor.MarkLabel(beforeKarmaLadderScreenIf);
 
-                // If the current process is ShelterCraftScreen, return, skipping setting the game data for everything else.
-                cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate((RainWorldGame rainWorldGame) =>
-                {
-                    return rainWorldGame.manager.currentMainLoop is ShelterCraftScreen shelterCraftScreen;
-                });
-                cursor.Emit(OpCodes.Brtrue, OpCodes.Ret);
-
                 // 1. Type check for next process being shelterCraftScreen, if so save the data.
                 cursor.Emit(OpCodes.Ldarg_1);
                 cursor.Emit(OpCodes.Isinst, typeof(ShelterCraftScreen));
