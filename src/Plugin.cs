@@ -172,7 +172,7 @@ sealed class Plugin : BaseUnityPlugin
         crafter.ReleaseGrasp(0);
 
         var player = (crafter as Player);
-        player.RealizeAndGrab(new AbstractLizardShell(lizard));
+        player.RealizeAndGrab(new AbstractLizardHeadShell(lizard));
         lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(CreatureBodyChunkIndex.Lizard.Head);
     }
 
@@ -183,7 +183,7 @@ sealed class Plugin : BaseUnityPlugin
         crafter.ReleaseGrasp(1);
 
         var player = (crafter as Player);
-        player.RealizeAndGrab(new AbstractLizardShell(lizard));
+        player.RealizeAndGrab(new AbstractLizardHeadShell(lizard));
         lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(CreatureBodyChunkIndex.Lizard.Head);
     }
 
@@ -196,7 +196,7 @@ sealed class Plugin : BaseUnityPlugin
     {
         Core.Content.RegisterShelterCraft(
             new ShelterCraft(
-                new CraftIngredient[] { SlugCraftingEnums.CraftIngredients.GreenLizardShell },
+                new CraftIngredient[] { SlugCraftingEnums.CraftIngredients.GreenLizardHeadShell },
                 SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet,
                 GreenLizardShellHelmetShelterCraftResult
             )

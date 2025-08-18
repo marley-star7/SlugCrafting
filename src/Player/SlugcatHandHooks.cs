@@ -6,7 +6,7 @@ internal static class SlugcatHandHooks
     {
         Player scug = self.owner.owner as Player;
 
-        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null && scug.grasps[self.limbNumber].grabbed is LizardShell)
+        if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null && scug.grasps[self.limbNumber].grabbed is LizardHeadShell)
         {
             self.huntSpeed = 12f;
             self.quickness = 0.7f;
@@ -24,9 +24,9 @@ internal static class SlugcatHandHooks
 
         if (scug.privSneak > 0.5f && scug.grasps[self.limbNumber] != null)
         {
-            if (scug.grasps[self.limbNumber].grabbed is LizardShell)
+            if (scug.grasps[self.limbNumber].grabbed is LizardHeadShell)
             {
-                self.relativeHuntPos *= 1f - (scug.grasps[self.limbNumber].grabbed as LizardShell).donned;
+                self.relativeHuntPos *= 1f - (scug.grasps[self.limbNumber].grabbed as LizardHeadShell).donned;
             }
         }
     }

@@ -3,7 +3,7 @@
 namespace SlugCrafting.Items;
 
 // TODO: these are not right, need to get the correct default values from the game.
-class GreenLizardShellProperties : LizardShellProperties
+class GreenLizardShellProperties : LizardHeadShellProperties
 {
     public GreenLizardShellProperties() : base(CreatureTemplate.Type.GreenLizard)
     {

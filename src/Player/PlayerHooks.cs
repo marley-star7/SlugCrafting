@@ -35,7 +35,7 @@ internal static class PlayerHooks
 
     internal static bool Player_HeavyCarry(On.Player.orig_HeavyCarry orig, Player self, PhysicalObject obj)
     {
-        if (obj is LizardShell && self.privSneak > 0.5f)
+        if (obj is LizardHeadShell && self.privSneak > 0.5f)
         {
             return false;
         }

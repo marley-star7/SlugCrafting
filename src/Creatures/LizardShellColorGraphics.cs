@@ -8,7 +8,7 @@ namespace SlugCrafting.Creatures;
 /// Make sure to run `Update()` every object's update, and `DrawSpritesUpdate()` every object's DrawSprites.
 /// Mostly copied to be identical to source in how lizard flickering appears.
 /// </summary>
-public class LizardShellColorGraphics
+public class LizardEffectColorGraphics
 {
     private const int sourceCodeLizardsFlickerThreshold = 10;
     private const int sourceCodeLizardsWhiteFlickerThreshold = 15;
@@ -20,7 +20,7 @@ public class LizardShellColorGraphics
     public int flicker;
     private float flickerColor = 0;
 
-    public LizardShellColorGraphics(Color rawColor)
+    public LizardEffectColorGraphics(Color rawColor)
     {
         this.rawColor = rawColor;
     }
@@ -110,7 +110,6 @@ public class LizardShellColorGraphics
         if (fl > flicker)
             flicker = fl;
     }
-
 
     public void WhiteFlicker(int fl = 15)
     {

@@ -23,7 +23,7 @@ public class AbstractLizardShellHelmet : AbstractPhysicalObject
         this.health = properties.maxHealth;
     }
 
-    public AbstractLizardShellHelmet(AbstractLizardShell abstractLizardShell, AbstractObjectType type, EntityID ID) : base(abstractLizardShell.world, type, null, abstractLizardShell.pos, ID)
+    public AbstractLizardShellHelmet(AbstractLizardHeadShell abstractLizardShell, AbstractObjectType type, EntityID ID) : base(abstractLizardShell.world, type, null, abstractLizardShell.pos, ID)
     {
         LizardShellHelmetProperties properties = GetPropertiesForType(type);
 

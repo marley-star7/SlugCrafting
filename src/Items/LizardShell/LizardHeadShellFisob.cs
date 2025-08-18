@@ -8,9 +8,9 @@ namespace SlugCrafting.Items;
 /// <summary>
 /// The generic Lizard Shell Fisob, usually for modded lizards or lizards without custom shell implementation/crafts yet.
 /// </summary>
-sealed class LizardShellFisob : Fisob
+sealed class LizardHeadShellFisob : Fisob
 {
-    public LizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.LizardShell)
+    public LizardHeadShellFisob() : base(SlugCraftingEnums.AbstractObjectType.LizardHeadShell)
     {
 
     }
@@ -19,11 +19,11 @@ sealed class LizardShellFisob : Fisob
     {
         // TODO: add data later for this.
 
-        var result = new AbstractLizardShell(world, CreatureTemplate.Type.LizardTemplate, saveData.Pos, saveData.ID);
+        var result = new AbstractLizardHeadShell(world, CreatureTemplate.Type.LizardTemplate, saveData.Pos, saveData.ID);
         return result;
     }
 
-    public static readonly LizardShellProperties properties = new(null);
+    public static readonly LizardHeadShellProperties properties = new(null);
 
     public override ItemProperties Properties(PhysicalObject forObject)
     {

@@ -15,7 +15,7 @@ internal static class RegionStateHooks
             var entity = playerShelterAbstractRoom.entities[i];
             if (entity is AbstractPhysicalObject abstractPhysicalObject)
             {
-                if (entity is AbstractLizardShell abstractLizardShell && abstractLizardShell.type == SlugCraftingEnums.AbstractObjectType.GreenLizardShell)
+                if (entity is AbstractLizardHeadShell abstractLizardShell && abstractLizardShell.type == SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell)
                 {
                     // Replace the add with a green liz shell helmet instead.
                     newRoomEntityList.Add(new AbstractLizardShellHelmet(abstractLizardShell, SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet, playerShelterAbstractRoom.realizedRoom.game.GetNewID()));

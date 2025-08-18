@@ -50,7 +50,7 @@ public class LizardShellHelmet
     public AbstractLizardShellHelmet abstractLizardShellHelmet;
     public LizardShellHelmetProperties properties;
 
-    public LizardShellColorGraphics lizardShellColorGraphics;
+    public LizardEffectColorGraphics lizardEffectColorGraphics;
 
     public float terrainImpactNoiseModifier = 3;
 
@@ -63,7 +63,7 @@ public class LizardShellHelmet
         this.abstractLizardShellHelmet = abstractLizardShellHelmet;
         this.properties = properties;
 
-        lizardShellColorGraphics = new LizardShellColorGraphics(abstractLizardShellHelmet.shellColor);
+        lizardEffectColorGraphics = new LizardEffectColorGraphics(abstractLizardShellHelmet.shellColor);
 
         spritesInfo = properties.spritesInfo;
         spriteLayerGroups = properties.spriteLayerGroups;
@@ -72,18 +72,18 @@ public class LizardShellHelmet
 
     public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        lizardShellColorGraphics.ApplyPalette(palette);
+        lizardEffectColorGraphics.ApplyPalette(palette);
         blackColor = palette.blackColor;
     }
 
     public void Update(bool eu)
     {
-        lizardShellColorGraphics.Update();
+        lizardEffectColorGraphics.Update();
     }
 
     private void SpawnSparks(UpdatableAndDeletable owner, Vector2 sourcePos, Vector2 directionAndMomentum, int sparkNum)
     {
-        Color sparkColor = lizardShellColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth);
+        Color sparkColor = lizardEffectColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth);
 
         for (int k = 0; k < sparkNum; k++)
         {
@@ -98,7 +98,7 @@ public class LizardShellHelmet
     {
         for (int k = 0; k < 5; k++)
         {
-            owner.room.AddObject(new LizardShellFragment(pos, Custom.RNV() * Mathf.Lerp(5f, 15f, UnityEngine.Random.value), lizardShellColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth)));
+            owner.room.AddObject(new LizardShellFragment(pos, Custom.RNV() * Mathf.Lerp(5f, 15f, UnityEngine.Random.value), lizardEffectColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth)));
         }
         owner.Destroy();
     }
@@ -111,7 +111,7 @@ public class LizardShellHelmet
 
         float flickerTimeF = (damage * 30f + stunBonus);
         int flickerTime = (int)(Mathf.Clamp(flickerTimeF, 25f, damage * 30f));
-        lizardShellColorGraphics.WhiteFlicker(flickerTime);
+        lizardEffectColorGraphics.WhiteFlicker(flickerTime);
 
         SpawnSparks(owner, sourcePos, directionAndMomentum, Random.Range(3, 8));
         owner.room.AddObject(new StationaryEffect(sourcePos, new Color(1f, 1f, 1f), null, StationaryEffect.EffectType.FlashingOrb));
@@ -133,7 +133,7 @@ public class LizardShellHelmet
         owner.room.InGameNoise(new InGameNoise(impactChunk.pos, noiseStrength, owner, 1f));
         int sparkNum = (int)Random.Range(vol * 2, vol * 7);
 
-        //lizardShellColorGraphics.Flicker((int)Mathf.Max(speed * 0.3f, 30));
+        //lizardEffectColorGraphics.Flicker((int)Mathf.Max(speed * 0.3f, 30));
         SpawnSparks(owner, impactChunk.pos, direction * speed, sparkNum);
     }
 
@@ -171,7 +171,7 @@ public class LizardShellHelmet
             sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(spritesInfo[i].name + spriteAngle);
         }
 
-        var effectColor = lizardShellColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth);
+        var effectColor = lizardEffectColorGraphics.ShellColor(abstractLizardShellHelmet.health, properties.maxHealth);
         for (int i = 0; i < effectColorGroup.sprites.Length; i++)
         {
             sLeaser.sprites[effectColorGroup.sprites[i]].color = effectColor;

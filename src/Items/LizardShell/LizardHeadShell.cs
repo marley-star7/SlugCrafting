@@ -4,17 +4,16 @@ using UnityEngine;
 
 namespace SlugCrafting.Items
 {
-    class LizardShell : PlayerCarryableItem, IDrawable
+    class LizardHeadShell : PlayerCarryableItem, IDrawable
     {
-        #region Constants and Fields
         public override float ThrowPowerFactor => 1f;
         public const int TotalSprites = 5;
         public const int HeadSpritesStart = 3;
         public const float JawOpenSensitivity = 20f;
         public const float JawVelocityOverOpenSensitivity = 2.5f;
 
-        public AbstractLizardShell abstractLizardShell;
-        public LizardShellColorGraphics lizardShellColorGraphics;
+        public AbstractLizardHeadShell abstractLizardHeadShell;
+        public LizardEffectColorGraphics lizardShellColorGraphics;
 
         public Vector2 rotation;
         public Vector2 lastRotation;
@@ -29,19 +28,17 @@ namespace SlugCrafting.Items
         public float donned;
         public float jawOpenRatio;
         public string[] HeadSprites { get; private set; }
-        #endregion
 
-        #region Initialization
-        public LizardShell(AbstractLizardShell abstractPhysicalObject) : base(abstractPhysicalObject)
+        public LizardHeadShell(AbstractLizardHeadShell abstractPhysicalObject) : base(abstractPhysicalObject)
         {
-            abstractLizardShell = abstractPhysicalObject;
+            abstractLizardHeadShell = abstractPhysicalObject;
 
             HeadSprites = new string[TotalSprites];
-            lizardShellColorGraphics = new LizardShellColorGraphics(abstractLizardShell.shellColor);
+            lizardShellColorGraphics = new LizardEffectColorGraphics(abstractLizardHeadShell.shellColor);
 
-            var pos = abstractLizardShell.Room.realizedRoom.MiddleOfTile(abstractLizardShell.pos.Tile);
+            var pos = abstractLizardHeadShell.Room.realizedRoom.MiddleOfTile(abstractLizardHeadShell.pos.Tile);
             base.bodyChunks = new[] {
-                new BodyChunk(this, 0, pos, abstractLizardShell.rad, abstractLizardShell.mass),
+                new BodyChunk(this, 0, pos, abstractLizardHeadShell.rad, abstractLizardHeadShell.mass),
             };
 
             base.bodyChunkConnections = new BodyChunkConnection[0];
@@ -57,11 +54,9 @@ namespace SlugCrafting.Items
             lastRotation = rotation;
             jawRotation = Vector2.zero;
             lastJawRotation = jawRotation;
-            facingRight = abstractLizardShell.scaleX > 0;
+            facingRight = abstractLizardHeadShell.scaleX > 0;
         }
-        #endregion
 
-        #region Physics and Movement
         public override void Update(bool eu)
         {
             StorePreviousStates();
@@ -128,12 +123,12 @@ namespace SlugCrafting.Items
 
             donned = scug.privSneak;
             rotation = faceDir;
-            facingRight = faceDir.x > 0 == abstractLizardShell.scaleX > 0;
+            facingRight = faceDir.x > 0 == abstractLizardHeadShell.scaleX > 0;
         }
 
         private void HandleGenericGrab(Creature grabber)
         {
-            rotation = abstractLizardShell.scaleX < 0
+            rotation = abstractLizardHeadShell.scaleX < 0
                 ? Custom.RotateAroundOrigo(
                     Custom.PerpendicularVector(Custom.DirVec(firstChunk.pos, grabber.mainBodyChunk.pos)), 180)
                 : Custom.PerpendicularVector(Custom.DirVec(firstChunk.pos, grabber.mainBodyChunk.pos));
@@ -217,12 +212,12 @@ namespace SlugCrafting.Items
             float openAmount = Mathf.Clamp01(1 - velAgainstFacing);
             float velocityFactor = Mathf.Clamp(firstChunk.vel.magnitude / 10f, 0f, 1f);
 
-            float targetJawRotationDegrees = -openAmount * velocityFactor * abstractLizardShell.jawOpenAngle;
+            float targetJawRotationDegrees = -openAmount * velocityFactor * abstractLizardHeadShell.jawOpenAngle;
             float headRotationDegrees = Custom.VecToDeg(rotation);
 
             targetJawRotationDegrees = Mathf.Clamp(
                 Mathf.DeltaAngle(headRotationDegrees, targetJawRotationDegrees + headRotationDegrees),
-                -abstractLizardShell.jawOpenAngle,
+                -abstractLizardHeadShell.jawOpenAngle,
                 0f);
 
             float currentJawRotationDegrees = Custom.VecToDeg(jawRotation);
@@ -233,20 +228,18 @@ namespace SlugCrafting.Items
 
             jawRotation = Custom.DegToVec(currentJawRotationDegrees);
         }
-        #endregion
 
-        #region Damage and Effects
         public void AddDamage(float damage)
         {
-            abstractLizardShell.health -= damage;
-            if (abstractLizardShell.health <= 0) Shatter();
+            abstractLizardHeadShell.health -= damage;
+            if (abstractLizardHeadShell.health <= 0) Shatter();
         }
 
         public void HitEffect(Vector2 impactVelocity)
         {
             Color sparkColor = lizardShellColorGraphics.ShellColor(
-                abstractLizardShell.health,
-                abstractLizardShell.maxHealth);
+                abstractLizardHeadShell.health,
+                abstractLizardHeadShell.maxHealth);
 
             for (int k = 0; k < UnityEngine.Random.Range(3, 8); k++)
             {
@@ -272,8 +265,8 @@ namespace SlugCrafting.Items
                     firstChunk.pos,
                     Custom.RNV() * Mathf.Lerp(5f, 15f, UnityEngine.Random.value),
                     lizardShellColorGraphics.ShellColor(
-                        abstractLizardShell.health,
-                        abstractLizardShell.maxHealth)));
+                        abstractLizardHeadShell.health,
+                        abstractLizardHeadShell.maxHealth)));
             }
             Destroy();
         }
@@ -314,23 +307,21 @@ namespace SlugCrafting.Items
         }
 
         private static float Rand => UnityEngine.Random.value;
-        #endregion
 
-        #region Graphics and Rendering
         public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
             sLeaser.sprites = new FSprite[TotalSprites]
             {
-                new FSprite(abstractLizardShell.headSprite0Jaw, true),
-                new FSprite(abstractLizardShell.headSprite1LowerTeeth, true),
-                new FSprite(abstractLizardShell.headSprite2UpperTeeth, true),
-                new FSprite(abstractLizardShell.headSprite3Head, true),
-                new FSprite(abstractLizardShell.headSprite4Eyes, true),
+                new FSprite(abstractLizardHeadShell.headSprite0Jaw, true),
+                new FSprite(abstractLizardHeadShell.headSprite1LowerTeeth, true),
+                new FSprite(abstractLizardHeadShell.headSprite2UpperTeeth, true),
+                new FSprite(abstractLizardHeadShell.headSprite3Head, true),
+                new FSprite(abstractLizardHeadShell.headSprite4Eyes, true),
             };
 
             for (int i = 0; i < sLeaser.sprites.Length; i++)
             {
-                sLeaser.sprites[i].color = abstractLizardShell.shellColor;
+                sLeaser.sprites[i].color = abstractLizardHeadShell.shellColor;
                 string headSpriteName = sLeaser.sprites[i].element.name;
                 HeadSprites[i] = headSpriteName.Remove(headSpriteName.Length - 3, 1);
             }
@@ -349,8 +340,8 @@ namespace SlugCrafting.Items
             float headRot = Custom.VecToDeg(rot);
             float jawRotDeg = Custom.VecToDeg(jawRot);
             Color effectColor = lizardShellColorGraphics.ShellColor(
-                abstractLizardShell.health,
-                abstractLizardShell.maxHealth);
+                abstractLizardHeadShell.health,
+                abstractLizardHeadShell.maxHealth);
 
             UpdateHeadSprites(sLeaser, pos, headRot, effectColor, camPos);
             UpdateJawSprites(sLeaser, pos, jawRotDeg, effectColor, camPos);
@@ -424,6 +415,5 @@ namespace SlugCrafting.Items
                 newContainer.AddChild(fsprite);
             }
         }
-        #endregion
     }
 }
