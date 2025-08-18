@@ -5,21 +5,21 @@ using Fisobs.Sandbox;
 
 namespace SlugCrafting.Items;
 
-sealed class PinkLizardShellFisob : Fisob
+sealed class GreenLizardShellFisob : Fisob
 {
-    public static readonly PinkLizardShellProperties properties = new();
+    public static readonly GreenLizardShellProperties properties = new();
 
-    public PinkLizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.PinkLizardShell)
+    public GreenLizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell)
     {
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.PinkLizardShell, parent: MultiplayerUnlocks.SandboxUnlockID.PinkLizard, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxID.GreenLizardHeadShell, parent: MultiplayerUnlocks.SandboxUnlockID.GreenLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
     {
         // TODO: add data later for this.
 
-        var result = new AbstractLizardShell(world, CreatureTemplate.Type.PinkLizard, saveData.Pos, saveData.ID);
+        var result = new AbstractLizardHeadShell(world, CreatureTemplate.Type.GreenLizard, saveData.Pos, saveData.ID);
         return result;
     }
 

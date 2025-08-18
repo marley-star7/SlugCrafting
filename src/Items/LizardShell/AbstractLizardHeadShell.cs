@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SlugCrafting.Items;
 
-public class AbstractLizardShell : AbstractPhysicalObject
+public class AbstractLizardHeadShell : AbstractPhysicalObject
 {
     public float health;
     public float maxHealth;
@@ -33,11 +33,11 @@ public class AbstractLizardShell : AbstractPhysicalObject
 
     private static Dictionary<CreatureTemplate.Type, AbstractObjectType> _creatureTemplateToShellAbstractObjectType = new()
     {
-        { CreatureTemplate.Type.GreenLizard, SlugCraftingEnums.AbstractObjectType.GreenLizardShell },
-        { CreatureTemplate.Type.PinkLizard, SlugCraftingEnums.AbstractObjectType.PinkLizardShell }
+        { CreatureTemplate.Type.GreenLizard, SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell },
+        { CreatureTemplate.Type.PinkLizard, SlugCraftingEnums.AbstractObjectType.PinkLizardHeadShell }
     };
 
-    public AbstractLizardShell(World world, CreatureTemplate.Type templateType, WorldCoordinate pos, EntityID ID)
+    public AbstractLizardHeadShell(World world, CreatureTemplate.Type templateType, WorldCoordinate pos, EntityID ID)
     : base(
         world, GetAbstractObjectTypeForCreatureTemplate(templateType), null, pos, ID)
     {
@@ -45,11 +45,11 @@ public class AbstractLizardShell : AbstractPhysicalObject
 
         // TODO: later make the fisobs just use the stats from the lizardtemplatetype stuff.
 
-        LizardShellProperties properties;
-        if (LizardShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
-            properties = LizardShellProperties.PropertiesOfTemplateType[templateType];
+        LizardHeadShellProperties properties;
+        if (LizardHeadShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
+            properties = LizardHeadShellProperties.PropertiesOfTemplateType[templateType];
         else
-            properties = LizardShellFisob.properties;
+            properties = LizardHeadShellFisob.properties;
 
         shellColor = properties.defaultShellColor;
 
@@ -66,18 +66,18 @@ public class AbstractLizardShell : AbstractPhysicalObject
         maxHealth = properties.maxHealth;
     }
 
-    public AbstractLizardShell(Lizard lizard) : base(lizard.room.world, GetAbstractObjectTypeForCreatureTemplate(lizard.Template.type), null, lizard.coord, lizard.room.game.GetNewID())
+    public AbstractLizardHeadShell(Lizard lizard) : base(lizard.room.world, GetAbstractObjectTypeForCreatureTemplate(lizard.Template.type), null, lizard.coord, lizard.room.game.GetNewID())
     {
         var lizardGraphics = lizard.graphicsModule as LizardGraphics;
         var sLeaser = lizard.graphicsModule.GetGraphicsModuleCCGData().sLeaser;
 
         this.templateType = lizard.Template.type;
 
-        LizardShellProperties properties;
-        if (LizardShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
-            properties = LizardShellProperties.PropertiesOfTemplateType[templateType];
+        LizardHeadShellProperties properties;
+        if (LizardHeadShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
+            properties = LizardHeadShellProperties.PropertiesOfTemplateType[templateType];
         else
-            properties = LizardShellFisob.properties;
+            properties = LizardHeadShellFisob.properties;
 
         shellColor = properties.defaultShellColor;
 
@@ -98,7 +98,7 @@ public class AbstractLizardShell : AbstractPhysicalObject
     {
         base.Realize();
         if (realizedObject == null)
-            realizedObject = new LizardShell(this);
+            realizedObject = new LizardHeadShell(this);
     }
 
     public override string ToString()
@@ -118,7 +118,7 @@ public class AbstractLizardShell : AbstractPhysicalObject
         }
         else
         {
-            return SlugCraftingEnums.AbstractObjectType.LizardShell; // Default for lizards that don't have a specific shell type.
+            return SlugCraftingEnums.AbstractObjectType.LizardHeadShell; // Default for lizards that don't have a specific shell type.
         }
     }
 }

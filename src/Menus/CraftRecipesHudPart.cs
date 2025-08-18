@@ -1,6 +1,7 @@
-﻿using HUD;
+﻿/*
+using HUD;
 
-namespace SlugCrafting.Menu;
+namespace SlugCrafting.Menus;
 
 public class CraftRecipesHudPart : HudPart
 {
@@ -23,3 +24,4 @@ public class CraftRecipesHudPart : HudPart
         
     }
 }
+*/

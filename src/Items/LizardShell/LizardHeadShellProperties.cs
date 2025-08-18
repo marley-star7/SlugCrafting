@@ -7,15 +7,15 @@ namespace SlugCrafting.Items;
 /// <summary>
 /// All default values based off pink lizards.
 /// </summary>
-public class LizardShellProperties : ItemProperties
+public class LizardHeadShellProperties : ItemProperties
 {
     /// <summary>
     /// Dictionary of all the corresponding properties for each lizard template type.
     /// Add to this when adding a custom lizard type to the dictionary for it to be recognized.
     /// </summary>
-    public readonly static Dictionary<CreatureTemplate.Type, LizardShellProperties> PropertiesOfTemplateType = new();
+    public readonly static Dictionary<CreatureTemplate.Type, LizardHeadShellProperties> PropertiesOfTemplateType = new();
 
-    public LizardShellProperties(CreatureTemplate.Type? lizardType)
+    public LizardHeadShellProperties(CreatureTemplate.Type? lizardType)
     {
         if (lizardType == null)
             lizardType = CreatureTemplate.Type.LizardTemplate;

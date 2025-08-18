@@ -2,7 +2,7 @@
 
 namespace SlugCrafting.Items;
 
-class PinkLizardShellProperties : LizardShellProperties
+class PinkLizardShellProperties : LizardHeadShellProperties
 {
     public PinkLizardShellProperties() : base(CreatureTemplate.Type.PinkLizard)
     {

@@ -6,7 +6,7 @@ public class SparkCraftingData
 {
     public WeakReference<Spark> sparkRef;
 
-    public LizardShellColorGraphics lizardShellColorGraphics;
+    public LizardEffectColorGraphics lizardShellColorGraphics;
 
     public SparkCraftingData(Spark spark)
     {

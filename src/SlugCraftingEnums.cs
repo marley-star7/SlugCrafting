@@ -7,6 +7,11 @@ public static class SlugCraftingEnums
 {
     public static readonly SlugcatStats.Name Crafter = new(nameof(Crafter), false);
 
+    public static class ProcessID
+    {
+        public static readonly ProcessManager.ProcessID ShelterCraft = new("ShelterCraft", true);
+    }
+
     public static class AbstractObjectType
     {
         public static readonly AbstractPhysicalObject.AbstractObjectType Knife = new("Knife", true);
@@ -15,10 +20,10 @@ public static class SlugCraftingEnums
         public static readonly AbstractPhysicalObject.AbstractObjectType LanternMouseString = new("LanternMouseString", true);
         public static readonly AbstractPhysicalObject.AbstractObjectType Cord = new("Cord", true);
 
-        public static readonly AbstractPhysicalObject.AbstractObjectType LizardShell = new("LizardShell", true);
-        public static readonly AbstractPhysicalObject.AbstractObjectType GreenLizardShell = new("GreenLizardShell", true);
-        public static readonly AbstractPhysicalObject.AbstractObjectType PinkLizardShell = new("PinkLizardShell", true);
-        public static readonly AbstractPhysicalObject.AbstractObjectType BlueLizardShell = new("BlueLizardShell", true);
+        public static readonly AbstractPhysicalObject.AbstractObjectType LizardHeadShell = new("LizardHeadShell", true);
+        public static readonly AbstractPhysicalObject.AbstractObjectType GreenLizardHeadShell = new("GreenLizardHeadShell", true);
+        public static readonly AbstractPhysicalObject.AbstractObjectType PinkLizardHeadShell = new("PinkLizardHeadShell", true);
+        public static readonly AbstractPhysicalObject.AbstractObjectType BlueLizardHeadShell = new("BlueLizardHeadShell", true);
 
         public static readonly AbstractPhysicalObject.AbstractObjectType GreenLizardShellHelmet = new("GreenLizardShellHelmet", true);
         public static readonly AbstractPhysicalObject.AbstractObjectType PinkLizardShellHelmet = new("PinkLizardShellHelmet", true);
@@ -37,9 +42,9 @@ public static class SlugCraftingEnums
         public static readonly MultiplayerUnlocks.SandboxUnlockID LanternMouseString = new("LanternMouseString", true);
         public static readonly MultiplayerUnlocks.SandboxUnlockID Cord = new("Cord", true);
 
-        public static readonly MultiplayerUnlocks.SandboxUnlockID GreenLizardShell = new("GreenLizardShell", true);
-        public static readonly MultiplayerUnlocks.SandboxUnlockID PinkLizardShell = new("PinkLizardShell", true);
-        public static readonly MultiplayerUnlocks.SandboxUnlockID BlueLizardShell = new("BlueLizardShellHelmet", true);
+        public static readonly MultiplayerUnlocks.SandboxUnlockID GreenLizardHeadShell = new("GreenLizardHeadShell", true);
+        public static readonly MultiplayerUnlocks.SandboxUnlockID PinkLizardHeadShell = new("PinkLizardHeadShell", true);
+        public static readonly MultiplayerUnlocks.SandboxUnlockID BlueLizardHeadShell = new("BlueLizardShellHelmet", true);
 
         public static readonly MultiplayerUnlocks.SandboxUnlockID GreenLizardShellHelmet = new("GreenLizardShellHelmet", true);
         public static readonly MultiplayerUnlocks.SandboxUnlockID PinkLizardShellHelmet = new("PinkLizardShellHelmet", true);
@@ -179,8 +184,8 @@ public static class SlugCraftingEnums
     {
         public static CraftIngredient Knife = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Knife);
 
-        public static CraftIngredient GreenLizardShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.GreenLizardShell);
-        public static CraftIngredient PinkLizardShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.PinkLizardShell);
+        public static CraftIngredient GreenLizardHeadShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell);
+        public static CraftIngredient PinkLizardHeadShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.PinkLizardHeadShell);
 
         public static CraftIngredient GreenLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.GreenLizard);
         public static CraftIngredient GreenLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.GreenLizard);
