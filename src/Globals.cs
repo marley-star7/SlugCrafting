@@ -10,7 +10,7 @@ global using UnityEngine;
 global using BepInEx;
 global using BepInEx.Logging;
 
-//global using Mono.Cecil.Cil;
+global using Mono.Cecil.Cil;
 global using MonoMod.Cil;
 
 global using RWCustom;
