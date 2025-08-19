@@ -4,6 +4,8 @@ namespace SlugCrafting.Menus;
 
 public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 {
+    public KarmaLadderScreen.SleepDeathScreenDataPackage fromGameDataPackage;
+
     public int CurrentFood => 0;
 
     public Player.InputPackage MapInput => RWInput.PlayerInput(0);
@@ -66,6 +68,24 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
                 break;
         }
     }
+
+    public void GetDataFromGame(KarmaLadderScreen.SleepDeathScreenDataPackage package)
+    {
+        Plugin.LogDebug($"Got the data from the game for the Shelter Craft Screen!");
+        fromGameDataPackage = package;
+    }
+
+    public override void CommunicateWithUpcomingProcess(MainLoopProcess nextProcess)
+    {
+        // Ms7: Have to communicate to send the data package to sleep screen.
+
+        base.CommunicateWithUpcomingProcess(nextProcess);
+        if (nextProcess is SleepAndDeathScreen sleepAndDeathScreen)
+        {
+            sleepAndDeathScreen.GetDataFromGame(fromGameDataPackage);
+        }
+    }
+
 
     public void FoodCountDownDone()
     {

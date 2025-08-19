@@ -5,6 +5,7 @@ public static partial class Hooks
     internal static void ApplyHooks()
     {
         ProcessManagerHooks.ApplyHooks();
+        RainWorldGameHooks.ApplyHooks();
 
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
@@ -29,6 +30,7 @@ public static partial class Hooks
     internal static void RemoveHooks()
     {
         ProcessManagerHooks.RemoveHooks();
+        RainWorldGameHooks.RemoveHooks();
 
         On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
 
