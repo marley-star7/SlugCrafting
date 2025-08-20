@@ -4,27 +4,34 @@ public static partial class Hooks
 {
     internal static void ApplyHooks()
     {
+        Debug.LogInfo("Init all hooks");
+        WeaponsExtInit.WeaponsExtInit.Apply();
+
         ProcessManagerHooks.ApplyHooks();
         RainWorldGameHooks.ApplyHooks();
+        Debug.LogInfo("Finish rain world");
+
 
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
         ApplySlugcatHandHooks();
+        Debug.LogInfo("Finish player");
 
         ApplyRegionStateHooks();
+        Debug.LogInfo("Finish state hook");
 
         ApplyPhysicalObjectHooks();
         ApplyPlayerCarryableItemHooks();
         ApplyLanternHooks();
         ApplySlimeMoldHooks();
+        Debug.LogInfo("Finish items");
 
-        ApplyWeaponHooks();
         ApplySpearHooks();
         ApplySporePlantHooks();
 
-        //ApplySparkHooks(); //-- MS7: Uneeded, disabled
 
-        WeaponsExtInit.WeaponsExtInit.Init();
+        //ApplySparkHooks(); //-- MS7: Uneeded, disabled
+        Debug.LogInfo("Finish all hook");
     }
 
     internal static void RemoveHooks()
@@ -45,7 +52,7 @@ public static partial class Hooks
         RemoveLanternHooks();
         RemoveSlimeMoldHooks();
 
-        RemoveWeaponHooks();
+        WeaponsExtInit.WeaponsExtInit.Terminate();
         RemoveSpearHooks();
         RemoveSporePlantHooks();
 
@@ -194,21 +201,7 @@ public static partial class Hooks
         On.SlimeMold.Update -= SlimeMoldHooks.SlimeMold_Update;
     }
 
-    private static void ApplyWeaponHooks()
-    {
-        On.Weapon.AddToContainer += WeaponHooks.Weapon_AddToContainer;
 
-        On.Weapon.HitSomething += WeaponHooks.Weapon_HitSomething;
-        On.Weapon.Update += WeaponHooks.Update;
-    }
-
-    private static void RemoveWeaponHooks()
-    {
-        On.Weapon.AddToContainer -= WeaponHooks.Weapon_AddToContainer;
-
-        On.Weapon.HitSomething -= WeaponHooks.Weapon_HitSomething;
-        On.Weapon.Update -= WeaponHooks.Update;
-    }
 
     // Spear
 
