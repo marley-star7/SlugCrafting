@@ -34,7 +34,7 @@ public static class SlugCraftingEnums
         public static readonly AbstractPhysicalObject.AbstractObjectType KingVultureSpear = new("KingVultureSpear", true);
     }
 
-    public static class SandboxID
+    public static class SandboxUnlockID
     {
         public static readonly MultiplayerUnlocks.SandboxUnlockID Knife = new("Knife", true);
 

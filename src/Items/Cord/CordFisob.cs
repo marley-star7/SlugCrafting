@@ -9,7 +9,7 @@ public class CordFisob : Fisob
         CordProperties.typesProperties.Add(SlugCraftingEnums.AbstractObjectType.Cord, properties);
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.Cord, parent: MultiplayerUnlocks.SandboxUnlockID.PoleMimic, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.Cord, parent: MultiplayerUnlocks.SandboxUnlockID.PoleMimic, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

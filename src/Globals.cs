@@ -26,6 +26,7 @@ global using ImprovedInput;
 global using SlugBase;
 
 global using MRCustom;
+global using MRCustom.UI;
 global using MRCustom.Events;
 global using MRCustom.Math;
 global using MRCustom.Animations;

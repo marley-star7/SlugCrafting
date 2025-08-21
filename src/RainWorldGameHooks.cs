@@ -67,30 +67,59 @@ internal static class RainWorldGameHooks
                 Plugin.LogDebug("Using default data package index: 6");
             }
 
-            // Find the target instruction sequence
-            bool foundInsertionPoint = cursor.TryGotoNext(MoveType.Before,
-                x => x.MatchLdarg(1),
-                x => x.MatchIsinst<Menu.KarmaLadderScreen>()
-            );
+            ILLabel pastReturnStatement = cursor.DefineLabel();
 
-            if (foundInsertionPoint)
+            if (cursor.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(1),
+                x => x.MatchIsinst<Menu.EndCredits>(),
+                x => x.MatchBrfalse(out ILLabel targetLabel)))
+            {
+                cursor.MarkLabel(pastReturnStatement);
+            }
+
+            cursor.Index = 0;
+
+            if (cursor.TryGotoNext(MoveType.Before,
+                x => x.MatchLdarg(1),
+                x => x.MatchIsinst<Menu.KarmaLadderScreen>(),
+                x => x.MatchBrtrue(out ILLabel targetLabel)))
+            {
+                cursor.Index += 1;
+
+                cursor.Emit(OpCodes.Isinst, (typeof(ShelterCraftScreen)));
+                cursor.Emit(OpCodes.Brtrue_S, pastReturnStatement);
+
+                cursor.Emit(OpCodes.Ldarg_1); // Re-add the load arg we use for ours.
+            }
+
+            // Find the target instruction sequence
+            if (cursor.TryGotoNext(MoveType.Before,
+                x => x.MatchLdarg(1),
+                x => x.MatchIsinst<Menu.KarmaLadderScreen>(),
+                x => x.MatchBrfalse(out ILLabel targetLabel)))
             {
                 Plugin.LogDebug($"Found insertion point at index: {cursor.Index}");
 
                 ILLabel beforeKarmaLadderScreenIf = cursor.DefineLabel();
-                cursor.MarkLabel(beforeKarmaLadderScreenIf);
 
-                // 1. Type check for next process being shelterCraftScreen, if so save the data.
+                cursor.Index += 1;
+
+                cursor.EmitDelegate(() => Plugin.LogDebug("I'm so"));
+
+                cursor.Emit(OpCodes.Isinst, typeof(ShelterCraftScreen));
+                cursor.Emit(OpCodes.Brfalse_S, beforeKarmaLadderScreenIf);
+
                 cursor.Emit(OpCodes.Ldarg_1);
                 cursor.Emit(OpCodes.Isinst, typeof(ShelterCraftScreen));
-                cursor.Emit(OpCodes.Brfalse, beforeKarmaLadderScreenIf);
+                cursor.Emit(OpCodes.Ldloc_S, dataPackageVarIndex); // -- Ms7: DON'T FORGET THE _SSSSSSSSSSSSSSSSSSS AHHGGGGG
+                cursor.Emit(OpCodes.Callvirt, typeof(ShelterCraftScreen).GetMethod(
+                    "GetDataFromGame",
+                    new[] { typeof(KarmaLadderScreen.SleepDeathScreenDataPackage) }
+                ));
 
-                cursor.Emit(OpCodes.Ldloc_S, dataPackageVarIndex);
-                cursor.EmitDelegate((ShelterCraftScreen nextProcess,
-                    KarmaLadderScreen.SleepDeathScreenDataPackage sleepDeathScreenDataPackage) =>
-                {
-                    nextProcess.GetDataFromGame(sleepDeathScreenDataPackage);
-                });
+                cursor.MarkLabel(beforeKarmaLadderScreenIf);
+
+                cursor.Emit(OpCodes.Ldarg_1); // Re-add load arg we stole.
             }
             else
             {
@@ -100,6 +129,7 @@ internal static class RainWorldGameHooks
                     Plugin.LogError($"IL_{cursor.Index:X4}: {cursor.Instrs[cursor.Index]}");
                 }
             }
+
         }
         catch (Exception ex)
         {
@@ -110,5 +140,7 @@ internal static class RainWorldGameHooks
         }
 
         Plugin.LogDebug("=== Finished CommunicateWithUpcomingProcess patch ===");
+
+        Plugin.LogDebug(il);
     }
 }

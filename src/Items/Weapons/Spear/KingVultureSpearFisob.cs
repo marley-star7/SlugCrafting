@@ -7,7 +7,7 @@ public class KingVultureSpearFisobs : Fisob
     public KingVultureSpearFisobs() : base(SlugCraftingEnums.AbstractObjectType.KingVultureSpear)
     {
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.KingVultureSpear, parent: MultiplayerUnlocks.SandboxUnlockID.KingVulture, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.KingVultureSpear, parent: MultiplayerUnlocks.SandboxUnlockID.KingVulture, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

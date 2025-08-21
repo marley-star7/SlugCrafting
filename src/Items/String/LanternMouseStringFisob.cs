@@ -9,7 +9,7 @@ public class LanternMouseStringFisob : Fisob
         CordProperties.typesProperties.Add(SlugCraftingEnums.AbstractObjectType.LanternMouseString, properties);
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.LanternMouseString, parent: MultiplayerUnlocks.SandboxUnlockID.LanternMouse, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.LanternMouseString, parent: MultiplayerUnlocks.SandboxUnlockID.LanternMouse, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
