@@ -52,7 +52,7 @@ public class GarbageWormHooks
         }
         if (self != null && self.worm != null && self.worm.grasps != null)
         {
-            if (GarbajeWormTarget(self))
+            if (GarbageWormTarget(self))
             {
                 Plugin.LogGame($"The object grasps is not magnetic: {self.worm.grasps[0].grabbed}");
                 self.worm.LoseAllGrasps();
@@ -62,7 +62,7 @@ public class GarbageWormHooks
 
     // Sekq: Not sure if this should be in MRcustom with the archive "WeaponsExtHelper.cs"
     // Since magnetic field is from slugcrafing, but this is a ext function, so idk...
-    private static bool GarbajeWormTarget(GarbageWormAI self)
+    private static bool GarbageWormTarget(GarbageWormAI self)
     {
         //The worm always has a grasps place, but shold make sure if exits
         if (self == null || self.worm.grasps[0] == null)
