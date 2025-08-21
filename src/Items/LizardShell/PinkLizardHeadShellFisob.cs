@@ -12,7 +12,7 @@ sealed class PinkLizardShellFisob : Fisob
     public PinkLizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.PinkLizardHeadShell)
     {
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.PinkLizardHeadShell, parent: MultiplayerUnlocks.SandboxUnlockID.PinkLizard, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.PinkLizardHeadShell, parent: MultiplayerUnlocks.SandboxUnlockID.PinkLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

@@ -11,7 +11,7 @@ sealed class KnifeFisob : Fisob
     {
         SandboxPerformanceCost = new(linear: 0.3f, exponential: 0f);
 
-        RegisterUnlock(SlugCraftingEnums.SandboxID.Knife, parent: MultiplayerUnlocks.SandboxUnlockID.Spear, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.Knife, parent: MultiplayerUnlocks.SandboxUnlockID.Spear, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

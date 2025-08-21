@@ -15,7 +15,7 @@ sealed class BlueLizardShellHelmetFisob : Fisob
         LizardShellHelmetProperties.typesProperties.Add(SlugCraftingEnums.AbstractObjectType.BlueLizardShellHelmet, properties);
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxID.BlueLizardShellHelmet, parent: MultiplayerUnlocks.SandboxUnlockID.BlueLizard, data: 0);
+        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.BlueLizardShellHelmet, parent: MultiplayerUnlocks.SandboxUnlockID.BlueLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

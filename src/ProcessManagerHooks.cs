@@ -113,9 +113,11 @@ public static class ProcessManagerHooks
             self.currentMainLoop = new ShelterCraftScreen(self, ID);
         }
 
+        Plugin.LogDebug($"Switching main process to {ID}");
+
         orig(self, ID);
 
-        Plugin.LogDebug($"Switching main process to {ID}");
+        Plugin.LogDebug($"Post Swtiched main process to {ID}");
     }
 
 }
