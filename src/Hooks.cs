@@ -5,7 +5,10 @@ public static partial class Hooks
     internal static void ApplyHooks()
     {
         Debug.LogInfo("Init all hooks");
-        WeaponsExtInit.WeaponsExtInit.Apply();
+        // Sekq: Later should make a Item Init, where weapons is being called from there
+        Items.WeaponsExtension.Weapons.Apply();
+        CreaturesExtension.Creatures.Apply();
+        Debug.LogInfo("Finish weapons-creature");
 
         ProcessManagerHooks.ApplyHooks();
         RainWorldGameHooks.ApplyHooks();
@@ -36,6 +39,9 @@ public static partial class Hooks
 
     internal static void RemoveHooks()
     {
+        Items.WeaponsExtension.Weapons.Remove();
+        CreaturesExtension.Creatures.Remove();
+
         ProcessManagerHooks.RemoveHooks();
         RainWorldGameHooks.RemoveHooks();
 
@@ -52,7 +58,7 @@ public static partial class Hooks
         RemoveLanternHooks();
         RemoveSlimeMoldHooks();
 
-        WeaponsExtInit.WeaponsExtInit.Terminate();
+        Items.WeaponsExtension.Weapons.Remove();
         RemoveSpearHooks();
         RemoveSporePlantHooks();
 

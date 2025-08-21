@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace WeaponsExtInit
+﻿namespace SlugCrafting.Items.WeaponsExtension
 {
     public static class WeaponExtHelper
     {

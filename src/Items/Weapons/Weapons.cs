@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WeaponsExtInit 
+namespace SlugCrafting.Items.WeaponsExtension
 {
-    public class WeaponsExtInit
+    public class Weapons
     {
         public static void Apply()
         {
-            Plugin.LogInfo("Init WeaponsExte");
+            Plugin.LogInfo("Start WeaponsExtension");
             WeaponExtHooks.ApplyHooks();
-            Plugin.LogInfo("Finalize WeaponsExte");
+            Plugin.LogInfo("End WeaponsExtension");
         }
 
-        public static void Terminate()
+        public static void Remove()
         {
             WeaponExtHooks.RemoveHooks();
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SlugCrafting.Items.Weapons;
 
-public class KingVultureSpear : Spear, WeaponsExtInit.IWeaponExtension
+public class KingVultureSpear : Spear, WeaponsExtension.IWeaponExtension
 {
     public bool IsMagnetic => true;
 
