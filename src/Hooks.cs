@@ -4,37 +4,37 @@ public static partial class Hooks
 {
     internal static void ApplyHooks()
     {
-        Debug.LogInfo("Init all hooks");
+        Plugin.LogInfo("Init all hooks");
         // Sekq: Later should make a Item Init, where weapons is being called from there
         Items.WeaponsExtension.Weapons.Apply();
         CreaturesExtension.Creatures.Apply();
-        Debug.LogInfo("Finish weapons-creature");
+        Plugin.LogInfo("Finish weapons-creature"); 
 
         ProcessManagerHooks.ApplyHooks();
         RainWorldGameHooks.ApplyHooks();
-        Debug.LogInfo("Finish rain world");
+        Plugin.LogInfo("Finish rain world");
 
 
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
         ApplySlugcatHandHooks();
-        Debug.LogInfo("Finish player");
+        Plugin.LogInfo("Finish player");
 
         ApplyRegionStateHooks();
-        Debug.LogInfo("Finish state hook");
+        Plugin.LogInfo("Finish state hook");
 
         ApplyPhysicalObjectHooks();
         ApplyPlayerCarryableItemHooks();
         ApplyLanternHooks();
         ApplySlimeMoldHooks();
-        Debug.LogInfo("Finish items");
+        Plugin.LogInfo("Finish items");
 
         ApplySpearHooks();
         ApplySporePlantHooks();
 
 
         //ApplySparkHooks(); //-- MS7: Uneeded, disabled
-        Debug.LogInfo("Finish all hook");
+        Plugin.LogInfo("Finish all hook");
     }
 
     internal static void RemoveHooks()
