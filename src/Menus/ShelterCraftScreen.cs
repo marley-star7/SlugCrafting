@@ -4,11 +4,15 @@ namespace SlugCrafting.Menus;
 
 public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 {
+    public global::HUD.HUD hud { get; private set; }
+
     public KarmaLadderScreen.SleepDeathScreenDataPackage fromGameDataPackage;
 
-    public int CurrentFood => 0;
+    public CraftRecipesSelector recipesSelector;
 
     public Player.InputPackage MapInput => RWInput.PlayerInput(0);
+
+    public int CurrentFood => 0;
 
     public Vector2 MapOwnerInRoomPosition => new Vector2(0f, 0f);
     public int MapOwnerRoom => -1;
@@ -20,8 +24,6 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 
     public float ContinueAndExitButtonsXPos => manager.rainWorld.options.ScreenSize.x + (1366f - manager.rainWorld.options.ScreenSize.x) / 2f;
 
-    public global::HUD.HUD hud { get; private set; }
-
     public ShelterCraftScreen(ProcessManager manager, ProcessManager.ProcessID ID) : base(manager, ID)
     {
         this.ID = SlugCraftingEnums.ProcessID.ShelterCraft;
@@ -30,11 +32,15 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
         selectedObject = null;
 
         AddContinueButton(black: true);
+
+        recipesSelector = new CraftRecipesSelector(this, this.pages[0], new Vector2(400f, manager.rainWorld.options.ScreenSize.y / 2)); // Same position as karma ladder, ui pos is relative to center of the ui element.
     }
 
     public override void Update()
     {
         base.Update();
+        recipesSelector.Update();
+
         if (continueButton != null)
         {
             continueButton.buttonBehav.greyedOut = ButtonsGreyedOut;
@@ -44,6 +50,12 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
         {
             hud.Update();
         }
+    }
+
+    public override void GrafUpdate(float timeStacker)
+    {
+        base.GrafUpdate(timeStacker);
+        recipesSelector.GrafUpdate(timeStacker);
     }
 
     private void AddContinueButton(bool black)
