@@ -141,6 +141,6 @@ internal static class RainWorldGameHooks
 
         Plugin.LogDebug("=== Finished CommunicateWithUpcomingProcess patch ===");
 
-        Plugin.LogDebug(il);
+        //Plugin.LogDebug(il);
     }
 }

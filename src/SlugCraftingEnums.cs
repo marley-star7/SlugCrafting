@@ -12,6 +12,11 @@ public static class SlugCraftingEnums
         public static readonly ProcessManager.ProcessID ShelterCraft = new("ShelterCraft", true);
     }
 
+    public static class SliderID
+    {
+        public static readonly Slider.SliderID CraftRecipesSelectorScroll = new("CraftRecipesSelectorScroll", true);
+    }
+
     public static class AbstractObjectType
     {
         public static readonly AbstractPhysicalObject.AbstractObjectType Knife = new("Knife", true);
