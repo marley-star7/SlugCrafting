@@ -104,9 +104,12 @@ sealed class Plugin : BaseUnityPlugin
         }
     }
 
-    internal static void LogInfo(object ex) => Logger.LogInfo(ex);
+    // Dev Custom Logs
+    // Sekq: Not sure if should make a dev archive for drive those custom dev logs or other upcoming things like dev console for items i guess?
 
-    internal static void LogMessage(object ex) => Logger.LogMessage(ex);
+    internal static void LogInfo(object ex) => Logger.LogInfo($"[{Plugin.ID}] + {ex}");
+
+    internal static void LogMessage(object ex) => Logger.LogMessage($"[{Plugin.ID}] + {ex}");
 
     // -- Ms7: String prints are expensive!
     // So just incase we forget any #if's anywhere to encase debug logs to be for debug builds only to reduce hit on user performance.
@@ -117,11 +120,36 @@ sealed class Plugin : BaseUnityPlugin
 #endif
     }
 
-    internal static void LogWarning(object ex) => Logger.LogWarning(ex);
+    internal static void LogWarning(object ex) => Logger.LogWarning($"[{Plugin.ID}] + {ex}");
 
-    internal static void LogError(object ex) => Logger.LogError(ex);
+    internal static void LogError(object ex) => Logger.LogError($"[{Plugin.ID}] + {ex}");
 
-    internal static void LogFatal(object ex) => Logger.LogFatal(ex);
+    internal static void LogFatal(object ex) => Logger.LogFatal($"[{Plugin.ID}] + {ex}");
+
+    /// <summary>
+    /// Logs a message to the Unity debug console during development builds.
+    /// </summary>
+    /// <remarks>This method is only active in debug builds and has no effect in release builds.</remarks>
+    /// <param name="msm">The message to log.</param>
+    /// <param name="type">An optional string representing the log type or category. Defaults to an empty string.</param>
+    public static void LogGame(string msm, string type="")
+    {
+#if DEBUG
+        UnityEngine.Debug.Log($"[{Plugin.ID}{type}] {msm}");
+#endif
+    }
+
+    public static void LogGameError(string msm)
+    {
+        LogError(msm);
+        LogGame(msm, "ERROR");
+    }
+
+    /// <summary>
+    /// Implement warn or thing to do in some functions
+    /// </summary>
+    /// <param name="msm"></param>
+    public static void LogGameWarn(string msm) => LogGame(msm, "WARN");
 
     //
     //-- CRAFTS
