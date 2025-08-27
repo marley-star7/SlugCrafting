@@ -5,14 +5,54 @@ using UnityEngine;
 
 namespace SlugCrafting.Items;
 
-public class CordItem : PlayerCarryableItem, IDrawable
+public class CordItem : PlayerCarryableItem, IDrawable, IClimbableVine
 {
+    public Rope[] ropes;
+
+    public Vector2 Pos(int index)
+	{
+		return this.mRLinePhysics.parts[index].pos;
+	}
+
+	public int TotalPositions()
+	{
+		return this.mRLinePhysics.parts.Length;
+	}
+
+	public float Rad(int index)
+	{
+		return 2f;
+	}
+
+	public float Mass(int index)
+	{
+		return 0.25f;
+	}
+
+	public void Push(int index, Vector2 movement)
+	{
+        this.mRLinePhysics.parts[index].pos += movement;
+        //this.mRLinePhysics.parts[index].vel += movement;
+	}
+
+	public void BeingClimbedOn(Creature crit)
+	{
+        Plugin.LogGame($"CordItem: CurrentlyClimbable() mode: {this.mode}");
+    }
+
+    public bool CurrentlyClimbable()
+	{
+        Plugin.LogGame($"CordItem: CurrentlyClimbable() mode: {this.mode}");
+        return true;
+        //return this.mode == Mode.BothEndsTied || this.mode == Mode.FirstEndTiedAndSecondEndGrabbed;
+    }
+
     public CordProperties properties;
 
     public AbstractCord abstractCord;
 
     public MRLinePhysics mRLinePhysics;
-    public Rope rope;
+    //public Rope rope;
 
     public enum Mode
     {
@@ -29,7 +69,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
     /// <summary>
     /// The total length of the string, how far of a distance an object can have from the string.
     /// </summary>
-    public float totalCordLength = 200f;
+    public float totalCordLength = 150f;
 
     public int cordSprite => 0;
     public const int totalSprites = 1;
@@ -82,7 +122,15 @@ public class CordItem : PlayerCarryableItem, IDrawable
         };
         mRLinePhysics.SetPartsRadius(properties.thickness);
         this.properties = properties;
-
+        // There will be a rope between 2 parts
+        this.ropes = new Rope[this.mRLinePhysics.parts.GetLength(0) - 1];
+        for (int i = 0; i < this.ropes.Length; i++)
+        {
+            // Initialize each rope with his room
+            // Sekq: later move this stuff to only realize when the mode is at least 1 End tied
+            this.ropes[i] = new Rope(abstractPhysicalObject.Room.realizedRoom, this.mRLinePhysics.parts[i].pos, this.mRLinePhysics.parts[i + 1].pos, 4f);
+            Plugin.LogGame("Creating rope part " + i + "IN ROMM " + this.ropes[i].room);
+        }
         /*
         rope = new Rope(room, firstChunk.pos, firstChunk.pos, properties.thickness)
         {
@@ -129,6 +177,15 @@ public class CordItem : PlayerCarryableItem, IDrawable
         }
 
         _mode = newMode;
+
+        if(_mode == Mode.FirstEndTied)
+        {
+            Plugin.LogGame("Setting midpart to first tied");
+            for (int i = 0; i < ropes.Length; i++)
+            {
+                
+            }
+        }
     }
 
     public void TieObject(AbstractPhysicalObject objectToTie, int tiedChunkIndex, int tiePosition)
@@ -145,7 +202,14 @@ public class CordItem : PlayerCarryableItem, IDrawable
         {
             Array.Resize(ref bodyChunkConnections, bodyChunkConnections.Length + 1);
             // MS7: Looking at source code, using -1 weight symmetry has the calculations go based off the chunks mass, so cool!
-            bodyChunkConnections[bodyChunkConnections.Length - 1] = (new BodyChunkConnection(this.firstChunk, objectToTie.realizedObject.bodyChunks[tiedChunkIndex], totalCordLength, type: BodyChunkConnection.Type.Pull, 0.7f, -1));
+            // Sekq: the equation refer for -1 are B/(A+B), where A is the weight of chunk1 and B the weight of chunk2
+            bodyChunkConnections[bodyChunkConnections.Length - 1] = new BodyChunkConnection(
+                this.firstChunk, 
+                objectToTie.realizedObject.bodyChunks[tiedChunkIndex], 
+                totalCordLength, 
+                BodyChunkConnection.Type.Pull, 
+                0.7f, 
+                -1);
         }
 
         objectToTie.GetAbstractPhysicalObjectCraftingData().tiedCord = abstractCord;
@@ -202,12 +266,21 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
     private void DislodgeTiedSpearFromWall(Spear tiedSpear)
     {
+        Plugin.LogGame("Dislodging tied spear from wall due to cord tension.");
         if (tiedSpear.stuckInWall.HasValue)
         {
             tiedSpear.room.PlaySound(SoundID.Spear_Stick_In_Ground, tiedSpear.firstChunk.pos, 1.8f, Random.Range(1.1f, 1.5f));
+            tiedSpear.PulledOutOfStuckObject();
+            tiedSpear.abstractPhysicalObject.LoseAllStuckObjects();
             tiedSpear.ChangeMode(Spear.Mode.Free);
+            tiedSpear.stuckInWall = null;
+            Plugin.LogGame("Setting the spear out of the wall");
         }
     }
+
+    public Vector2? stuckPosA;
+
+	public Vector2? stuckPosB;
 
     public override void Update(bool eu)
     {
@@ -304,7 +377,30 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
         //rope.Update(ropePos[0], ropePos[1]);
         mRLinePhysics.Update();
+        // Plugin.LogGame("Going update ropes");
+        try
+        {
+            for (int j = 0; j < this.ropes.Length; j++)
+            {
+                if (this.ropes[j].bends.Count > 3)
+                {
+                    this.ropes[j].Reset();
+                }
+                // SEKQ: I have to found a way to slugcat recognize the new ropes
+                this.ropes[j].Update(this.mRLinePhysics.parts[j].pos, this.mRLinePhysics.parts[j + 1].pos);
+                // Looks in wait sto improve
+                 Plugin.LogGame($"midpart at {this.bodyChunks[0].pos}, {j} Rope updated {this.ropes[j].A}, {this.ropes[j].B} ");
+            }
+
+
+        }
+        catch (Exception e)
+        {
+            Plugin.LogGameError("Rope failed " + e.Message);
+        }
     }
+
+    public float conRad = 10f;
 
     //
     // IDRAWABLE INTERFACE
