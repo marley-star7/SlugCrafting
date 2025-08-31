@@ -1,4 +1,4 @@
-﻿namespace SlugCrafting.Core;
+﻿namespace SlugCrafting;
 
 //-- MS7: I would move this somewhere else if I could think of a better spot.
 public static partial class Content
@@ -38,8 +38,8 @@ public static partial class Content
 
     internal static void RegisterSlugCraftingItemBundlesProperties()
     {
-        SlugCrafting.Core.Content.RegisterItemBundleProperties(
-            SlugCraftingEnums.AbstractObjectType.LanternMouseString,
+        Content.RegisterItemBundleProperties(
+            Enums.AbstractObjectType.LanternMouseString,
             new ItemBundleProperties
             (
                 3

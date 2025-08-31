@@ -3,7 +3,7 @@ using SlugCrafting.Animations;
 
 namespace SlugCrafting;
 
-public static class SlugCraftingEnums
+public static class Enums
 {
     public static readonly SlugcatStats.Name Crafter = new(nameof(Crafter), false);
 
@@ -175,45 +175,48 @@ public static class SlugCraftingEnums
 
     public static class CraftAnimationSets
     {
-        public static Craft.Animation[] DefaultSawBackForthUsingLeftHandAnimations = new Craft.Animation[]
+        public static HandCraft.Animation[] DefaultSawBackForthUsingLeftHandAnimations = new HandCraft.Animation[]
         {
-            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingLeftHand)
+            new HandCraft.Animation(1, Enums.PlayerHandAnimations.SawBackForthUsingLeftHand)
         };
-        public static Craft.Animation[] DefaultSawBackForthUsingRightHandAnimations = new Craft.Animation[]
+        public static HandCraft.Animation[] DefaultSawBackForthUsingRightHandAnimations = new HandCraft.Animation[]
         {
-            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.SawBackForthUsingRightHand)
+            new HandCraft.Animation(1, Enums.PlayerHandAnimations.SawBackForthUsingRightHand)
         };
     }
 
-    public static class CraftIngredients
+    public static class CraftRecipeMaterials
     {
-        public static CraftIngredient Knife = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Knife);
+        public static CraftRecipe.Material Knife = new CraftRecipe.Material(Enums.AbstractObjectType.Knife);
 
-        public static CraftIngredient GreenLizardHeadShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell);
-        public static CraftIngredient PinkLizardHeadShell = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.PinkLizardHeadShell);
+        public static CraftRecipe.Material Cord = new CraftRecipe.Material(Enums.AbstractObjectType.Cord);
 
-        public static CraftIngredient GreenLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.GreenLizard);
-        public static CraftIngredient GreenLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.GreenLizard);
+        public static CraftRecipe.Material GreenLizardHeadShell = new CraftRecipe.Material(Enums.AbstractObjectType.GreenLizardHeadShell);
+        public static CraftRecipe.Material PinkLizardHeadShell = new CraftRecipe.Material(Enums.AbstractObjectType.PinkLizardHeadShell);
+        public static CraftRecipe.Material BlueLizardHeadShell = new CraftRecipe.Material(Enums.AbstractObjectType.BlueLizardShellHelmet);
 
-        public static CraftIngredient PinkLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.PinkLizard);
-        public static CraftIngredient PinkLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.PinkLizard);
+        public static CraftRecipe.Material GreenLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.GreenLizard);
+        public static CraftRecipe.Material GreenLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.GreenLizard);
 
-        public static CraftIngredient BlueLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.BlueLizard);
-        public static CraftIngredient BlueLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.BlueLizard);
+        public static CraftRecipe.Material PinkLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.PinkLizard);
+        public static CraftRecipe.Material PinkLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.PinkLizard);
 
-        public static CraftIngredient WhiteLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.WhiteLizard);
-        public static CraftIngredient WhiteLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.WhiteLizard);
+        public static CraftRecipe.Material BlueLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.BlueLizard);
+        public static CraftRecipe.Material BlueLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.BlueLizard);
 
-        public static CraftIngredient YellowLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.YellowLizard);
-        public static CraftIngredient YellowLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.YellowLizard);
+        public static CraftRecipe.Material WhiteLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.WhiteLizard);
+        public static CraftRecipe.Material WhiteLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.WhiteLizard);
 
-        public static CraftIngredient BlackLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.BlackLizard);
-        public static CraftIngredient BlackLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.BlackLizard);
+        public static CraftRecipe.Material YellowLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.YellowLizard);
+        public static CraftRecipe.Material YellowLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.YellowLizard);
 
-        public static CraftIngredient RedLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.RedLizard);
-        public static CraftIngredient RedLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.RedLizard);
+        public static CraftRecipe.Material BlackLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.BlackLizard);
+        public static CraftRecipe.Material BlackLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.BlackLizard);
 
-        public static CraftIngredient CyanLizardHead = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.CyanLizard);
-        public static CraftIngredient CyanLizardBody = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.CyanLizard);
+        public static CraftRecipe.Material RedLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.RedLizard);
+        public static CraftRecipe.Material RedLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.RedLizard);
+
+        public static CraftRecipe.Material CyanLizardHead = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Head, CreatureTemplate.Type.CyanLizard);
+        public static CraftRecipe.Material CyanLizardBody = new CraftRecipe.Material(AbstractPhysicalObject.AbstractObjectType.Creature, CreatureBodyChunkIndex.Lizard.Body, CreatureTemplate.Type.CyanLizard);
     }
 }

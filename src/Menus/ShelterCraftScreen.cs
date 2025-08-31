@@ -2,13 +2,37 @@
 
 namespace SlugCrafting.Menus;
 
+// TODO: save inventory as persistent data before goin to sleep by whats in the shelter room,
+// Modify it during shelter craft
+// And then when loading, modfify the items in the shelter room to match the changes in inventory.
+// and i believe as quitting out causes a save, you can save the intended changes to string data for if ever quit out during crafting.
+// And put all of this inventory data in PlayerProgression.
+// Just need to find best point during sleep to hook onto for it.
+
+// TODO: look at PlayerProgresson.SaveWorldStateAndProgression for how to make malnourished not always stop saving.
+// TODO: it always saves to disk it seems on win.
+
 public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 {
+    public class ShelterCraftScreenDataPackage
+    {
+        public Inventory playerShelterInventory;
+
+        public SleepAndDeathScreen.SleepDeathScreenDataPackage sleepAndDeathScreenDataPackage;
+
+        public ShelterCraftScreenDataPackage(SleepAndDeathScreen.SleepDeathScreenDataPackage sleepDeathScreenDataPackage)
+        {
+            sleepAndDeathScreenDataPackage = sleepDeathScreenDataPackage;
+        }
+    }
+
     public global::HUD.HUD hud { get; private set; }
 
-    public KarmaLadderScreen.SleepDeathScreenDataPackage fromGameDataPackage;
+    public ShelterCraftScreenDataPackage fromGameDataPackage;
 
-    public CraftRecipesSelector recipesSelector;
+    public ShelterCraftSelector shelterCraftSelector;
+
+    public InventoryDisplay inventoryDisplay;
 
     public Player.InputPackage MapInput => RWInput.PlayerInput(0);
 
@@ -26,20 +50,22 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 
     public ShelterCraftScreen(ProcessManager manager, ProcessManager.ProcessID ID) : base(manager, ID)
     {
-        this.ID = SlugCraftingEnums.ProcessID.ShelterCraft;
+        this.ID = Enums.ProcessID.ShelterCraft;
 
         pages.Add(new Page(this, null, "main", 0));
         selectedObject = null;
 
         AddContinueButton(black: true);
 
-        recipesSelector = new CraftRecipesSelector(this, this.pages[0], new Vector2(400f, manager.rainWorld.options.ScreenSize.y / 2)); // Same position as karma ladder, ui pos is relative to center of the ui element.
+        shelterCraftSelector = new ShelterCraftSelector(this, this.pages[0], new Vector2(400f, manager.rainWorld.options.ScreenSize.y / 2), ShelterCraftSelector.GetDefaultSize); // Same position as karma ladder, ui pos is relative to center of the ui element.
+        inventoryDisplay = new InventoryDisplay(this, this.pages[0], new Vector2(800f, manager.rainWorld.options.ScreenSize.y - 32));
     }
 
     public override void Update()
     {
         base.Update();
-        recipesSelector.Update();
+        shelterCraftSelector.Update();
+        inventoryDisplay.Update();
 
         if (continueButton != null)
         {
@@ -55,7 +81,8 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
     public override void GrafUpdate(float timeStacker)
     {
         base.GrafUpdate(timeStacker);
-        recipesSelector.GrafUpdate(timeStacker);
+        shelterCraftSelector.GrafUpdate(timeStacker);
+        inventoryDisplay.GrafUpdate(timeStacker);
     }
 
     private void AddContinueButton(bool black)
@@ -81,10 +108,13 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
         }
     }
 
-    public void GetDataFromGame(KarmaLadderScreen.SleepDeathScreenDataPackage package)
+    public void GetDataFromGame(ShelterCraftScreenDataPackage package)
     {
         Plugin.LogDebug($"Got the data from the game for the Shelter Craft Screen!");
+
         fromGameDataPackage = package;
+        shelterCraftSelector.SetPlayerInventory(fromGameDataPackage.playerShelterInventory);
+        inventoryDisplay.SetInventory(fromGameDataPackage.playerShelterInventory);
     }
 
     public override void CommunicateWithUpcomingProcess(MainLoopProcess nextProcess)
@@ -94,7 +124,7 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
         base.CommunicateWithUpcomingProcess(nextProcess);
         if (nextProcess is SleepAndDeathScreen sleepAndDeathScreen)
         {
-            sleepAndDeathScreen.GetDataFromGame(fromGameDataPackage);
+            sleepAndDeathScreen.GetDataFromGame(fromGameDataPackage.sleepAndDeathScreenDataPackage);
         }
     }
 

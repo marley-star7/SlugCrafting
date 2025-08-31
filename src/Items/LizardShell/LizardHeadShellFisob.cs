@@ -10,7 +10,7 @@ namespace SlugCrafting.Items;
 /// </summary>
 sealed class LizardHeadShellFisob : Fisob
 {
-    public LizardHeadShellFisob() : base(SlugCraftingEnums.AbstractObjectType.LizardHeadShell)
+    public LizardHeadShellFisob() : base(Enums.AbstractObjectType.LizardHeadShell)
     {
 
     }

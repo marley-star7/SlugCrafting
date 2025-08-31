@@ -1,6 +1,4 @@
-﻿using static CompartmentalizedCreatureGraphics.CCGEnums;
-
-namespace SlugCrafting.Items;
+﻿namespace SlugCrafting.Items;
 
 public class LizardShellHelmetProperties : ItemProperties
 {

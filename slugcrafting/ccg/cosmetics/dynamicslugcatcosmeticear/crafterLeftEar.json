@@ -9,9 +9,7 @@
       "endSpriteIndex": 0
     }
   ],
-  "spriteAnglePositions": [
-    [ -4, 4 ]
-  ],
+  "spriteAnglePropertiesId": "vanillaLeftEar",
   "curl": -0.3,
   "rad": 5,
   "scaleX": 1,

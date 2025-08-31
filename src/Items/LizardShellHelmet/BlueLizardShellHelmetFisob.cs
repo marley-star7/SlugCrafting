@@ -10,12 +10,12 @@ sealed class BlueLizardShellHelmetFisob : Fisob
 {
     public static readonly BlueLizardShellHelmetProperties properties = new();
 
-    public BlueLizardShellHelmetFisob() : base(SlugCraftingEnums.AbstractObjectType.BlueLizardShellHelmet)
+    public BlueLizardShellHelmetFisob() : base(Enums.AbstractObjectType.BlueLizardShellHelmet)
     {
-        LizardShellHelmetProperties.typesProperties.Add(SlugCraftingEnums.AbstractObjectType.BlueLizardShellHelmet, properties);
+        LizardShellHelmetProperties.typesProperties.Add(Enums.AbstractObjectType.BlueLizardShellHelmet, properties);
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.BlueLizardShellHelmet, parent: MultiplayerUnlocks.SandboxUnlockID.BlueLizard, data: 0);
+        RegisterUnlock(Enums.SandboxUnlockID.BlueLizardShellHelmet, parent: MultiplayerUnlocks.SandboxUnlockID.BlueLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
@@ -28,7 +28,7 @@ sealed class BlueLizardShellHelmetFisob : Fisob
             parsedData = new string[2];
         }
 
-        var result = new AbstractLizardShellHelmet(world, SlugCraftingEnums.AbstractObjectType.BlueLizardShellHelmet, saveData.Pos, saveData.ID);
+        var result = new AbstractLizardShellHelmet(world, Enums.AbstractObjectType.BlueLizardShellHelmet, saveData.Pos, saveData.ID);
 
         if (MRJson.TryParseColor(parsedData[0], out var shellColorParsed))
             result.shellColor = shellColorParsed;

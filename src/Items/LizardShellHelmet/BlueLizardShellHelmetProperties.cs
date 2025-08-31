@@ -67,8 +67,8 @@ public class BlueLizardShellHelmetProperties : LizardShellHelmetProperties
 
     public override SpriteLayerGroup[] spriteLayerGroups => new SpriteLayerGroup[]
     {
-        new SpriteLayerGroup((int) CCGEnums.SlugcatCosmeticLayer.BaseHead, 0, 1),
-        new SpriteLayerGroup((int) CCGEnums.SlugcatCosmeticLayer.FaceMask, 2, 9),
+        new SpriteLayerGroup((int) CompartmentalizedCreatureGraphics.Enums.SlugcatCosmeticLayer.BaseHead, 0, 1),
+        new SpriteLayerGroup((int) CompartmentalizedCreatureGraphics.Enums.SlugcatCosmeticLayer.FaceMask, 2, 9),
     };
 
     public override SpriteEffectGroup[] spriteEffectGroups => new SpriteEffectGroup[]

@@ -1,65 +1,63 @@
-﻿using RWCustom;
-using UnityEngine;
+﻿using MRCustom.IdGenerators;
 
-using SlugCrafting.Crafts;
-using SlugCrafting.Items;
-
-namespace SlugCrafting.Core;
+namespace SlugCrafting;
 
 public static partial class Content
 {
-    //
-    // CRAFTING
-    //
+    // Ms7: Set up a craft recipe id system, this way only one list is needed for all craft recipes, which can be efficiently looped through.
+    // A craft recipe stores the id of the craft with it, which you get set yourself in the constructor for no confusion as to each craft recipe having it's own unique id.
+    // The id is used to refer to shelter crafts by dictionary, for efficient gettage in the thingy, all very performance friendly! (A little overkill tbh)
 
-    public static readonly Dictionary<CraftIngredient, List<Craft>> CraftsUsingIngredients = new();
+    private static UShortIdGenerator CraftIDGenerator = new();
+
+    /// <summary>
+    /// All the registered craft recipes in the crafting system.
+    /// </summary>
+    public static readonly List<CraftRecipe> CraftRecipes = new();
+
     /// <summary>
     /// The first element in the tuple is the primary dominant ingredient.
     /// Second is the non-dominant (or secondary) ingredient.
-    /// A dictionary is used for optimized lookup
+    /// A dictionary is used for optimized lookup, so can immediately see the existance of crafts using an item.
     /// </summary>
-    public static readonly Dictionary<(CraftIngredient?, CraftIngredient?), Craft> Crafts = new();
+    public static readonly Dictionary<(CraftRecipe.Material?, CraftRecipe.Material?), HandCraft> HandCrafts = new();
+
+    /// <summary>
+    /// The static collection of all shelter crafts registered in the crafting system.
+    /// Access a ShelterCraft by it's CraftRecipe Id.
+    /// </summary>
+    public static readonly Dictionary<ushort, ShelterCraft> ShelterCrafts = new();
+
+    // -- Ms7: The purpose of the RegisterHandCraft optional register for shelter craft is just to help in creation, and clearly define it in code as a craft that shares id's with a ShelterCraft
+    // This so that if showing both HandCrafts and ShelterCrafts there is not duplicate entries in the menu for the same resulting craft.
 
     /// <summary>
     /// Register a new craft to the crafting system.
     /// The primary ingredient is the one in your character's dominant hand, and is the item that always ends up "changed" after crafts.
     /// The secondary ingredient is the one in your character's non-dominant hand, it is where tools, or the item that is consumed is held.
     /// The craft will always end with the new item in your primary (dominant) hand.
+    /// If you set an optional ShelterCraft.CraftResult, it will also register a ShelterCraft for this HandCraft, using the same recipe.
     /// </summary>
-    /// <param name="primaryIngredient"></param>
-    /// <param name="secondaryIngredient"></param>
     /// <param name="newCraft"></param>
-    public static void RegisterCraft(Craft newCraft)
+    /// <param name="optionalShelterCraftResult"></param>
+    public static void RegisterHandCraft(HandCraft newCraft, ShelterCraft.CraftResult optionalShelterCraftResult = null)
     {
-        var ingredientTuple = (newCraft.primaryIngredient, newCraft.secondaryIngredient);
+        var ingredientTuple = (newCraft.primaryIngredient.material, newCraft.secondaryIngredient.material);
 
-        if (Crafts.ContainsKey(ingredientTuple))
-            Crafts[ingredientTuple] = newCraft;
+        if (HandCrafts.ContainsKey(ingredientTuple))
+            HandCrafts[ingredientTuple] = newCraft;
         else
-            Crafts.Add(ingredientTuple, newCraft);
+            HandCrafts.Add(ingredientTuple, newCraft);
 
-        RegisterCraftUsingIngredient(newCraft.primaryIngredient, newCraft);
-        RegisterCraftUsingIngredient(newCraft.secondaryIngredient, newCraft);
+        if (optionalShelterCraftResult != null)
+        {
+            RegisterShelterCraft(new ShelterCraft(newCraft.recipe, optionalShelterCraftResult));
+        }
+        else
+        {
+            RegisterCraftRecipe(newCraft.recipe); // RegisterShelterCraft registers craft recipe, no need to do twice,
+        }
     }
-
-    internal static void RegisterCraftUsingIngredient(CraftIngredient craftIngredient, Craft craft)
-    {
-        if (!CraftsUsingIngredients.ContainsKey(craftIngredient))
-            CraftsUsingIngredients.Add(craftIngredient, new List<Craft>());
-
-        CraftsUsingIngredients[craftIngredient].Add(craft);
-    }
-
-    /// <summary>
-    /// The static collection of all crafts registered in the crafting system.
-    /// </summary>
-    public static readonly HashSet<ShelterCraft> ShelterCrafts = new();
-
-    /// <summary>
-    /// The dynamic dictionary of crafts using a specific object type,
-    /// Important saved and updated to improve performance during runtime real time questionaires for crafting.
-    /// </summary>
-    public static readonly Dictionary<CraftIngredient, HashSet<ShelterCraft>> ShelterCraftsUsingObjectType = new();
 
     /// <summary>
     /// Register a new craft to the crafting system.
@@ -68,36 +66,36 @@ public static partial class Content
     /// <exception cref="ArgumentException"></exception>
     public static void RegisterShelterCraft(ShelterCraft newShelterCraft)
     {
-        if (ShelterCrafts.Contains(newShelterCraft))
-            throw new ArgumentException($"Craft already registered: {newShelterCraft}");
-        else
-            ShelterCrafts.Add(newShelterCraft);
-
-        foreach (var ingredient in newShelterCraft.ingredients)
-        {
-            // Search for the ingredient type in dictionary
-            if (ShelterCraftsUsingObjectType.TryGetValue(ingredient, out HashSet<ShelterCraft> crafts))
-            {
-                if (!crafts.Contains(newShelterCraft))
-                    crafts.Add(newShelterCraft);
-            }
-            else
-            {
-                // If the ingredient type is not found, create a new Hashet for that ingredient containing the craft, and add it to the dictionary.
-                ShelterCraftsUsingObjectType[ingredient] = crafts = new HashSet<ShelterCraft>()
-                {
-                    newShelterCraft
-                };
-            }
-        }
+        ShelterCrafts.Add(newShelterCraft.recipe.craftID, newShelterCraft);
+        RegisterCraftRecipe(newShelterCraft.recipe);
     }
 
+    /// <summary>
+    /// Generate a unique craft ID to be assigned to a CraftRecipe, relating it back to it's respective crafts.
+    /// </summary>
+    /// <returns></returns>
+    public static ushort GenerateUniqueCraftID()
+    {
+        return CraftIDGenerator.GenerateUniqueId();
+    }
+
+    private static void RegisterCraftRecipe(CraftRecipe newRecipe)
+    {
+        if (CraftRecipes.Contains(newRecipe))
+        {
+            Plugin.LogError($"Craft Recipe of ingredients: {newRecipe.ingredients} already exists! Cannot register! What are you actually doing? How did you do this?");
+            return;
+        }
+        CraftRecipes.Add(newRecipe);
+    }
+
+    /*
     public static bool ShelterCraftContainsIngredient(in ShelterCraft craft, AbstractPhysicalObject.AbstractObjectType objectType)
     {
         for (int i = 0; i < craft.ingredients.Length; i++)
         {
             // Check if the ingredient type is in the object types.
-            if (craft.ingredients[i].objectType == objectType)
+            if (craft.ingredients[i].material == objectType)
             {
                 return true;
             }
@@ -105,6 +103,7 @@ public static partial class Content
         return false;
     }
 
+   
     public static bool HasAllIngredientsForShelterCraft(AbstractPhysicalObject.AbstractObjectType[] objectTypes, in ShelterCraft craft)
     {
         for (int i = 0; i < objectTypes.Length; i++)
@@ -117,6 +116,7 @@ public static partial class Content
         }
         return true;
     }
+        */
 
     /*
     public static HashSet<ShelterCraft> GetSheterCraftsForObjectTypes(AbstractPhysicalObject.AbstractObjectType[] objectTypes)
@@ -213,17 +213,6 @@ public static partial class Content
         return null;
     }
     */
-
-    //
-    // ITEM BUNDLES
-    //
-
-    public static readonly Dictionary<AbstractPhysicalObject.AbstractObjectType, ItemBundleProperties> ItemsBundleProperties = new Dictionary<AbstractPhysicalObject.AbstractObjectType, ItemBundleProperties>();
-
-    public static void RegisterItemBundleProperties(AbstractPhysicalObject.AbstractObjectType type, ItemBundleProperties properties)
-    {
-        ItemsBundleProperties[type] = properties;
-    }
 
     //
     // HELPER FUNCTIONS

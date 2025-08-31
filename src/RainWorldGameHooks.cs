@@ -31,6 +31,23 @@ internal static class RainWorldGameHooks
         }
     }
 
+    private static RegionState FindPlayerRegionState(SaveState saveState, string regionName)
+    {
+        if (saveState == null)
+            Plugin.LogError("SaveState is null in FindPlayerRegionState!");
+        else if (saveState.regionStates == null)
+            Plugin.LogError("RegionStates is null in FindPlayerRegionState!");
+
+        for (int i = 0; i < saveState.regionStates.Length; i++)
+        {
+            if (saveState.regionStates[i].regionName == regionName)
+            {
+                return saveState.regionStates[i];
+            }
+        }
+        return null;
+    }
+
     private static void RainWorldGame_CommunicateWithUpcomingProcess(ILContext il)
     {
         ILCursor cursor = new ILCursor(il);
@@ -109,13 +126,22 @@ internal static class RainWorldGameHooks
                 cursor.Emit(OpCodes.Isinst, typeof(ShelterCraftScreen));
                 cursor.Emit(OpCodes.Brfalse_S, beforeKarmaLadderScreenIf);
 
+
                 cursor.Emit(OpCodes.Ldarg_1);
                 cursor.Emit(OpCodes.Isinst, typeof(ShelterCraftScreen));
                 cursor.Emit(OpCodes.Ldloc_S, dataPackageVarIndex); // -- Ms7: DON'T FORGET THE _SSSSSSSSSSSSSSSSSSS AHHGGGGG
-                cursor.Emit(OpCodes.Callvirt, typeof(ShelterCraftScreen).GetMethod(
-                    "GetDataFromGame",
-                    new[] { typeof(KarmaLadderScreen.SleepDeathScreenDataPackage) }
-                ));
+                cursor.EmitDelegate((ShelterCraftScreen shelterCraftScreen, KarmaLadderScreen.SleepDeathScreenDataPackage sleepDeathScreenDataPackage) =>
+                {
+                    //RegionState playerRegionState = FindPlayerRegionState(sleepDeathScreenDataPackage.saveState, rainWorldGame.world.region.name);
+
+                    //-- Ms7: Create the data package for shelter craft screen containing SleepDeathScreenDataPackage and other stuff.
+                    var shelterCraftScreenDataPackage = new ShelterCraftScreen.ShelterCraftScreenDataPackage(sleepDeathScreenDataPackage)
+                    {
+                        playerShelterInventory = sleepDeathScreenDataPackage.saveState.GetSaveStateCraftingData().playerShelterInventory
+                    };
+
+                    shelterCraftScreen.GetDataFromGame(shelterCraftScreenDataPackage);
+                });
 
                 cursor.MarkLabel(beforeKarmaLadderScreenIf);
 

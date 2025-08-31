@@ -1,6 +1,4 @@
-﻿using Fisobs.Properties;
-using static CompartmentalizedCreatureGraphics.CCGEnums;
-using static SlugCrafting.Items.LizardShellHelmet;
+﻿using static SlugCrafting.Items.LizardShellHelmet;
 
 namespace SlugCrafting.Items;
 
@@ -58,8 +56,8 @@ public class GreenLizardShellHelmetProperties : LizardShellHelmetProperties
 
     public override SpriteLayerGroup[] spriteLayerGroups => new SpriteLayerGroup[]
     {
-        new SpriteLayerGroup((int) CCGEnums.SlugcatCosmeticLayer.BaseHead, 0, 1),
-        new SpriteLayerGroup((int) CCGEnums.SlugcatCosmeticLayer.FaceMask, 2, 8),
+        new SpriteLayerGroup((int) CompartmentalizedCreatureGraphics.Enums.SlugcatCosmeticLayer.BaseHead, 0, 1),
+        new SpriteLayerGroup((int) CompartmentalizedCreatureGraphics.Enums.SlugcatCosmeticLayer.FaceMask, 2, 8),
     };
 
     public override SpriteEffectGroup[] spriteEffectGroups => new SpriteEffectGroup[]

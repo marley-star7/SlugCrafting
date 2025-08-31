@@ -41,17 +41,17 @@ sealed class Plugin : BaseUnityPlugin
         // Someday's I think about logging with my logger, and I get all loggy...
         Logger = base.Logger;
 
-        //CompartmentalizedCreatureGraphics.Core.Content.AddCharacterCosmeticPreset(SlugCraftingEnums.Crafter, crafterCosmeticsPreset);
+        //CompartmentalizedCreatureGraphics.Core.Content.AddCharacterCosmeticPreset(Enums.Crafter, crafterCosmeticsPreset);
 
-        Core.Content.RegisterSlugCraftingFisobs();
-        RegisterSlugCraftingShelterCrafts();
+        Content.RegisterSlugCraftingFisobs();
         RegisterSlugCraftingCrafts();
-        Core.Content.RegisterSlugCraftingItemBundlesProperties();
+        Content.RegisterSlugCraftingItemBundlesProperties();
+        RegisterObjectIconSymbolProperties();
 
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
 
-        SlugCraftingEnums.PlayerHandAnimations.RegisterValues();
+        Enums.PlayerHandAnimations.RegisterValues();
 
         try
         {
@@ -171,23 +171,23 @@ sealed class Plugin : BaseUnityPlugin
         cordObject.TieObject(objectToTie.abstractPhysicalObject, 0, 0);
     }
 
-    public static bool PrimaryIngredientChunkNotScavengedValidation(in Craft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject)
+    public static bool PrimaryIngredientChunkNotScavengedValidation(in HandCraft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject)
     {
         if (primaryIngredientObject is not Creature creature)
             return false;
 
-        if (creature.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Contains(craft.primaryIngredient.bodyChunkIndex))
+        if (creature.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Contains(craft.primaryIngredient.material.bodyChunkIndex))
             return false;
 
         return true;
     }
 
-    public static bool SecondaryIngredientChunkNotScavengedValidation(in Craft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject)
+    public static bool SecondaryIngredientChunkNotScavengedValidation(in HandCraft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject)
     {
         if (secondaryIngredientObject is not Creature creature)
             return false;
 
-        if (creature.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Contains(craft.secondaryIngredient.bodyChunkIndex))
+        if (creature.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Contains(craft.secondaryIngredient.material.bodyChunkIndex))
             return false;
 
         return true;
@@ -215,37 +215,88 @@ sealed class Plugin : BaseUnityPlugin
         lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(CreatureBodyChunkIndex.Lizard.Head);
     }
 
-    private static void GreenLizardShellHelmetShelterCraftResult(in ShelterCraft shelterCraft, Creature crafter)
+    private static void GreenLizardShellHelmetShelterCraftResult(in CraftRecipe shelterCraft, Creature crafter)
     {
 
     }
 
-    internal static void RegisterSlugCraftingShelterCrafts()
+    private void RegisterObjectIconSymbolProperties()
     {
-        Core.Content.RegisterShelterCraft(
-            new ShelterCraft(
-                new CraftIngredient[] { SlugCraftingEnums.CraftIngredients.GreenLizardHeadShell },
-                SlugCraftingEnums.AbstractObjectType.GreenLizardShellHelmet,
-                GreenLizardShellHelmetShelterCraftResult
-            )
-        );
+        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.Knife, new ObjectIconSymbolProperties("Knife", "icon_Knife", Color.gray, 1f));
+
+        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.Cord, new ObjectIconSymbolProperties("Cord", "icon_Cord", Color.gray, 1f));
+
+        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.GreenLizardHeadShell, new ObjectIconSymbolProperties("Green Lizard Head Shell", "icon_GreenLizardHeadShell", Color.green, 1f));
+        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.GreenLizardShellHelmet, new ObjectIconSymbolProperties("Green Lizard Shell Helmet", "icon_GreenLizardShellHelmet", Color.green, 1f));
+
+        //ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.BlueLizardHeadShell, new ObjectIconSymbolProperties("Blue Lizard Head Shell", "icon_BlueLizardHeadShell", Color.blue, 1f));
+        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.BlueLizardShellHelmet, new ObjectIconSymbolProperties("Blue Lizard Shell Helmet", "icon_BlueLizardShellHelmet", Color.blue, 1f));
     }
 
     internal static void RegisterSlugCraftingCrafts()
     {
+        // TODO: shelter crafts use have delegate that creates the item on wakeup, during wakeup all delegates run, adding stuff to the room .
+        /*
+        Core.Content.RegisterShelterCraft(new ShelterCraft(
+            new CraftRecipe(
+                new CraftRecipe.Ingredient[]
+                {
+                    new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.GreenLizardHeadShell, consumed: true),
+                    new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Cord, consumed: true),
+                },
+                new ObjectDefinition[]
+                {
+                    new ObjectDefinition(Enums.AbstractObjectType.GreenLizardShellHelmet)
+                }
+            )
+        ));
+
+        Core.Content.RegisterShelterCraft(new ShelterCraft(
+            new CraftRecipe(
+                new CraftRecipe.Ingredient[]
+                {
+                            new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.BlueLizardHeadShell, consumed: true),
+                            new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Cord, consumed: true),
+                },
+                new ObjectDefinition[]
+                {
+                    new ObjectDefinition(Enums.AbstractObjectType.BlueLizardShellHelmet)
+                }
+            )
+        ));
+
+        Core.Content.RegisterShelterCraft(new ShelterCraft(
+            new CraftRecipe(
+                new CraftRecipe.Ingredient[]
+                {
+                    new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.PinkLizardHeadShell, consumed: true),
+                    new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Cord, consumed: true),
+                },
+                new ObjectDefinition[]
+                {
+                    new ObjectDefinition(Enums.AbstractObjectType.PinkLizardShellHelmet)
+                }
+            )
+        ));
+        */
+
         //
         //-MS7 TODO: can probably remove the "CraftIngredient" type and just search by abstract object?
         // Use craft result instead to decide wether something is consumed via an easy function, would definitely fit nicer.
         //
 
         //-- CRAFT DATA
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.WaterNut),
-                secondaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.FirecrackerPlant),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.WaterNut, consumed: true),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.FirecrackerPlant, consumed: true),
+                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.ScavengerBomb)
+                ),
 
-                ingredientValidation = (in Craft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
+                ingredientValidation = (in HandCraft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
                 {
                     var waterNut = (WaterNut)primaryIngredientObject;
 
@@ -270,12 +321,24 @@ sealed class Plugin : BaseUnityPlugin
                          ));
                 },
 
-                animations = new Craft.Animation[]
+                animations = new HandCraft.Animation[]
                 {
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.BiteStruggleNutLeftHand),
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.DoubleSwallow)
+                    new HandCraft.Animation(1, Enums.PlayerHandAnimations.BiteStruggleNutLeftHand),
+                    new HandCraft.Animation(1, Enums.PlayerHandAnimations.DoubleSwallow)
                 },
+
                 needBothHandsFree = true,
+            },
+            optionalShelterCraftResult: (in ShelterCraft.ShelterCraftResultDataPackage shelterCraftResultDataPackage) =>
+            {
+                shelterCraftResultDataPackage.abstractRoom.AddEntity(
+                    new AbstractPhysicalObject(
+                        shelterCraftResultDataPackage.abstractRoom.world,
+                        AbstractPhysicalObject.AbstractObjectType.ScavengerBomb,
+                        null,
+                        shelterCraftResultDataPackage.pos,
+                        shelterCraftResultDataPackage.abstractRoom.world.game.GetNewID())
+                );
             }
         );
 
@@ -283,11 +346,15 @@ sealed class Plugin : BaseUnityPlugin
         // SPEAR PRIMARY CRAFTS
         //
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
-                secondaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Rock),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear, consumed: true),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Rock),
+                    new ObjectDefinition(Enums.AbstractObjectType.Knife)
+                ),
 
                 craftResult = (Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject) =>
                 {
@@ -311,29 +378,33 @@ sealed class Plugin : BaseUnityPlugin
                     player.RealizeAndGrab(
                         new AbstractKnife(
                              crafter.room.world,
-                             SlugCraftingEnums.AbstractObjectType.Knife,
+                             Enums.AbstractObjectType.Knife,
                              crafter.coord,
                              crafter.room.game.GetNewID()
                          )
                     );
                 },
 
-                animations = new Craft.Animation[]
+                animations = new HandCraft.Animation[]
                 {
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.KnapSpearFirstHit),
-                    new Craft.Animation(5, SlugCraftingEnums.PlayerHandAnimations.KnapSpearLoop),
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.KnapSpearBreak)
+                    new HandCraft.Animation(1, Enums.PlayerHandAnimations.KnapSpearFirstHit),
+                    new HandCraft.Animation(5, Enums.PlayerHandAnimations.KnapSpearLoop),
+                    new HandCraft.Animation(1, Enums.PlayerHandAnimations.KnapSpearBreak)
                 },
             }
         );
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
-                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Knife),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
+                    new CraftRecipe.Ingredient(Enums.AbstractObjectType.Knife),
+                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                ),
 
-                ingredientValidation = (in Craft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
+                ingredientValidation = (in HandCraft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
                 {
                     // TODO: for some reason this validation isn't working / updating.
                     // Only can craft if the spear is not already sharpened.
@@ -408,49 +479,61 @@ sealed class Plugin : BaseUnityPlugin
                     player.SlugcatGrab(newSpear, player.FreeHand());
                 },
 
-                animations = new Craft.Animation[]
+                animations = new HandCraft.Animation[]
                 {
-                    new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.ImpaleOnSpear)
+                    new HandCraft.Animation(1, Enums.PlayerHandAnimations.ImpaleOnSpear)
                 },
             }
         );
 
         // --- Spear Impaling Crafts List ---
 
-        var defaultImpaleOnSpearCraftAnimation = new Craft.Animation[]
+        var defaultImpaleOnSpearCraftAnimation = new HandCraft.Animation[]
         {
-            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.KnapSpearBreak)
+            new HandCraft.Animation(1, Enums.PlayerHandAnimations.KnapSpearBreak)
         };
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
-                secondaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Lantern),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Lantern),
+                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                ),
 
                 craftResult = DefaultImpaleObjectOnSpearCraftResult,
                 animations = defaultImpaleOnSpearCraftAnimation,
             }
         );
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
-                secondaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.SlimeMold),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.SlimeMold),
+                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                ),
 
                 craftResult = DefaultImpaleObjectOnSpearCraftResult,
                 animations = defaultImpaleOnSpearCraftAnimation,
             }
         );
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
-                secondaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.SporePlant),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
+                    new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.SporePlant),
+                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                ),
 
-                ingredientValidation = (in Craft craft, in Creature crafter, in PhysicalObject _, in PhysicalObject secondaryIngredientObject) =>
+                ingredientValidation = (in HandCraft craft, in Creature crafter, in PhysicalObject _, in PhysicalObject secondaryIngredientObject) =>
                 {
                     var sporePlant = (SporePlant)secondaryIngredientObject;
                     // Spore plant has to be pacified first.
@@ -467,132 +550,101 @@ sealed class Plugin : BaseUnityPlugin
 
         // --- String Tying Crafts List ---
 
-        var defaultCordTieCraftAnimations = new Craft.Animation[]
+        var defaultCordTieCraftAnimations = new HandCraft.Animation[]
         {
-            new Craft.Animation(1, SlugCraftingEnums.PlayerHandAnimations.DoubleSwallow)
+            new HandCraft.Animation(1, Enums.PlayerHandAnimations.DoubleSwallow)
         };
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.Spear);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.Rock);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.FlareBomb);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.VultureMask);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.PuffBall);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.DangleFruit);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.Oracle);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.PebblesPearl);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.DataPearl);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.SeedCob);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.WaterNut);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.JellyFish);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.Lantern);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.Mushroom);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.FirecrackerPlant);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.SlimeMold);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.ScavengerBomb);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.SporePlant);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.EggBugEgg);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.NeedleEgg);
+        RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType.OverseerCarcass);
+
+        void RegisterObjectTieCrafts(AbstractPhysicalObject.AbstractObjectType tyingObjectType)
+        {
+            RegisterCordTieCraft(tyingObjectType, Enums.AbstractObjectType.Cord);
+            RegisterCordTieCraft(tyingObjectType, Enums.AbstractObjectType.SpiderSilkString);
+            RegisterCordTieCraft(tyingObjectType, Enums.AbstractObjectType.LanternMouseString);
+        }
+
+        void RegisterCordTieCraft(AbstractPhysicalObject.AbstractObjectType tyingObjectType, AbstractPhysicalObject.AbstractObjectType cordType)
+        {
+            Content.RegisterHandCraft(
+            new HandCraft()
             {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Lantern),
-                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
+                recipe = new CraftRecipe(
+                    Content.GenerateUniqueCraftID(),
+                    new CraftRecipe.Ingredient(tyingObjectType),
+                    new CraftRecipe.Ingredient(cordType),
+                    new ObjectDefinition(Enums.AbstractObjectType.Cord)
+                ),
 
                 craftResult = DefaultTieObjectToCordCraftResult,
                 animations = defaultCordTieCraftAnimations
-            }
-        );
-
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.ScavengerBomb),
-                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
-
-                craftResult = DefaultTieObjectToCordCraftResult,
-                animations = defaultCordTieCraftAnimations
-            }
-        );
-
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Spear),
-                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
-
-                craftResult = DefaultTieObjectToCordCraftResult,
-                animations = defaultCordTieCraftAnimations
-            }
-        );
-
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = new CraftIngredient(AbstractPhysicalObject.AbstractObjectType.Rock),
-                secondaryIngredient = new CraftIngredient(SlugCraftingEnums.AbstractObjectType.Cord),
-
-                craftResult = DefaultTieObjectToCordCraftResult,
-                animations = defaultCordTieCraftAnimations
-            }
-        );
+            });
+        }
 
         /////////////////////////////////
         // --- Creature Scavenges --- ///
         /////////////////////////////////
 
-        // --- Green Lizard --- //
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = SlugCraftingEnums.CraftIngredients.GreenLizardHead,
-                secondaryIngredient = SlugCraftingEnums.CraftIngredients.Knife,
-                ingredientValidation = PrimaryIngredientChunkNotScavengedValidation,
+        // TODO: make a function for crafts that registers it for both primary and secondary hands, so we don't have to repeat ourselves.
+        // TODO: make a function for crafts that registers it for shelter craft as well, probably do this as bools in a function.
 
-                craftResult = ScavengeLizardHeadInPrimaryHandCraftResult,
-                animations = SlugCraftingEnums.CraftAnimationSets.DefaultSawBackForthUsingLeftHandAnimations,
-            }
-        );
+        RegisterLizardHeadShellCutCraft(CreatureTemplate.Type.GreenLizard, Enums.AbstractObjectType.GreenLizardHeadShell);
+        RegisterLizardHeadShellCutCraft(CreatureTemplate.Type.PinkLizard, Enums.AbstractObjectType.PinkLizardHeadShell);
+        RegisterLizardHeadShellCutCraft(CreatureTemplate.Type.BlueLizard, Enums.AbstractObjectType.BlueLizardHeadShell);
 
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = SlugCraftingEnums.CraftIngredients.Knife,
-                secondaryIngredient = SlugCraftingEnums.CraftIngredients.GreenLizardHead,
-                ingredientValidation = SecondaryIngredientChunkNotScavengedValidation,
+        void RegisterLizardHeadShellCutCraft(CreatureTemplate.Type lizardType, AbstractPhysicalObject.AbstractObjectType lizardHeadShellType)
+        {
+            Content.RegisterHandCraft(
+                new HandCraft()
+                {
+                    recipe = new CraftRecipe(
+                        Content.GenerateUniqueCraftID(),
+                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, CreatureBodyChunkIndex.Lizard.Head, lizardType),
+                        new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Knife),
+                        new ObjectDefinition(lizardHeadShellType)
+                    ),
+                    ingredientValidation = PrimaryIngredientChunkNotScavengedValidation,
 
-                craftResult = ScavengeLizardHeadInSecondaryHandCraftResult,
-                animations = SlugCraftingEnums.CraftAnimationSets.DefaultSawBackForthUsingRightHandAnimations,
-            }
-        );
+                    craftResult = ScavengeLizardHeadInPrimaryHandCraftResult,
+                    animations = Enums.CraftAnimationSets.DefaultSawBackForthUsingLeftHandAnimations,
+                }
+            );
 
-        // --- Pink Lizard --- //
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = SlugCraftingEnums.CraftIngredients.PinkLizardHead,
-                secondaryIngredient = SlugCraftingEnums.CraftIngredients.Knife,
-                ingredientValidation = PrimaryIngredientChunkNotScavengedValidation,
+            Content.RegisterHandCraft(
+                new HandCraft()
+                {
+                    recipe = new CraftRecipe(
+                        Content.GenerateUniqueCraftID(),
+                        new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Knife),
+                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, CreatureBodyChunkIndex.Lizard.Head, lizardType),
+                        new ObjectDefinition(lizardHeadShellType)
+                    ),
+                    ingredientValidation = SecondaryIngredientChunkNotScavengedValidation,
 
-                craftResult = ScavengeLizardHeadInPrimaryHandCraftResult,
-                animations = SlugCraftingEnums.CraftAnimationSets.DefaultSawBackForthUsingLeftHandAnimations,
-            }
-        );
-
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = SlugCraftingEnums.CraftIngredients.Knife,
-                secondaryIngredient = SlugCraftingEnums.CraftIngredients.PinkLizardHead,
-                ingredientValidation = SecondaryIngredientChunkNotScavengedValidation,
-
-                craftResult = ScavengeLizardHeadInSecondaryHandCraftResult,
-                animations = SlugCraftingEnums.CraftAnimationSets.DefaultSawBackForthUsingRightHandAnimations,
-            }
-        );
-
-        // --- Blue Lizard --- //
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = SlugCraftingEnums.CraftIngredients.BlueLizardHead,
-                secondaryIngredient = SlugCraftingEnums.CraftIngredients.Knife,
-                ingredientValidation = PrimaryIngredientChunkNotScavengedValidation,
-
-                craftResult = ScavengeLizardHeadInPrimaryHandCraftResult,
-                animations = SlugCraftingEnums.CraftAnimationSets.DefaultSawBackForthUsingLeftHandAnimations,
-            }
-        );
-
-        SlugCrafting.Core.Content.RegisterCraft(
-            new Craft()
-            {
-                primaryIngredient = SlugCraftingEnums.CraftIngredients.Knife,
-                secondaryIngredient = SlugCraftingEnums.CraftIngredients.BlueLizardHead,
-                ingredientValidation = SecondaryIngredientChunkNotScavengedValidation,
-
-                craftResult = ScavengeLizardHeadInSecondaryHandCraftResult,
-                animations = SlugCraftingEnums.CraftAnimationSets.DefaultSawBackForthUsingRightHandAnimations,
-            }
-        );
+                    craftResult = ScavengeLizardHeadInSecondaryHandCraftResult,
+                    animations = Enums.CraftAnimationSets.DefaultSawBackForthUsingRightHandAnimations,
+                }
+            );
+        }
     }
 }

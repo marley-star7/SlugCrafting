@@ -171,11 +171,11 @@ internal static class PlayerHooks
 
         if (grasp <= 1) // Only check for the first two grasps for a release, if so there is obviously no possible craft currently.
         {
-            playerSlugCraftingData.currentPossibleCraft = null;
+            playerSlugCraftingData.currentPossibleHandCraft = null;
         }
 
         // Update the current possible crafts
-        playerSlugCraftingData.currentPossibleCraft = player.GetGraspsPhysicalCraft();
+        playerSlugCraftingData.currentPossibleHandCraft = player.GetGraspsHandCraft();
     }
 
     internal static void OnPlayerGrab(Player player, PhysicalObject grabbedObj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)

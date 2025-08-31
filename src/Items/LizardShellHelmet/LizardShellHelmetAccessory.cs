@@ -181,12 +181,15 @@ public class LizardShellHelmetAccessory : Accessory
         var lookDirX = playerGraphicsCCGData.BaseFaceSprite.x - playerGraphicsCCGData.BaseHeadSprite.x;
         var lookDirY = playerGraphicsCCGData.BaseFaceSprite.y - playerGraphicsCCGData.BaseHeadSprite.y;
 
-        var helmetRotation = (playerGraphicsCCGData.faceRotationTimeStacked + playerGraphicsCCGData.BaseHeadSprite.rotation) / 2;
+        var faceRotationTimeStacked = Vector2.Lerp(playerGraphicsCCGData.lastFaceRotation, playerGraphicsCCGData.faceRotation, timeStacker);
+        var rot = Custom.VecToDeg(faceRotationTimeStacked);
+
+        var helmetRotation = (rot + playerGraphicsCCGData.BaseHeadSprite.rotation) / 2;
 
         LizardShellHelmet.DrawSpritesContext context = new LizardShellHelmet.DrawSpritesContext(
             playerGraphicsCCGData.BaseHeadSprite.x, playerGraphicsCCGData.BaseHeadSprite.y,
             playerGraphicsCCGData.BaseFaceSprite.scaleX, playerGraphicsCCGData.BaseFaceSprite.scaleY,
-            playerGraphicsCCGData.faceRotationTimeStacked,
+            rot,
             playerGraphicsCCGData.faceSpriteAngleAsymmetrical,
             lookDirX, lookDirY
         );

@@ -7,18 +7,18 @@ namespace SlugCrafting.Items.Weapons;
 
 sealed class KnifeFisob : Fisob
 {
-    public KnifeFisob() : base(SlugCraftingEnums.AbstractObjectType.Knife)
+    public KnifeFisob() : base(Enums.AbstractObjectType.Knife)
     {
         SandboxPerformanceCost = new(linear: 0.3f, exponential: 0f);
 
-        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.Knife, parent: MultiplayerUnlocks.SandboxUnlockID.Spear, data: 0);
+        RegisterUnlock(Enums.SandboxUnlockID.Knife, parent: MultiplayerUnlocks.SandboxUnlockID.Spear, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
     {
         // TODO: add data later for this.
 
-        var result = new AbstractKnife(world, SlugCraftingEnums.AbstractObjectType.Knife, saveData.Pos, saveData.ID);
+        var result = new AbstractKnife(world, Enums.AbstractObjectType.Knife, saveData.Pos, saveData.ID);
         return result;
     }
 

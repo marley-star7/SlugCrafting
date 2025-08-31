@@ -39,8 +39,8 @@ public static class ProcessManagerHooks
         // -- Ms7: I know this functionality should be an ILhook into rain world game and not... this, this is bad practice lol.
         // BUT, I don't care right now, this works and removes need for ILHook, avoiding the standard.
 
-        if (ID == ProcessManager.ProcessID.SleepScreen && self.currentMainLoop.ID != SlugCraftingEnums.ProcessID.ShelterCraft)
-            ID = SlugCraftingEnums.ProcessID.ShelterCraft;
+        if (ID == ProcessManager.ProcessID.SleepScreen && self.currentMainLoop.ID != Enums.ProcessID.ShelterCraft)
+            ID = Enums.ProcessID.ShelterCraft;
 
         orig(self, ID);
     }
@@ -86,7 +86,7 @@ public static class ProcessManagerHooks
                 cursor.Emit(OpCodes.Ldarg_1);
                 cursor.EmitDelegate((ProcessManager.ProcessID id) =>
                 {
-                    var isShelterCraft = id == SlugCraftingEnums.ProcessID.ShelterCraft;
+                    var isShelterCraft = id == Enums.ProcessID.ShelterCraft;
                     Plugin.LogDebug($"ProcessID: {id}, IsShelterCraft: {isShelterCraft}");
                     return isShelterCraft;
                 });
@@ -108,7 +108,7 @@ public static class ProcessManagerHooks
 
     private static void ProcessManager_PostSwitchMainProcess(On.ProcessManager.orig_PostSwitchMainProcess orig, ProcessManager self, ProcessManager.ProcessID ID)
     {
-        if (ID == SlugCraftingEnums.ProcessID.ShelterCraft)
+        if (ID == Enums.ProcessID.ShelterCraft)
         {
             self.currentMainLoop = new ShelterCraftScreen(self, ID);
         }

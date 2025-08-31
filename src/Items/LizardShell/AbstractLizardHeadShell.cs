@@ -33,8 +33,8 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
 
     private static Dictionary<CreatureTemplate.Type, AbstractObjectType> _creatureTemplateToShellAbstractObjectType = new()
     {
-        { CreatureTemplate.Type.GreenLizard, SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell },
-        { CreatureTemplate.Type.PinkLizard, SlugCraftingEnums.AbstractObjectType.PinkLizardHeadShell }
+        { CreatureTemplate.Type.GreenLizard, Enums.AbstractObjectType.GreenLizardHeadShell },
+        { CreatureTemplate.Type.PinkLizard, Enums.AbstractObjectType.PinkLizardHeadShell }
     };
 
     public AbstractLizardHeadShell(World world, CreatureTemplate.Type templateType, WorldCoordinate pos, EntityID ID)
@@ -118,7 +118,7 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
         }
         else
         {
-            return SlugCraftingEnums.AbstractObjectType.LizardHeadShell; // Default for lizards that don't have a specific shell type.
+            return Enums.AbstractObjectType.LizardHeadShell; // Default for lizards that don't have a specific shell type.
         }
     }
 }

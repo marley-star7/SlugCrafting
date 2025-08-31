@@ -9,10 +9,10 @@ sealed class GreenLizardShellFisob : Fisob
 {
     public static readonly GreenLizardShellProperties properties = new();
 
-    public GreenLizardShellFisob() : base(SlugCraftingEnums.AbstractObjectType.GreenLizardHeadShell)
+    public GreenLizardShellFisob() : base(Enums.AbstractObjectType.GreenLizardHeadShell)
     {
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
-        RegisterUnlock(SlugCraftingEnums.SandboxUnlockID.GreenLizardHeadShell, parent: MultiplayerUnlocks.SandboxUnlockID.GreenLizard, data: 0);
+        RegisterUnlock(Enums.SandboxUnlockID.GreenLizardHeadShell, parent: MultiplayerUnlocks.SandboxUnlockID.GreenLizard, data: 0);
     }
 
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)

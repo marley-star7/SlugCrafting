@@ -3,7 +3,7 @@
 public class AbstractLizardHideBackpack : AbstractPhysicalObject
 {
     public AbstractLizardHideBackpack(World world, WorldCoordinate pos, EntityID ID)
-    : base(world, SlugCraftingEnums.AbstractObjectType.LizardHideBackpack, null, pos, ID)
+    : base(world, Enums.AbstractObjectType.LizardHideBackpack, null, pos, ID)
     {
 
     }

@@ -20,7 +20,7 @@ public static partial class Hooks
         ApplySlugcatHandHooks();
         Debug.LogInfo("Finish player");
 
-        ApplyRegionStateHooks();
+        RegionStateHooks.ApplyHooks();
         Debug.LogInfo("Finish state hook");
 
         ApplyPhysicalObjectHooks();
@@ -51,7 +51,7 @@ public static partial class Hooks
         RemovePlayerGraphicsHooks();
         RemoveSlugcatHandHooks();
 
-        RemoveRegionStateHooks();
+        RegionStateHooks.RemoveHooks();
 
         RemovePhysicalObjectHooks();
         RemovePlayerCarryableItemHooks();
@@ -143,16 +143,6 @@ public static partial class Hooks
     {
         On.SlugcatHand.EngageInMovement -= SlugcatHandHooks.SlugcatHand_EngageInMovement;
         On.SlugcatHand.Update -= SlugcatHandHooks.SlugcatHand_Update;
-    }
-
-    private static void ApplyRegionStateHooks()
-    {
-        On.RegionState.AdaptRegionStateToWorld += RegionStateHooks.RegionState_AdaptRegionStateToWorld;
-    }
-
-    private static void RemoveRegionStateHooks()
-    {
-        On.RegionState.AdaptRegionStateToWorld -= RegionStateHooks.RegionState_AdaptRegionStateToWorld;
     }
 
     // PhysicalObject

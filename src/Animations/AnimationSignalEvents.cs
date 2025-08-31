@@ -15,7 +15,7 @@ public static class AnimationSignalEvents
             // This is for thematics of mimicking the spear getting more shakey,
             // As well as for gameplay reasons showing acting as a minor visual indicator on how close to break.
 
-            var vibrationMultiplierWithTime = Mathf.InverseLerp(0, player.GetPlayerCraftingData().currentPossibleCraft.Value.totalAnimationLoops, player.GetHandAnimationPlayer().timesLoopedCurrentAnimation);
+            var vibrationMultiplierWithTime = Mathf.InverseLerp(0, player.GetPlayerCraftingData().currentPossibleHandCraft.Value.totalAnimationLoops, player.GetHandAnimationPlayer().timesLoopedCurrentAnimation);
             vibrationMultiplierWithTime = 1 / vibrationMultiplierWithTime + 0.01f; // Inverse it so that it goes from 1 to 0 over time, prevent divison by zero.
             vibrationMultiplierWithTime = Mathf.Clamp(vibrationMultiplierWithTime, 0.3f, 1f); // Clamp it to prevent it from going too low.
 
@@ -37,7 +37,7 @@ public static class AnimationSignalEvents
             // This is for thematics of mimicking the spear getting more shakey,
             // As well as for gameplay reasons showing acting as a minor visual indicator on how close to break.
 
-            var vibrationMultiplierWithTime = Mathf.InverseLerp(0, player.GetPlayerCraftingData().currentPossibleCraft.Value.totalAnimationLoops, player.GetHandAnimationPlayer().timesLoopedCurrentAnimation);
+            var vibrationMultiplierWithTime = Mathf.InverseLerp(0, player.GetPlayerCraftingData().currentPossibleHandCraft.Value.totalAnimationLoops, player.GetHandAnimationPlayer().timesLoopedCurrentAnimation);
             vibrationMultiplierWithTime = 1 / vibrationMultiplierWithTime + 0.01f; // Inverse it so that it goes from 1 to 0 over time, prevent divison by zero.
             vibrationMultiplierWithTime = Mathf.Clamp(vibrationMultiplierWithTime, 0.3f, 1f); // Clamp it to prevent it from going too low.
 
