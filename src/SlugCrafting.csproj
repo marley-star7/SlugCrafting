@@ -1,21 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-    <LangVersion>11</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-    <RootNamespace>SlugCrafting</RootNamespace>
-    <AssemblyName>SlugCrafting</AssemblyName>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<LangVersion>11</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+		<RootNamespace>SlugCrafting</RootNamespace>
+		<AssemblyName>SlugCrafting</AssemblyName>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<!-- Optional: Suppress warnings for missing comments -->
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Authors>marley-star7</Authors>
 		<Company>marley-star7</Company>
 	</PropertyGroup>
-
+	
 	<ItemGroup>
 		<Reference Include="..\lib\Assembly-CSharp-firstpass.dll">
 		  <Private>false</Private>
