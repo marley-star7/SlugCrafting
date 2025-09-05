@@ -43,29 +43,19 @@ internal static class PlayerGraphicsHooks
         // Tried making some code for this to find an optimal gray based both off the room palette, and fog color, for max readability.
         // (and to help the colorblind folks out)
 
-        float idealLerpRatio = 0.6f;
-        float visibilityLerpRatioModifierFullStrength = 0.13f;
-
         Color roomBlackColor = palette.GetColor(RoomPalette.ColorName.BlackColor);
         Color roomFogColor = palette.GetColor(RoomPalette.ColorName.FogColor);
+        Color roomSkyColor = palette.GetColor(RoomPalette.ColorName.SkyColor);
 
+        float idealLerpRatio = 0.6f;
         Color idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio);
 
-        float adjustmentIfTooCloseRatio;
-        if (idealGray.grayscale < roomFogColor.grayscale)
-        {
-            //Plugin.Logger.LogDebug("Ideal gray is darker than room fog color gray, lightening the gray even further.");
-            float inverseLerp = Mathf.InverseLerp(0, roomFogColor.grayscale, idealGray.grayscale);
-            adjustmentIfTooCloseRatio = inverseLerp * visibilityLerpRatioModifierFullStrength * 1.5f; //- MS7: Multiply a bit more since we need to put in extra work to get out of the darker section.
-            idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio + adjustmentIfTooCloseRatio);
-        }
-        else
-        {
-            //Plugin.Logger.LogDebug("Ideal gray is lighter than room fog color gray, lighter the gray further.");
-            float inverseLerp = Mathf.InverseLerp(roomFogColor.grayscale, Color.white.grayscale, idealGray.grayscale);
-            adjustmentIfTooCloseRatio = (1 - inverseLerp) * visibilityLerpRatioModifierFullStrength; // 1 - 0 because the inverse lerp here is closest to ideal gray at 0
-            idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio + adjustmentIfTooCloseRatio);
-        }
+        //-- Ms7: Checka and shift against both fog and sky color, since both can heavy heavy impact on readability.
+        // Sky color comes first as it's more important, fog color has less impact, it tries to find a balance inbetween.
+
+        idealGray = idealGray.ShiftToColorIfGrayscaleTooClose(roomBlackColor, roomSkyColor, 0.09f); // Shift a bit down again.
+        idealGray = idealGray.ShiftToColorIfGrayscaleTooClose(Color.white, roomSkyColor, 0.16f);
+        idealGray = idealGray.ShiftToColorIfGrayscaleTooClose(Color.white, roomFogColor, 0.09f);
 
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {

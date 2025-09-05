@@ -12,6 +12,7 @@ public static partial class Hooks
 
         ProcessManagerHooks.ApplyHooks();
         RainWorldGameHooks.ApplyHooks();
+        SaveStateHooks.ApplyHooks();
         Plugin.LogInfo("Finish rain world");
 
 
@@ -44,6 +45,7 @@ public static partial class Hooks
 
         ProcessManagerHooks.RemoveHooks();
         RainWorldGameHooks.RemoveHooks();
+        SaveStateHooks.RemoveHooks();
 
         On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
 

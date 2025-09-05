@@ -1,23 +1,40 @@
 ﻿namespace SlugCrafting.Crafts;
 
-public struct ShelterCraft
+[Serializable]
+public struct ShelterCraftResultData
 {
-    public struct ShelterCraftResultDataPackage
+    [Serializable]
+    public readonly struct MaterialResultData
     {
-        public AbstractRoom abstractRoom;
-        public AbstractPhysicalObject[] materialObjects;
-        public WorldCoordinate pos;
+        public readonly EntityID entityID;
+        public readonly bool consumed;
 
-        public ShelterCraftResultDataPackage(AbstractRoom abstractRoom, AbstractPhysicalObject[] materialObjects)
+        public MaterialResultData(EntityID entityID, bool consumed)
         {
-            this.abstractRoom = abstractRoom;
-            this.materialObjects = materialObjects;
+            this.entityID = entityID;
+            this.consumed = consumed;
         }
     }
 
+    public MaterialResultData[] materials;
+
+    public ushort craftID;
+
+    public WorldCoordinate coord;
+
+    public ShelterCraftResultData(MaterialResultData[] materials, ushort craftID, WorldCoordinate coord)
+    {
+        this.materials = materials;
+        this.craftID = craftID;
+        this.coord = coord;
+    }
+}
+
+public struct ShelterCraft
+{
     public CraftRecipe recipe;
 
-    public delegate void CraftResult(in ShelterCraftResultDataPackage shelterCraftResultDataPackage);
+    public delegate void CraftResult(in World world, in ShelterCraftResultData shelterCraftResultData);
 
     public CraftResult craftResult;
 
@@ -26,5 +43,13 @@ public struct ShelterCraft
         this.recipe = recipe;
         this.craftResult = craftResult;
         //this.craftResult = craftResult;
+    }
+}
+
+public static class ShelterCraftResultDataExtensions
+{
+    public static AbstractRoom GetAbstractRoomToCraftIn(this ShelterCraftResultData shelterCraftResultData, World world)
+    {
+        return world.GetAbstractRoom(shelterCraftResultData.coord.room);
     }
 }

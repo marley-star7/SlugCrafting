@@ -3,7 +3,7 @@ namespace SlugCrafting.Menus;
 
 public class CraftRecipeElaborationDisplay : RectangularMenuObject
 {
-    public CraftRecipesSelector owner => (CraftRecipesSelector)base.owner;
+    public new CraftRecipesSelector owner => (CraftRecipesSelector)base.owner;
 
     public FSprite craftObjectSymbol;
 
@@ -13,7 +13,7 @@ public class CraftRecipeElaborationDisplay : RectangularMenuObject
 
     public CraftRecipe recipe;
 
-    public ObjectIconSymbolProperties craftObjectSymbolProperties;
+    public EntityTypeSymbolProperties craftObjectSymbolProperties;
 
     private float topLeftPosX => pos.x - size.x / 2;
     private float topLeftPosY => pos.y - size.y / 2;
@@ -31,13 +31,13 @@ public class CraftRecipeElaborationDisplay : RectangularMenuObject
         this.recipe = recipe;
         var resultObject = recipe.resultedObjects[0];
 
-        this.craftObjectSymbolProperties = ObjectIconSymbolPropertiesManager.GetObjectIconSymbolProperties(resultObject);
+        this.craftObjectSymbolProperties = EntityTypeSymbolPropertiesManager.GetEntityTypeSymbolProperties(resultObject);
 
         AddCraftObjectSymbol();
         AddCraftObjectTitle();
     }
 
-    private void AddCraftObjectSymbol()
+    protected void AddCraftObjectSymbol()
     {
         craftObjectSymbol = new FSprite(craftObjectSymbolProperties.spriteName, true)
         {
@@ -48,7 +48,7 @@ public class CraftRecipeElaborationDisplay : RectangularMenuObject
         this.Container.AddChild(craftObjectSymbol);
     }
 
-    private void AddCraftObjectTitle()
+    protected void AddCraftObjectTitle()
     {
         craftObjectTitle = new FLabel(LabelTest.GetFont(true), craftObjectSymbolProperties.name)
         {
@@ -57,6 +57,16 @@ public class CraftRecipeElaborationDisplay : RectangularMenuObject
         };
         this.Container.AddChild(craftObjectTitle);
     }
+
+    protected void AddCraftButton()
+    {
+        var craftButtonPos = new Vector2(40, 40);
+        var craftButtonSize = new Vector2(90, 32);
+        craftButton = new BigSimpleButton(menu, this, "Craft", "CRAFT", craftButtonPos, craftButtonSize, FLabelAlignment.Center, true);
+
+        this.subObjects.Add(craftButton);
+    }
+
 
     public override void RemoveSprites()
     {

@@ -41,15 +41,13 @@ sealed class Plugin : BaseUnityPlugin
         // Someday's I think about logging with my logger, and I get all loggy...
         Logger = base.Logger;
 
-        //CompartmentalizedCreatureGraphics.Core.Content.AddCharacterCosmeticPreset(Enums.Crafter, crafterCosmeticsPreset);
+        On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
+        On.RainWorld.PostModsInit += RainWorld_PostModsInit;
 
         Content.RegisterSlugCraftingFisobs();
         RegisterSlugCraftingCrafts();
         Content.RegisterSlugCraftingItemBundlesProperties();
-        RegisterObjectIconSymbolProperties();
-
-        On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
-        On.RainWorld.PostModsInit += RainWorld_PostModsInit;
+        RegisterEntityTypeSymbolProperties();
 
         Enums.PlayerHandAnimations.RegisterValues();
 
@@ -201,7 +199,7 @@ sealed class Plugin : BaseUnityPlugin
 
         var player = (crafter as Player);
         player.RealizeAndGrab(new AbstractLizardHeadShell(lizard));
-        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(CreatureBodyChunkIndex.Lizard.Head);
+        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(EntityBodyChunkIndexes.Lizard.Head);
     }
 
     public static void ScavengeLizardHeadInSecondaryHandCraftResult(Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject)
@@ -212,7 +210,7 @@ sealed class Plugin : BaseUnityPlugin
 
         var player = (crafter as Player);
         player.RealizeAndGrab(new AbstractLizardHeadShell(lizard));
-        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(CreatureBodyChunkIndex.Lizard.Head);
+        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(EntityBodyChunkIndexes.Lizard.Head);
     }
 
     private static void GreenLizardShellHelmetShelterCraftResult(in CraftRecipe shelterCraft, Creature crafter)
@@ -220,17 +218,17 @@ sealed class Plugin : BaseUnityPlugin
 
     }
 
-    private void RegisterObjectIconSymbolProperties()
+    private void RegisterEntityTypeSymbolProperties()
     {
-        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.Knife, new ObjectIconSymbolProperties("Knife", "icon_Knife", Color.gray, 1f));
+        EntityTypeSymbolPropertiesManager.AddEntityTypeSymbolProperties(Enums.AbstractObjectType.Knife, new EntityTypeSymbolProperties("Knife", "icon_Knife", Color.gray, 1f));
 
-        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.Cord, new ObjectIconSymbolProperties("Cord", "icon_Cord", Color.gray, 1f));
+        EntityTypeSymbolPropertiesManager.AddEntityTypeSymbolProperties(Enums.AbstractObjectType.Cord, new EntityTypeSymbolProperties("Cord", "icon_Cord", Color.gray, 1f));
 
-        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.GreenLizardHeadShell, new ObjectIconSymbolProperties("Green Lizard Head Shell", "icon_GreenLizardHeadShell", Color.green, 1f));
-        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.GreenLizardShellHelmet, new ObjectIconSymbolProperties("Green Lizard Shell Helmet", "icon_GreenLizardShellHelmet", Color.green, 1f));
+        EntityTypeSymbolPropertiesManager.AddEntityTypeSymbolProperties(Enums.AbstractObjectType.GreenLizardHeadShell, new EntityTypeSymbolProperties("Green Lizard Head Shell", "icon_GreenLizardHeadShell", Color.green, 1f));
+        EntityTypeSymbolPropertiesManager.AddEntityTypeSymbolProperties(Enums.AbstractObjectType.GreenLizardShellHelmet, new EntityTypeSymbolProperties("Green Lizard Shell Helmet", "icon_GreenLizardShellHelmet", Color.green, 1f));
 
         //ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.BlueLizardHeadShell, new ObjectIconSymbolProperties("Blue Lizard Head Shell", "icon_BlueLizardHeadShell", Color.blue, 1f));
-        ObjectIconSymbolPropertiesManager.AddObjectIconSymbolProperties(Enums.AbstractObjectType.BlueLizardShellHelmet, new ObjectIconSymbolProperties("Blue Lizard Shell Helmet", "icon_BlueLizardShellHelmet", Color.blue, 1f));
+        EntityTypeSymbolPropertiesManager.AddEntityTypeSymbolProperties(Enums.AbstractObjectType.BlueLizardShellHelmet, new EntityTypeSymbolProperties("Blue Lizard Shell Helmet", "icon_BlueLizardShellHelmet", Color.blue, 1f));
     }
 
     internal static void RegisterSlugCraftingCrafts()
@@ -244,9 +242,9 @@ sealed class Plugin : BaseUnityPlugin
                     new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.GreenLizardHeadShell, consumed: true),
                     new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Cord, consumed: true),
                 },
-                new ObjectDefinition[]
+                new EntityTypeDefinition[]
                 {
-                    new ObjectDefinition(Enums.AbstractObjectType.GreenLizardShellHelmet)
+                    new EntityTypeDefinition(Enums.AbstractObjectType.GreenLizardShellHelmet)
                 }
             )
         ));
@@ -258,9 +256,9 @@ sealed class Plugin : BaseUnityPlugin
                             new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.BlueLizardHeadShell, consumed: true),
                             new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Cord, consumed: true),
                 },
-                new ObjectDefinition[]
+                new EntityTypeDefinition[]
                 {
-                    new ObjectDefinition(Enums.AbstractObjectType.BlueLizardShellHelmet)
+                    new EntityTypeDefinition(Enums.AbstractObjectType.BlueLizardShellHelmet)
                 }
             )
         ));
@@ -272,9 +270,9 @@ sealed class Plugin : BaseUnityPlugin
                     new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.PinkLizardHeadShell, consumed: true),
                     new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Cord, consumed: true),
                 },
-                new ObjectDefinition[]
+                new EntityTypeDefinition[]
                 {
-                    new ObjectDefinition(Enums.AbstractObjectType.PinkLizardShellHelmet)
+                    new EntityTypeDefinition(Enums.AbstractObjectType.PinkLizardShellHelmet)
                 }
             )
         ));
@@ -293,7 +291,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.WaterNut, consumed: true),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.FirecrackerPlant, consumed: true),
-                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.ScavengerBomb)
+                    new EntityTypeDefinition(AbstractPhysicalObject.AbstractObjectType.ScavengerBomb)
                 ),
 
                 ingredientValidation = (in HandCraft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
@@ -329,15 +327,15 @@ sealed class Plugin : BaseUnityPlugin
 
                 needBothHandsFree = true,
             },
-            optionalShelterCraftResult: (in ShelterCraft.ShelterCraftResultDataPackage shelterCraftResultDataPackage) =>
+            optionalShelterCraftResult: (in World world, in ShelterCraftResultData shelterCraftResultData) =>
             {
-                shelterCraftResultDataPackage.abstractRoom.AddEntity(
+                shelterCraftResultData.GetAbstractRoomToCraftIn(world).AddEntity(
                     new AbstractPhysicalObject(
-                        shelterCraftResultDataPackage.abstractRoom.world,
+                        world,
                         AbstractPhysicalObject.AbstractObjectType.ScavengerBomb,
                         null,
-                        shelterCraftResultDataPackage.pos,
-                        shelterCraftResultDataPackage.abstractRoom.world.game.GetNewID())
+                        shelterCraftResultData.coord,
+                        world.game.GetNewID())
                 );
             }
         );
@@ -353,7 +351,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear, consumed: true),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Rock),
-                    new ObjectDefinition(Enums.AbstractObjectType.Knife)
+                    new EntityTypeDefinition(Enums.AbstractObjectType.Knife)
                 ),
 
                 craftResult = (Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject) =>
@@ -401,7 +399,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
                     new CraftRecipe.Ingredient(Enums.AbstractObjectType.Knife),
-                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                    new EntityTypeDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
                 ),
 
                 ingredientValidation = (in HandCraft craft, in Creature crafter, in PhysicalObject primaryIngredientObject, in PhysicalObject secondaryIngredientObject) =>
@@ -500,7 +498,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Lantern),
-                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                    new EntityTypeDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
                 ),
 
                 craftResult = DefaultImpaleObjectOnSpearCraftResult,
@@ -515,7 +513,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.SlimeMold),
-                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                    new EntityTypeDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
                 ),
 
                 craftResult = DefaultImpaleObjectOnSpearCraftResult,
@@ -530,7 +528,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Spear),
                     new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.SporePlant),
-                    new ObjectDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
+                    new EntityTypeDefinition(AbstractPhysicalObject.AbstractObjectType.Spear)
                 ),
 
                 ingredientValidation = (in HandCraft craft, in Creature crafter, in PhysicalObject _, in PhysicalObject secondaryIngredientObject) =>
@@ -593,7 +591,7 @@ sealed class Plugin : BaseUnityPlugin
                     Content.GenerateUniqueCraftID(),
                     new CraftRecipe.Ingredient(tyingObjectType),
                     new CraftRecipe.Ingredient(cordType),
-                    new ObjectDefinition(Enums.AbstractObjectType.Cord)
+                    new EntityTypeDefinition(Enums.AbstractObjectType.Cord)
                 ),
 
                 craftResult = DefaultTieObjectToCordCraftResult,
@@ -619,9 +617,9 @@ sealed class Plugin : BaseUnityPlugin
                 {
                     recipe = new CraftRecipe(
                         Content.GenerateUniqueCraftID(),
-                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, CreatureBodyChunkIndex.Lizard.Head, lizardType),
+                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, EntityBodyChunkIndexes.Lizard.Head, lizardType),
                         new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Knife),
-                        new ObjectDefinition(lizardHeadShellType)
+                        new EntityTypeDefinition(lizardHeadShellType)
                     ),
                     ingredientValidation = PrimaryIngredientChunkNotScavengedValidation,
 
@@ -636,8 +634,8 @@ sealed class Plugin : BaseUnityPlugin
                     recipe = new CraftRecipe(
                         Content.GenerateUniqueCraftID(),
                         new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Knife),
-                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, CreatureBodyChunkIndex.Lizard.Head, lizardType),
-                        new ObjectDefinition(lizardHeadShellType)
+                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, EntityBodyChunkIndexes.Lizard.Head, lizardType),
+                        new EntityTypeDefinition(lizardHeadShellType)
                     ),
                     ingredientValidation = SecondaryIngredientChunkNotScavengedValidation,
 

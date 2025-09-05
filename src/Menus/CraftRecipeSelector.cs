@@ -1,9 +1,4 @@
-﻿using Menu;
-using MRCustom.UI;
-using SlugCrafting.Crafts;
-using System;
-using System.Linq;
-using static SlugCrafting.Menus.CraftRecipesSelector;
+﻿using static SlugCrafting.Menus.CraftRecipesSelector;
 
 namespace SlugCrafting.Menus;
 
@@ -22,6 +17,8 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
         /// </summary>
         public class Button : ButtonTemplate
         {
+            public new CraftRecipeItem owner => (CraftRecipeItem)base.owner;
+
             public Button(Menu.Menu menu, CraftRecipeItem owner) : base(menu, owner, new Vector2(0, -owner.size.y / 2), owner.size)
             {
             }
@@ -60,17 +57,12 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
 
         public const int LayeredSymbolsOffsetDistance = 6;
 
-        public float fadeAway = 0f;
-
-        private float fade;
-        private float lastFade;
-
         public CraftRecipeItem(CraftRecipesSelector owner, int index, CraftRecipe recipe) : base(owner, index)
         {
             this.recipe = recipe;
 
-            var ingredientsIconSymbolProperties = recipe.ingredients.Select(ingredient => ObjectIconSymbolPropertiesManager.GetObjectIconSymbolProperties(ingredient.material.objectType)).ToArray();
-            var resultIconSymbolProperties = ObjectIconSymbolPropertiesManager.GetObjectIconSymbolProperties(recipe.resultedObjects[0].objectType);
+            var ingredientsIconSymbolProperties = recipe.ingredients.Select(ingredient => EntityTypeSymbolPropertiesManager.GetEntityTypeSymbolProperties(ingredient.material.objectType)).ToArray();
+            var resultIconSymbolProperties = EntityTypeSymbolPropertiesManager.GetEntityTypeSymbolProperties(recipe.resultedObjects[0].objectType);
 
             this.symbolColor = resultIconSymbolProperties.color;
 
@@ -100,11 +92,13 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
             this.button = new Button(menu, this);
             this.subObjects.Add(this.button);
 
-            //AddBodyModeRequirementSymbols();
+            AddBodyModeRequirementSymbols();
         }
 
         protected virtual void AddBodyModeRequirementSymbols()
         {
+            bodyModeRequirementSymbols = new FSprite[0];
+            /*
             var halfOwnerSizeX = ((CraftRecipesSelector)owner).size.x / 2f;
 
             switch (recipe.bodyModeRequirement)
@@ -150,6 +144,7 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
                 bodyModeRequirementSymbols[i].y = pos.y + LayeredSymbolsOffsetDistance * i;
                 this.Container.AddChild(bodyModeRequirementSymbols[i]);
             }
+            */
         }
 
         public override void GrafUpdate(float timeStacker)
@@ -220,9 +215,12 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
         }
     }
 
-    private Inventory _playerInventory;
+    private MenuInventory _playerInventory;
+    public MenuInventory PlayerInventory => _playerInventory;
 
     public CraftRecipeElaborationDisplay? craftRecipeElaborationDisplay;
+
+    protected Vector2 recipeElaborationDisplayPlacementPosition => new Vector2(size.x / 2f + 16f, 0);
 
     private readonly FSprite _separator;
 
@@ -258,7 +256,7 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
         base.Singal(sender, message);
         if (message == "CRAFTRESULTCLICKED")
         {
-            ShowCraftRecipeInformation((sender as CraftRecipesSelector.CraftRecipeItem).recipe);
+            ShowCraftRecipeInformation((sender as CraftRecipesSelector.CraftRecipeItem.Button).owner.recipe);
             return;
         }
     }
@@ -266,12 +264,17 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
     //--- Ms7: Cache of craft recipe availability to avoid recalculating every time resort, since uses dictionary can lookup fast (thank you hashing).
     private HashSet<CraftRecipe> _cachedCraftableRecipes = new();
 
+    public void SortCraftRecipeItems()
+    {
+        SortCraftRecipeItemsByAvaliability();
+    }
+
     public void SortCraftRecipeItemsByAvaliability()
     {
         var newOrder = Content.CraftRecipes
             .OrderByDescending(recipe => recipe.IsShelterCraft())
             .ThenBy(recipe => _cachedCraftableRecipes.Contains(recipe))
-            .ThenBy(recipe => ObjectIconSymbolPropertiesManager.GetObjectIconSymbolProperties(
+            .ThenBy(recipe => EntityTypeSymbolPropertiesManager.GetEntityTypeSymbolProperties(
                 recipe.resultedObjects[0]).name)
             .ToList();
 
@@ -291,11 +294,10 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
         scrollableBehav.ResetScrollPos();
     }
 
-    public void SetPlayerInventory(Inventory inventory)
+    public void SetPlayerInventory(MenuInventory inventory)
     {
         this._playerInventory = inventory;
-        UpdateAvailabilityCache();
-        SortCraftRecipeItemsByAvaliability();
+        OnInventoryItemsChanged();
     }
 
     protected virtual void AddCraftRecipe(CraftRecipe recipe)
@@ -316,7 +318,7 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
 
     protected void ShowCraftRecipeInformation(in CraftRecipe recipe)
     {
-        craftRecipeElaborationDisplay = new CraftRecipeElaborationDisplay(recipe, menu, this, this.pos + new Vector2(200, 0), new Vector2(600, 900));
+        craftRecipeElaborationDisplay = new CraftRecipeElaborationDisplay(recipe, menu, this, recipeElaborationDisplayPlacementPosition, new Vector2(600, 900));
         this.subObjects.Add(craftRecipeElaborationDisplay);
     }
 
@@ -329,14 +331,20 @@ public class CraftRecipesSelector : ScrollableItemList<CraftRecipeItem>
     {
         Plugin.LogDebug($"Updating avaliability cache in CraftRecipeSelector");
 
+        _cachedCraftableRecipes.Clear();
+
         for (int i = 0; i < Content.CraftRecipes.Count; i++)
         {
             var recipe = Content.CraftRecipes[i];
 
             if (IsRecipeCraftable(recipe))
                 _cachedCraftableRecipes.Add(recipe);
-            else
-                _cachedCraftableRecipes.Remove(recipe);
         }
+    }
+
+    public void OnInventoryItemsChanged()
+    {
+        UpdateAvailabilityCache();
+        SortCraftRecipeItems();
     }
 }

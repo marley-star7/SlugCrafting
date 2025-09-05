@@ -52,6 +52,8 @@ global using SlugCrafting.CosmeticSprites;
 global using SlugCrafting.Crafts;
 global using SlugCrafting.Creatures;
 global using SlugCrafting.Items;
+global using SlugCrafting.Properties;
+global using SlugCrafting.Menus;
 global using SlugCrafting.Items.Weapons;
 global using SlugCrafting.Effects;
 

@@ -71,6 +71,10 @@
 		  <Private>False</Private>
 		</Reference>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Items\LizardShell\Generic\" />
+	</ItemGroup>
 
 	<!-- PostBuild Target -->
 	<Target Name="GenerateMod" AfterTargets="PostBuildEvent">

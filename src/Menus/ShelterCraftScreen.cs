@@ -2,21 +2,11 @@
 
 namespace SlugCrafting.Menus;
 
-// TODO: save inventory as persistent data before goin to sleep by whats in the shelter room,
-// Modify it during shelter craft
-// And then when loading, modfify the items in the shelter room to match the changes in inventory.
-// and i believe as quitting out causes a save, you can save the intended changes to string data for if ever quit out during crafting.
-// And put all of this inventory data in PlayerProgression.
-// Just need to find best point during sleep to hook onto for it.
-
-// TODO: look at PlayerProgresson.SaveWorldStateAndProgression for how to make malnourished not always stop saving.
-// TODO: it always saves to disk it seems on win.
-
 public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 {
     public class ShelterCraftScreenDataPackage
     {
-        public Inventory playerShelterInventory;
+        public MenuInventory playerShelterInventory;
 
         public SleepAndDeathScreen.SleepDeathScreenDataPackage sleepAndDeathScreenDataPackage;
 
@@ -32,7 +22,7 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
 
     public ShelterCraftSelector shelterCraftSelector;
 
-    public InventoryDisplay inventoryDisplay;
+    public MenuInventoryDisplay inventoryDisplay;
 
     public Player.InputPackage MapInput => RWInput.PlayerInput(0);
 
@@ -52,13 +42,17 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
     {
         this.ID = Enums.ProcessID.ShelterCraft;
 
+        //-- Ms7: Mmmmmmm the rainnnnnn, mmmmmmm my asmr rain world rain mmmmmmm.
+        this.mySoundLoopID = SoundID.MENU_Sleep_Screen_LOOP;
+        PlaySound(mySoundLoopID);
+
         pages.Add(new Page(this, null, "main", 0));
         selectedObject = null;
 
         AddContinueButton(black: true);
 
         shelterCraftSelector = new ShelterCraftSelector(this, this.pages[0], new Vector2(400f, manager.rainWorld.options.ScreenSize.y / 2), ShelterCraftSelector.GetDefaultSize); // Same position as karma ladder, ui pos is relative to center of the ui element.
-        inventoryDisplay = new InventoryDisplay(this, this.pages[0], new Vector2(800f, manager.rainWorld.options.ScreenSize.y - 32));
+        inventoryDisplay = new MenuInventoryDisplay(this, this.pages[0], new Vector2(800f, manager.rainWorld.options.ScreenSize.y - 32));
     }
 
     public override void Update()
@@ -103,6 +97,7 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
         switch (message)
         {
             case "CONTINUE":
+                manager.rainWorld.progression.SaveWorldStateAndProgression(fromGameDataPackage.sleepAndDeathScreenDataPackage.goalMalnourished); // Goal malnourished is if malnourished this cycle.
                 manager.RequestMainProcessSwitch(ProcessManager.ProcessID.SleepScreen);
                 break;
         }
@@ -113,7 +108,7 @@ public class ShelterCraftScreen : Menu.Menu, IOwnAHUD
         Plugin.LogDebug($"Got the data from the game for the Shelter Craft Screen!");
 
         fromGameDataPackage = package;
-        shelterCraftSelector.SetPlayerInventory(fromGameDataPackage.playerShelterInventory);
+        shelterCraftSelector.SetShelterCraftScreenDataPackage(fromGameDataPackage);
         inventoryDisplay.SetInventory(fromGameDataPackage.playerShelterInventory);
     }
 

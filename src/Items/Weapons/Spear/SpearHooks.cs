@@ -14,7 +14,10 @@ internal static class SpearHooks
             var playerCraftingData = ((Player)result.obj).GetPlayerCraftingData();
             for (int i = 0; i < playerCraftingData.accessories.Count; i++)
             {
-                didHit = playerCraftingData.accessories[i].PreSpearHitWearer(self, result, eu);
+                // If any of them return the spear shouldn't hit, it wont.
+
+                if (playerCraftingData.accessories[i].PreSpearHitWearer(self, result, eu) == false)
+                    didHit = false;
             }
         }
         if (!didHit)

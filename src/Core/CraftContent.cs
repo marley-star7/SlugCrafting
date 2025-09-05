@@ -16,6 +16,11 @@ public static partial class Content
     public static readonly List<CraftRecipe> CraftRecipes = new();
 
     /// <summary>
+    /// All the registered craft recipes, with their assocaited ID as the key.
+    /// </summary>
+    public static readonly Dictionary<ushort, CraftRecipe> CraftRecipeIDs = new();
+
+    /// <summary>
     /// The first element in the tuple is the primary dominant ingredient.
     /// Second is the non-dominant (or secondary) ingredient.
     /// A dictionary is used for optimized lookup, so can immediately see the existance of crafts using an item.
@@ -86,7 +91,9 @@ public static partial class Content
             Plugin.LogError($"Craft Recipe of ingredients: {newRecipe.ingredients} already exists! Cannot register! What are you actually doing? How did you do this?");
             return;
         }
+
         CraftRecipes.Add(newRecipe);
+        CraftRecipeIDs.Add(newRecipe.craftID, newRecipe);
     }
 
     /*

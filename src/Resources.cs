@@ -18,6 +18,12 @@ public static class Resources
 
         //-- COSMETICS
         Futile.atlasManager.LoadAtlas(AtlasesDir + "/greenLizardShellHelmet");
+        Futile.atlasManager.LoadAtlas(AtlasesDir + "/greenLizardShellCuirassBody");
+        Futile.atlasManager.LoadAtlas(AtlasesDir + "/greenLizardShellCuirassHips");
+
         Futile.atlasManager.LoadAtlas(AtlasesDir + "/blueLizardShellHelmet");
+
+        //-- ICONS
+        Futile.atlasManager.LoadAtlas(AtlasesDir + "/iconsLizardHeadShell");
     }
 }

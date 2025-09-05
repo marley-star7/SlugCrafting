@@ -45,25 +45,21 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
 
         // TODO: later make the fisobs just use the stats from the lizardtemplatetype stuff.
 
-        LizardHeadShellProperties properties;
-        if (LizardHeadShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
-            properties = LizardHeadShellProperties.PropertiesOfTemplateType[templateType];
-        else
-            properties = LizardHeadShellFisob.properties;
+        LizardHeadShellItemProperties itemProperties = GetItemPropertiesForTemplateType(templateType);
 
-        shellColor = properties.defaultShellColor;
+        shellColor = itemProperties.DefaultShellColor;
 
-        headSprite0Jaw = properties.headSprite0Jaw;
-        headSprite1LowerTeeth = properties.headSprite1LowerTeeth;
-        headSprite2UpperTeeth = properties.headSprite2UpperTeeth;
-        headSprite3Head = properties.headSprite3Head;
-        headSprite4Eyes = properties.headSprite4Eyes;
+        headSprite0Jaw = itemProperties.HeadSprite0Jaw;
+        headSprite1LowerTeeth = itemProperties.HeadSprite1LowerTeeth;
+        headSprite2UpperTeeth = itemProperties.HeadSprite2UpperTeeth;
+        headSprite3Head = itemProperties.HeadSprite3Head;
+        headSprite4Eyes = itemProperties.HeadSprite4Eyes;
 
-        rad = properties.defaultHeadBodyChunkRadius;
-        mass = properties.defaultHeadBodyChunkMass * properties.massModifier;
+        rad = itemProperties.DefaultHeadBodyChunkRadius;
+        mass = itemProperties.DefaultHeadBodyChunkMass * itemProperties.MassModifier;
 
-        health = properties.maxHealth;
-        maxHealth = properties.maxHealth;
+        health = itemProperties.MaxHealth;
+        maxHealth = itemProperties.MaxHealth;
     }
 
     public AbstractLizardHeadShell(Lizard lizard) : base(lizard.room.world, GetAbstractObjectTypeForCreatureTemplate(lizard.Template.type), null, lizard.coord, lizard.room.game.GetNewID())
@@ -73,13 +69,7 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
 
         this.templateType = lizard.Template.type;
 
-        LizardHeadShellProperties properties;
-        if (LizardHeadShellProperties.PropertiesOfTemplateType.ContainsKey(templateType))
-            properties = LizardHeadShellProperties.PropertiesOfTemplateType[templateType];
-        else
-            properties = LizardHeadShellFisob.properties;
-
-        shellColor = properties.defaultShellColor;
+        shellColor = lizard.lizardParams.standardColor;
 
         headSprite0Jaw = sLeaser.sprites[lizardGraphics.SpriteHeadStart].element.name;
         headSprite1LowerTeeth = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 1].element.name;
@@ -87,11 +77,19 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
         headSprite3Head = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].element.name;
         headSprite4Eyes = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 4].element.name;
 
-        rad = lizard.firstChunk.rad;
-        mass = lizard.firstChunk.mass * 0.25f; // -- Ms7: Copy the mass, but make it a little more bearable lol.
+        scaleX = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].scaleX;
+        scaleY = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].scaleY;
 
-        health = properties.maxHealth;
-        maxHealth = properties.maxHealth;
+        jawOpenAngle = lizard.lizardParams.jawOpenAngle;
+        jawOpenMoveJawsApart = lizard.lizardParams.jawOpenMoveJawsApart;
+
+        rad = lizard.bodyChunks[EntityBodyChunkIndexes.Lizard.Head].rad;
+        mass = lizard.bodyChunks[EntityBodyChunkIndexes.Lizard.Head].mass * 0.25f; // -- Ms7: Copy the mass, but make it a little more bearable lol.
+
+        LizardHeadShellItemProperties itemProperties = GetItemPropertiesForTemplateType(templateType);
+
+        health = itemProperties.MaxHealth;
+        maxHealth = itemProperties.MaxHealth;
     }
 
     public override void Realize()
@@ -118,7 +116,21 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
         }
         else
         {
-            return Enums.AbstractObjectType.LizardHeadShell; // Default for lizards that don't have a specific shell type.
+            return Enums.AbstractObjectType.LizardHeadShellTemplate; // Default for lizards that don't have a specific shell type.
+        }
+    }
+
+    public static LizardHeadShellItemProperties GetItemPropertiesForTemplateType(in CreatureTemplate.Type templateType)
+    {
+        LizardHeadShellItemProperties itemProperties;
+        if (LizardHeadShellItemProperties.PropertiesOfTemplateType.TryGetValue(templateType, out itemProperties))
+        {
+            return itemProperties;
+        }
+        else
+        {
+            Plugin.LogDebug($"No Head Shell Item Properties assigned for TemplateType{templateType.ToString()}, using default");
+            return LizardHeadShellItemProperties.PropertiesOfTemplateType[CreatureTemplate.Type.LizardTemplate];
         }
     }
 }

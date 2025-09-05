@@ -20,18 +20,18 @@ public readonly struct CraftRecipe
         /// Represents the definition of an object, including its properties and metadata.
         /// </summary>
         /// <remarks>This field is read-only and provides access to the associated <see
-        /// cref="ObjectDefinition"/> instance. It is typically used to retrieve information about the structure or
+        /// cref="EntityTypeDefinition"/> instance. It is typically used to retrieve information about the structure or
         /// configuration of the object.</remarks>
-        public readonly ObjectDefinition objectDefinition;
+        public readonly EntityTypeDefinition entityTypeDefinition;
         /// <summary>
         /// The AbstractObjectType of the ingredient.
         /// Set as AbstractObjectType.Creature if you wish to make the ingredient for a creature.
         /// </summary>
-        public readonly AbstractPhysicalObject.AbstractObjectType? objectType => objectDefinition.objectType;
+        public readonly AbstractPhysicalObject.AbstractObjectType? objectType => entityTypeDefinition.objectType;
         /// <summary>
         /// If this craft ingredient is a creature, the type of that creature.
         /// </summary>
-        public readonly CreatureTemplate.Type? creatureType => objectDefinition.creatureType;
+        public readonly CreatureTemplate.Type? creatureType => entityTypeDefinition.creatureType;
         /// <summary>
         /// The required body chunk to hold for the craft, useful for specifying in creatures.
         /// </summary>
@@ -39,7 +39,7 @@ public readonly struct CraftRecipe
 
         public Material(AbstractPhysicalObject.AbstractObjectType objectType, int bodyChunkIndex = 0, CreatureTemplate.Type? creatureType = null)
         {
-            objectDefinition = new ObjectDefinition(objectType, creatureType);
+            entityTypeDefinition = new EntityTypeDefinition(objectType, creatureType);
             this.bodyChunkIndex = bodyChunkIndex;
         }
 
@@ -48,10 +48,10 @@ public readonly struct CraftRecipe
         public bool Equals(Material other)
         {
             return bodyChunkIndex == other.bodyChunkIndex &&
-                   objectDefinition.Equals(other.objectDefinition);
+                   entityTypeDefinition.Equals(other.entityTypeDefinition);
         }
 
-        public override int GetHashCode() => HashCodeHelper.Combine(bodyChunkIndex, objectDefinition);
+        public override int GetHashCode() => HashCodeHelper.Combine(bodyChunkIndex, entityTypeDefinition);
 
         public static bool operator ==(Material left, Material right) => left.Equals(right);
         public static bool operator !=(Material left, Material right) => !left.Equals(right);
@@ -117,7 +117,7 @@ public readonly struct CraftRecipe
     /// <summary>
     /// The objects that will result from this craft recipe.
     /// </summary>
-    public readonly ObjectDefinition[] resultedObjects;
+    public readonly EntityTypeDefinition[] resultedObjects;
 
     /// <summary>
     /// The unique ID to relate this craft recipe back to it's respective craft.
@@ -151,7 +151,7 @@ public readonly struct CraftRecipe
     /// <param name="resultedObjects"></param>
     /// <param name="bodyModeRequirement"></param>
     /// <param name="quarterFoodPointsCost"></param>
-    public CraftRecipe(ushort craftID, Ingredient[] ingredients, ObjectDefinition[] resultedObjects, BodyModeRequirement bodyModeRequirement = BodyModeRequirement.Any, byte quarterFoodPointsCost = 0)
+    public CraftRecipe(ushort craftID, Ingredient[] ingredients, EntityTypeDefinition[] resultedObjects, BodyModeRequirement bodyModeRequirement = BodyModeRequirement.Any, byte quarterFoodPointsCost = 0)
     {
         this.craftID = craftID;
         this.ingredients = ingredients;
@@ -169,7 +169,7 @@ public readonly struct CraftRecipe
     /// <param name="resultedObject"></param>
     /// <param name="bodyModeRequirement"></param>
     /// <param name="quarterFoodPointsCost"></param>
-    public CraftRecipe(ushort craftID, Ingredient primaryIngredient, Ingredient secondaryIngredient, ObjectDefinition resultedObject, BodyModeRequirement bodyModeRequirement = BodyModeRequirement.Any, byte quarterFoodPointsCost = 0)
+    public CraftRecipe(ushort craftID, Ingredient primaryIngredient, Ingredient secondaryIngredient, EntityTypeDefinition resultedObject, BodyModeRequirement bodyModeRequirement = BodyModeRequirement.Any, byte quarterFoodPointsCost = 0)
     {
         this.craftID = craftID;
         this.ingredients = new[] { primaryIngredient, secondaryIngredient };
@@ -228,5 +228,17 @@ public static class CraftRecipeExtension
             return true;
 
         return false;
+    }
+
+    public static int GetTotalIngredientsQuantityRequired(this CraftRecipe craftRecipe)
+    {
+        var total = 0;
+
+        for (int i = 0; i < craftRecipe.ingredients.Length; i++)
+        {
+            total += craftRecipe.ingredients[i].quantityRequired;
+        }
+
+        return total;
     }
 }
