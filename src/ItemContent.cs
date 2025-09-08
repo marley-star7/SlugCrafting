@@ -33,6 +33,8 @@ public static partial class Content
             Fisobs.Core.Content.Register(new GreenLizardShellCuirassFisob());
 
             Fisobs.Core.Content.Register(new BlueLizardShellHelmetFisob());
+
+            Fisobs.Core.Content.Register(new KingVultureSpearFisobs());
         }
         catch (Exception e)
         {
