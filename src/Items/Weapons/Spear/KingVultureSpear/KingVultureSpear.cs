@@ -16,7 +16,7 @@ public class KingVultureSpear : Spear, WeaponsExtension.IWeaponExtension
 
     public int side = 0;
 
-    private const int tuskSegs = 15;
+    private const int tuskSegs = 100;
 
     public const int totalSprites = 2;
 
@@ -31,17 +31,16 @@ public class KingVultureSpear : Spear, WeaponsExtension.IWeaponExtension
         this.GetSpearCraftingData().distancePastCordConnectionDistanceForDislodge = 50f;
         spearDamageBonus = 2;
     }
-
-    Vector2 zRot;
-    Vector2 lastRot;
     public override void Update(bool eu)
     {
         base.Update(eu);
         // Sekq: Need to understand, but seting at rotation 0, 0 for now
+        
         chunkPoints[0, 0] = bodyChunks[0].pos;
         chunkPoints[0, 1] = bodyChunks[0].pos;
         chunkPoints[1, 0] = bodyChunks[0].pos;
         chunkPoints[1, 1] = bodyChunks[0].pos;
+    
     }
 
     public override void PlaceInRoom(Room placeRoom)
@@ -78,27 +77,26 @@ public class KingVultureSpear : Spear, WeaponsExtension.IWeaponExtension
     {
         float previousRadius = 0f;
 
-        Vector2 rotationLerp = Vector3.Slerp(lastRotation, rotation, timeStacker);
+        //Vector2 rotationLerp = Vector3.Slerp(lastRotation, rotation, timeStacker);
+        Vector2 rotationLerp = base.lastRotation;
 
-        // Punto central entre los dos chunks principales
-        Vector2 tuskBasePos = (Vector2.Lerp(chunkPoints[0, 1], chunkPoints[0, 0], timeStacker)
-                             + Vector2.Lerp(chunkPoints[1, 1], chunkPoints[1, 0], timeStacker)) / 2f;
+        //Vector2 tuskBasePos = (Vector2.Lerp(chunkPoints[0, 1], chunkPoints[0, 0], timeStacker)
+        //                    + Vector2.Lerp(chunkPoints[1, 1], chunkPoints[1, 0], timeStacker)) / 2f;
+        Vector2 tuskBasePos = bodyChunks[0].pos;
 
-        // Dirección entre los chunks
-        Vector2 tuskDirection = Custom.DirVec(
-            Vector2.Lerp(chunkPoints[1, 1], chunkPoints[1, 0], timeStacker),
-            Vector2.Lerp(chunkPoints[0, 1], chunkPoints[0, 0], timeStacker)
-        );
+        Vector2 tuskDirection = this.rotation;
 
-        Plugin.LogGame($"The chunkPoints pos are 00: {chunkPoints[0, 0]}, 01:{chunkPoints[0, 1]}, 10:{chunkPoints[1, 0]}, 11:{chunkPoints[1, 1]}");
+        //Plugin.LogGame($"The chunkPoints pos are 00: {chunkPoints[0, 0]}, 01:{chunkPoints[0, 1]}, 10:{chunkPoints[1, 0]}, 11:{chunkPoints[1, 1]}");
+        Plugin.LogGame($"The tuskBasePos is: {tuskBasePos}, and the tuskDirection is: {tuskDirection}, rotationLerp is: {rotationLerp}");
 
-        // Vector perpendicular a la dirección
         Vector2 tuskPerp = Custom.PerpendicularVector(tuskDirection);
 
-        // Punto inicial de la defensa
         Vector2 tuskStart = tuskBasePos
                           + tuskDirection * -35f
                           + tuskPerp * rotationLerp.y * ((side == 0) ? -1f : 1f) * -15f;
+
+        TriangleMesh tuskMesh = sLeaser.sprites[tuskSprite] as TriangleMesh;
+        TriangleMesh tuskDetailMesh = sLeaser.sprites[tuskSprite] as TriangleMesh;
 
         for (int i = 0; i < tuskSegs; i++)
         {
@@ -115,33 +113,33 @@ public class KingVultureSpear : Spear, WeaponsExtension.IWeaponExtension
             float segmentLength = Vector2.Distance(tuskSegment, tuskStart) / 5f;
             float segmentRadius = TuskRad(segmentFactor, Mathf.Abs(rotationLerp.y));
 
-            (sLeaser.sprites[tuskSprite] as TriangleMesh).MoveVertice(i * 4,
+            tuskMesh.MoveVertice(i * 4,
                 tuskStart - tuskSegmentPerp * (segmentRadius + previousRadius) * 0.5f + tuskSegmentDir * segmentLength - camPos);
-            (sLeaser.sprites[tuskDetailSprite] as TriangleMesh).MoveVertice(i * 4,
+            tuskDetailMesh.MoveVertice(i * 4,
                 tuskStart - tuskSegmentPerp * (segmentRadius + previousRadius) * 0.5f + tuskSegmentDir * segmentLength - camPos);
 
-            (sLeaser.sprites[tuskSprite] as TriangleMesh).MoveVertice(i * 4 + 1,
+            tuskMesh.MoveVertice(i * 4 + 1,
                 tuskStart + tuskSegmentPerp * (segmentRadius + previousRadius) * 0.5f + tuskSegmentDir * segmentLength - camPos);
-            (sLeaser.sprites[tuskDetailSprite] as TriangleMesh).MoveVertice(i * 4 + 1,
+            tuskDetailMesh.MoveVertice(i * 4 + 1,
                 tuskStart + tuskSegmentPerp * (segmentRadius + previousRadius) * 0.5f + tuskSegmentDir * segmentLength - camPos);
 
             if (i == tuskSegs - 1)
             {
-                (sLeaser.sprites[tuskSprite] as TriangleMesh).MoveVertice(i * 4 + 2,
+                tuskMesh.MoveVertice(i * 4 + 2,
                     tuskSegment + tuskSegmentDir * segmentLength - camPos);
-                (sLeaser.sprites[tuskDetailSprite] as TriangleMesh).MoveVertice(i * 4 + 2,
+                tuskDetailMesh.MoveVertice(i * 4 + 2,
                     tuskSegment + tuskSegmentDir * segmentLength - camPos);
             }
             else
             {
-                (sLeaser.sprites[tuskSprite] as TriangleMesh).MoveVertice(i * 4 + 2,
+                tuskMesh.MoveVertice(i * 4 + 2,
                     tuskSegment - tuskSegmentPerp * segmentRadius - tuskSegmentDir * segmentLength - camPos);
-                (sLeaser.sprites[tuskDetailSprite] as TriangleMesh).MoveVertice(i * 4 + 2,
+                tuskDetailMesh.MoveVertice(i * 4 + 2,
                     tuskSegment - tuskSegmentPerp * segmentRadius - tuskSegmentDir * segmentLength - camPos);
 
-                (sLeaser.sprites[tuskSprite] as TriangleMesh).MoveVertice(i * 4 + 3,
+                tuskMesh.MoveVertice(i * 4 + 3,
                     tuskSegment + tuskSegmentPerp * segmentRadius - tuskSegmentDir * segmentLength - camPos);
-                (sLeaser.sprites[tuskDetailSprite] as TriangleMesh).MoveVertice(i * 4 + 3,
+                tuskDetailMesh.MoveVertice(i * 4 + 3,
                     tuskSegment + tuskSegmentPerp * segmentRadius - tuskSegmentDir * segmentLength - camPos);
             }
 
@@ -149,7 +147,7 @@ public class KingVultureSpear : Spear, WeaponsExtension.IWeaponExtension
             tuskStart = tuskSegment;
         }
 
-        // Debug colores
+        // Debug colors
         sLeaser.sprites[totalSprites].color = Color.red;
         sLeaser.sprites[totalSprites].SetPosition(this.bodyChunks[0].pos - camPos);
     }

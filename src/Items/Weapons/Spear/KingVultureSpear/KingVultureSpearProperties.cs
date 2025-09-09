@@ -16,6 +16,6 @@ public sealed class KingVultureSpearProperties : ItemProperties
 
     public override void Grabability(Player player, ref Player.ObjectGrabability grabability)
     {
-        grabability = Player.ObjectGrabability.BigOneHand;
+        grabability = Player.ObjectGrabability.TwoHands;
     }
 }
