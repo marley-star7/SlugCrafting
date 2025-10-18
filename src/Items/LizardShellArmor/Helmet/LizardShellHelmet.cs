@@ -44,7 +44,7 @@ public class LizardShellHelmet : LizardShellArmor
     public new LizardShellHelmetItemProperties ItemProperties => (LizardShellHelmetItemProperties)base.ItemProperties;
     public new LizardShellHelmetAccessoryProperties AccessoryProperties => (LizardShellHelmetAccessoryProperties)base.AccessoryProperties;
 
-    public LizardShellHelmet(AbstractLizardShellHelmet abstractLizardShellHelmet, LizardShellHelmetItemProperties itemProperties) : base(abstractLizardShellHelmet, itemProperties)
+    public LizardShellHelmet(AbstractLizardShellHelmet abstractLizardShellHelmet, LizardShellHelmetItemProperties itemProperties, LizardShellEffectsModule lizardShellEffectsModule) : base(abstractLizardShellHelmet, itemProperties, lizardShellEffectsModule)
     {
         _spritesInfo = AccessoryProperties.SpritesInfo;
     }
@@ -66,6 +66,8 @@ public class LizardShellHelmet : LizardShellArmor
 
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos, DrawSpritesContext drawContext)
     {
+        lizardShellEffectsModule.DrawSpritesUpdate();
+
         int scaleX = drawContext.spriteAngle.StartsWith("-") ? -1 : 1;
         var spriteAngle = GraphicsModuleCCGExtensions.GetSymmetricalAngleFromAsymmetrical(drawContext.spriteAngle);
 

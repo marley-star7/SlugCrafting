@@ -77,8 +77,8 @@ public class AbstractLizardHeadShell : AbstractPhysicalObject
         headSprite3Head = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].element.name;
         headSprite4Eyes = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 4].element.name;
 
-        scaleX = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].scaleX;
-        scaleY = sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].scaleY;
+        scaleX = Math.Abs(sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].scaleX);
+        scaleY = Math.Abs(sLeaser.sprites[lizardGraphics.SpriteHeadStart + 3].scaleY);
 
         jawOpenAngle = lizard.lizardParams.jawOpenAngle;
         jawOpenMoveJawsApart = lizard.lizardParams.jawOpenMoveJawsApart;

@@ -25,7 +25,7 @@ public static partial class Content
     /// Second is the non-dominant (or secondary) ingredient.
     /// A dictionary is used for optimized lookup, so can immediately see the existance of crafts using an item.
     /// </summary>
-    public static readonly Dictionary<(CraftRecipe.Material?, CraftRecipe.Material?), HandCraft> HandCrafts = new();
+    public static readonly Dictionary<(CraftRecipe.Material? leftHandMaterial, CraftRecipe.Material? rightHandMaterial), HandCraft> HandCrafts = new();
 
     /// <summary>
     /// The static collection of all shelter crafts registered in the crafting system.

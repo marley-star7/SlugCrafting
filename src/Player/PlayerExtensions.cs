@@ -35,7 +35,7 @@ public class PlayerCraftingData
 
     public bool isHandCrafting => _craftTimer > 0;
 
-    public bool physicalCraftingEnabled = false;
+    public bool handCraftingEnabled = false;
 
     public WeakReference<Player> playerRef { get; }
 
@@ -44,8 +44,11 @@ public class PlayerCraftingData
         playerRef = new WeakReference<Player>(player);
         player.GetHandAnimationPlayer().AnimationLooped += OnPlayerHandAnimationLooped;
 
-        if (player.IsCrafter())
-            physicalCraftingEnabled = true;
+        if (player.IsCrafter() 
+            || player.SlugCatClass.value == "Project") // Temp code for testing.
+        {
+            handCraftingEnabled = true;
+        }
     }
 
     private void OnPlayerHandAnimationLooped(PlayerHandAnimationPlayer.AnimationIndex loopedAnimation, int timesLooped)
@@ -58,9 +61,9 @@ public class PlayerCraftingData
 
         craftAnimationsTotalTimesLooped++;
 
-        Plugin.LogDebug($"totalAnimationLoops: {handCraft.totalAnimationLoops}, loops: {timesLooped}, {isHandCrafting}, {loopedAnimation == currentCraftAnimation.animation}");
+        Plugin.LogDebug($"totalAnimationLoops: {handCraft.totalAnimationLoops}, loops: {timesLooped}, {isHandCrafting}, {loopedAnimation == currentCraftAnimation.animationIndex}");
 
-        if (isHandCrafting && loopedAnimation == currentCraftAnimation.animation)
+        if (isHandCrafting && loopedAnimation == currentCraftAnimation.animationIndex)
         {
             if (craftAnimationsTotalTimesLooped >= handCraft.totalAnimationLoops)
                 player.CompletePhysicalCraft(handCraft);
@@ -82,9 +85,9 @@ public static class PlayerCraftingExtensions
         _craftingDataTable.GetValue(player, p => new PlayerCraftingData(p));
 
     public static bool IsCrafter(this Player player) =>
-        player.slugcatStats.name == Enums.Crafter;
+        player.slugcatStats.name == Enums.SlugcatStats.Name.Crafter;
 
-    public static bool CanPhysicalCraft(this Player player) => player.GetPlayerCraftingData().physicalCraftingEnabled;
+    public static bool CanHandCraft(this Player player) => player.GetPlayerCraftingData().handCraftingEnabled;
 
     public static CraftRecipe.Material? GetCraftRecipeMaterialInGrasp(this Player player, int graspIndex)
     {
@@ -267,13 +270,26 @@ public static class PlayerCraftingExtensions
         var playerSCData = self.GetPlayerCraftingData();
 
         playerSCData.craftAnimationIndex++;
-        var nextCraftAnimation = playerSCData.currentPossibleHandCraft.Value.animations[playerSCData.craftAnimationIndex].animation;
+        var nextCraftAnimation = playerSCData.currentPossibleHandCraft.Value.animations[playerSCData.craftAnimationIndex].animationIndex;
         self.GetHandAnimationPlayer().Play(nextCraftAnimation);
     }
 
-    private static void PhysicalCraftEnded(this Player self)
+    public static void LoseHandCraft(this Player self)
     {
         var playerSlugCraftingData = self.GetPlayerCraftingData();
+        playerSlugCraftingData.currentPossibleHandCraft = null;
+
+        EndHandCraft(self);
+    }
+
+    private static void EndHandCraft(this Player self)
+    {
+        var playerSlugCraftingData = self.GetPlayerCraftingData();
+
+        if (playerSlugCraftingData.currentPossibleHandCraft != null)
+        {
+            self.GetHandAnimationPlayer().Stop(playerSlugCraftingData.currentPossibleHandCraft.Value.animations[playerSlugCraftingData.craftAnimationIndex].animationIndex);
+        }
 
         // RESET TIMER FOR NEXT CRAFT.
         playerSlugCraftingData.craftTimer = 0;
@@ -281,14 +297,24 @@ public static class PlayerCraftingExtensions
         playerSlugCraftingData.craftAnimationsTotalTimesLooped = 0;
     }
 
-    public static void CheckGraspsForPossiblePhysicalCraft(this Player player)
+    public static void CheckGraspsForPossibleHandCraft(this Player player)
     {
-        player.GetPlayerCraftingData().currentPossibleHandCraft = player.GetGraspsHandCraft();
+        var playerSlugCraftingData = player.GetPlayerCraftingData();
+
+        var newPossibleHandCraft = player.GetGraspsHandCraft();
+
+        // If we don't have one a craft anymore, run code to lose it.
+        if (playerSlugCraftingData.currentPossibleHandCraft != null && newPossibleHandCraft == null)
+        {
+            player.LoseHandCraft();
+        }
+
+        playerSlugCraftingData.currentPossibleHandCraft = newPossibleHandCraft;
     }
 
     internal static void CraftInputStart(this Player player)
     {
-        player.CheckGraspsForPossiblePhysicalCraft();
+        player.CheckGraspsForPossibleHandCraft();
 
         var sCData = player.GetPlayerCraftingData();
         if (sCData.currentPossibleHandCraft == null)
@@ -303,7 +329,7 @@ public static class PlayerCraftingExtensions
 #endif
 
         var animationPlayer = player.GetHandAnimationPlayer();
-        var currentAnim = handCraft.animations[sCData.craftAnimationIndex].animation;
+        var currentAnim = handCraft.animations[sCData.craftAnimationIndex].animationIndex;
 
         animationPlayer.Play(currentAnim);
     }
@@ -314,13 +340,14 @@ public static class PlayerCraftingExtensions
         var animationPlayer = player.GetHandAnimationPlayer();
 
         if (sCData.currentPossibleHandCraft == null)
+        {
             return;
+        }
 
-        var handCraft = sCData.currentPossibleHandCraft.Value;
-
-        if (player.CanPerformCraftInCurrentAnimation(handCraft))
+        if (player.CanPerformCraftInCurrentAnimation(sCData.currentPossibleHandCraft.Value))
         {
             player.swallowAndRegurgitateCounter = 0;
+            player.noGrabCounter = 1; // Cannot grab poles while crafting.
             sCData.craftTimer++;
         }
     }
@@ -333,23 +360,23 @@ public static class PlayerCraftingExtensions
 
         var animationPlayer = self.GetHandAnimationPlayer();
         var handCraft = selfCData.currentPossibleHandCraft.Value;
-        var wouldBeAnim = handCraft.animations[selfCData.craftAnimationIndex].animation;
+        var wouldBeAnim = handCraft.animations[selfCData.craftAnimationIndex].animationIndex;
 
         animationPlayer.Stop(wouldBeAnim);
-        self.PhysicalCraftEnded();
+        self.EndHandCraft();
     }
 
     public static void CompletePhysicalCraft(this Player self, HandCraft handCraft)
     {
-        self.GetHandAnimationPlayer().Stop();
-
         var primaryCraftObject = self.grasps[0].grabbed;
         var secondaryCraftObject = self.grasps[1].grabbed;
         handCraft.craftResult(self, primaryCraftObject, secondaryCraftObject);
 
+        self.GetHandAnimationPlayer().Stop();
+
         // UPDATE THE CURRENT POSSIBLE CRAFTS
-        GetGraspsHandCraft(self);
-        self.PhysicalCraftEnded();
+        self.CheckGraspsForPossibleHandCraft();
+        self.EndHandCraft();
     }
 
     public static void CancelPhysicalCraft(this Player self)
@@ -361,9 +388,9 @@ public static class PlayerCraftingExtensions
             playerSlugCraftingData.craftTimer = -1;
 
             var playerHandAnimationPlayer = self.GetHandAnimationPlayer();
-            playerHandAnimationPlayer.Stop(playerSlugCraftingData.currentPossibleHandCraft.Value.animations[playerSlugCraftingData.craftAnimationIndex].animation);
+            playerHandAnimationPlayer.Stop(playerSlugCraftingData.currentPossibleHandCraft.Value.animations[playerSlugCraftingData.craftAnimationIndex].animationIndex);
         }
-        self.PhysicalCraftEnded();
+        self.EndHandCraft();
     }
 
     /// <summary>

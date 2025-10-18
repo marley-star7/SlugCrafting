@@ -24,12 +24,12 @@ public struct HandCraft
     public struct Animation
     {
         public readonly int loopsInAnimation;
-        public readonly PlayerHandAnimationPlayer.AnimationIndex animation;
+        public readonly PlayerHandAnimationPlayer.AnimationIndex animationIndex;
 
-        public Animation(int loopsInAnimation, PlayerHandAnimationPlayer.AnimationIndex animation)
+        public Animation(int loopsInAnimation, PlayerHandAnimationPlayer.AnimationIndex animationIndex)
         {
             this.loopsInAnimation = loopsInAnimation;
-            this.animation = animation;
+            this.animationIndex = animationIndex;
         }
     }
 

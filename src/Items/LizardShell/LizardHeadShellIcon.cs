@@ -9,7 +9,7 @@ public class LizardHeadShellIcon : Icon
         _spriteColor = spriteColor;
     }
 
-    public override string SpriteName(int data) => "icon_LizardHeadShell";
+    public override string SpriteName(int data) => "Symbol_LizardHeadShell";
 
     public override Color SpriteColor(int data) => _spriteColor;
 

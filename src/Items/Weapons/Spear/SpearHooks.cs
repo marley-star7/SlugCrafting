@@ -1,4 +1,6 @@
-﻿namespace SlugCrafting.Items;
+﻿using MRCustom.Contexts;
+
+namespace SlugCrafting.Items;
 
 internal static class SpearHooks
 {
@@ -16,8 +18,11 @@ internal static class SpearHooks
             {
                 // If any of them return the spear shouldn't hit, it wont.
 
-                if (playerCraftingData.accessories[i].PreSpearHitWearer(self, result, eu) == false)
-                    didHit = false;
+                if (playerCraftingData.accessories[i].TryGetModule<ArmorAccessoryModule>(out var armorAccessoryModule))
+                {
+                    if (armorAccessoryModule.PreSpearHitWearer(self, result, eu) == false)
+                        didHit = false;
+                }
             }
         }
         if (!didHit)

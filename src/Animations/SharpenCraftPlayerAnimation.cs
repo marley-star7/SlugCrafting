@@ -1,6 +1,6 @@
 ﻿namespace SlugCrafting.Animations;
 
-public class SharpenCraftPlayerHandAnimation : MRAnimation<Player>
+public class SharpenCraftPlayerHandAnimation : RWAnimation<Player>
 {
     /// <summary>
     /// How fast the saw moves back and forth.

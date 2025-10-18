@@ -4,5 +4,9 @@ public class BlueLizardShellHelmetItemProperties : LizardShellHelmetItemProperti
 {
     public BlueLizardShellHelmetItemProperties() : base(new BlueLizardShellHelmetAccessoryProperties())
     {
+
     }
+
+    public override void ScavCollectScore(Scavenger scavenger, ref int score)
+        => score = 1;
 }

@@ -41,8 +41,12 @@ sealed class Plugin : BaseUnityPlugin
         // Someday's I think about logging with my logger, and I get all loggy...
         Logger = base.Logger;
 
+        Enums.Init();
+
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
+
+        MRCustom.Extensions.SlugcatStatsExtensions.SetSlugcatCanPickupStunnedLargeCreatures(Enums.SlugcatStats.Name.Crafter, true);
 
         Content.RegisterSlugCraftingFisobs();
         RegisterSlugCraftingCrafts();
@@ -199,7 +203,7 @@ sealed class Plugin : BaseUnityPlugin
 
         var player = (crafter as Player);
         player.RealizeAndGrab(new AbstractLizardHeadShell(lizard));
-        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(EntityBodyChunkIndexes.Lizard.Head);
+        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(Consts.BodyChunkIndexes.Lizard.Head);
     }
 
     public static void ScavengeLizardHeadInSecondaryHandCraftResult(Creature crafter, PhysicalObject primaryIngredientObject, PhysicalObject secondaryIngredientObject)
@@ -210,7 +214,7 @@ sealed class Plugin : BaseUnityPlugin
 
         var player = (crafter as Player);
         player.RealizeAndGrab(new AbstractLizardHeadShell(lizard));
-        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(EntityBodyChunkIndexes.Lizard.Head);
+        lizard.abstractCreature.GetAbstractCreatureCraftingData().scavengedBodyChunks.Add(Consts.BodyChunkIndexes.Lizard.Head);
     }
 
     private static void GreenLizardShellHelmetShelterCraftResult(in CraftRecipe shelterCraft, Creature crafter)
@@ -617,7 +621,7 @@ sealed class Plugin : BaseUnityPlugin
                 {
                     recipe = new CraftRecipe(
                         Content.GenerateUniqueCraftID(),
-                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, EntityBodyChunkIndexes.Lizard.Head, lizardType),
+                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, Consts.BodyChunkIndexes.Lizard.Head, lizardType),
                         new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Knife),
                         new EntityTypeDefinition(lizardHeadShellType)
                     ),
@@ -634,7 +638,7 @@ sealed class Plugin : BaseUnityPlugin
                     recipe = new CraftRecipe(
                         Content.GenerateUniqueCraftID(),
                         new CraftRecipe.Ingredient(Enums.CraftRecipeMaterials.Knife),
-                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, EntityBodyChunkIndexes.Lizard.Head, lizardType),
+                        new CraftRecipe.Ingredient(AbstractPhysicalObject.AbstractObjectType.Creature, consumed: true, Consts.BodyChunkIndexes.Lizard.Head, lizardType),
                         new EntityTypeDefinition(lizardHeadShellType)
                     ),
                     ingredientValidation = SecondaryIngredientChunkNotScavengedValidation,

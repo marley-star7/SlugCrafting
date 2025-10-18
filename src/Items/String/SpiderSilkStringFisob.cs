@@ -6,6 +6,8 @@ public class SpiderSilkStringFisob : Fisob
 
     public SpiderSilkStringFisob() : base(Enums.AbstractObjectType.SpiderSilkString)
     {
+        Icon = new SpiderSilkStringIcon();
+
         CordProperties.typesProperties.Add(Enums.AbstractObjectType.SpiderSilkString, properties);
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);
@@ -15,6 +17,7 @@ public class SpiderSilkStringFisob : Fisob
     public override AbstractPhysicalObject Parse(World world, EntitySaveData saveData, SandboxUnlock? unlock)
     {
         var result = new AbstractCord(Enums.AbstractObjectType.SpiderSilkString, world, saveData.Pos, saveData.ID);
+        result.color = Color.white;
         return result;
     }
 

@@ -2,7 +2,11 @@
 
 public class LizardShellHelmetItem : LizardShellArmorItem
 {
-    public LizardShellHelmet lizardShellHelmet;
+    public LizardShellHelmet LizardShellHelmet
+    {
+        get => (LizardShellHelmet)base.lizardShellArmor;
+        set => base.lizardShellArmor = value;
+    }
 
     private Creature? _wearer;
     public Creature? Wearer
@@ -12,10 +16,12 @@ public class LizardShellHelmetItem : LizardShellArmorItem
 
     public AbstractLizardShellHelmet abstractLizardShellHelmet;
 
-    public LizardShellHelmetItem(AbstractLizardShellHelmet abstractHeadAccessory, LizardShellHelmet lizardShellHelmet) : base(abstractHeadAccessory, lizardShellHelmet)
+    public LizardShellHelmetItem(AbstractLizardShellHelmet abstractLizardShellHelmet, LizardShellHelmet lizardShellHelmet) : base(abstractLizardShellHelmet, lizardShellHelmet)
     {
-        this.lizardShellHelmet = lizardShellHelmet;
-        abstractLizardShellHelmet = abstractHeadAccessory;
+        if (LizardShellHelmet == null)
+        {
+            LizardShellHelmet = new LizardShellHelmet(abstractLizardShellHelmet, LizardShellHelmetItemProperties.GetPropertiesForType(abstractLizardShellHelmet.type), new LizardShellEffectsModule(this, abstractLizardShellHelmet.shellColor));
+        }
 
         var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
 
@@ -36,8 +42,7 @@ public class LizardShellHelmetItem : LizardShellArmorItem
 
     public override void Equip(Player wearer)
     {
-        new LizardShellHelmetAccessory(wearer, lizardShellHelmet);
-        this.Destroy();
+        EquipLizardShellArmorAccessory(new LizardShellHelmetAccessory(wearer, LizardShellHelmet));
     }
 
     public override void Update(bool eu)
@@ -45,7 +50,6 @@ public class LizardShellHelmetItem : LizardShellArmorItem
         lastRotation = rotation;
 
         base.Update(eu);
-        lizardShellHelmet.Update(eu);
 
         //-- MS7: Effect for when being held to look more 3d.
         if (grabbedBy.Count > 0)
@@ -88,7 +92,7 @@ public class LizardShellHelmetItem : LizardShellArmorItem
             lookDirX: 0,
             lookDirY: 0
         );
-        lizardShellHelmet.DrawSprites(sLeaser, rCam, timeStacker, camPos, context);
+        LizardShellHelmet.DrawSprites(sLeaser, rCam, timeStacker, camPos, context);
 
         if (slatedForDeletetion || room != rCam.room)
         {

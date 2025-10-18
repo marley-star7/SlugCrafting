@@ -8,4 +8,7 @@ public class GreenLizardShellHelmetItemProperties : LizardShellHelmetItemPropert
     {
 
     }
+
+    public override void ScavCollectScore(Scavenger scavenger, ref int score)
+        => score = 1;
 }

@@ -45,7 +45,7 @@ public class LizardShellCuirass : LizardShellArmor
     public new LizardShellCuirassItemProperties ItemProperties => (LizardShellCuirassItemProperties)base.ItemProperties;
     public new LizardShellCuirassAccessoryProperties AccessoryProperties => (LizardShellCuirassAccessoryProperties)base.AccessoryProperties;
 
-    public LizardShellCuirass(AbstractLizardShellCuirass abstractLizardShellCuirass, LizardShellCuirassItemProperties itemProperties) : base(abstractLizardShellCuirass, itemProperties)
+    public LizardShellCuirass(AbstractLizardShellCuirass abstractLizardShellCuirass, LizardShellCuirassItemProperties itemProperties, LizardShellEffectsModule lizardShellEffectsModule) : base(abstractLizardShellCuirass, itemProperties, lizardShellEffectsModule)
     {
         _bodySpritesInfo = AccessoryProperties.BodySpritesInfo;
         _hipsSpritesInfo = AccessoryProperties.HipsSpritesInfo;

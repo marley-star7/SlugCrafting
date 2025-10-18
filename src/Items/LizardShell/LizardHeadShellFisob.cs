@@ -35,7 +35,7 @@ public abstract class LizardHeadShellFisob : Fisob
     {
         // TODO: add data later for this.
 
-        var result = new AbstractLizardHeadShell(world, CreatureTemplate.Type.LizardTemplate, saveData.Pos, saveData.ID);
+        var result = new AbstractLizardHeadShell(world, CreatureType, saveData.Pos, saveData.ID);
         return result;
     }
 

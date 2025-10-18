@@ -1,4 +1,6 @@
-﻿namespace SlugCrafting.Items;
+﻿using SlugCrafting.Core;
+
+namespace SlugCrafting.Items;
 
 public abstract class LizardShellArmorItem : PlayerCarryableItem, IDrawable, IEquippable
 {
@@ -71,6 +73,14 @@ public abstract class LizardShellArmorItem : PlayerCarryableItem, IDrawable, IEq
     }
 
     public abstract void Equip(Player wearer);
+
+    public void EquipLizardShellArmorAccessory(LizardShellArmorAccessory lizardShellArmorAccessory)
+    {
+        lizardShellArmor.lizardShellEffectsModule.Owner = lizardShellArmorAccessory;
+
+        abstractPhysicalObject.realizedObject.AllGraspsLetGoOfThisObject(true);
+        abstractPhysicalObject.Abstractize(abstractPhysicalObject.pos);
+    }
 
     //
     // IDrawable and IDynamicCosmetic

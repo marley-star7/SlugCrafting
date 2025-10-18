@@ -8,4 +8,7 @@ public class GreenLizardShellCuirassItemProperties : LizardShellCuirassItemPrope
     {
 
     }
+
+    public override void ScavCollectScore(Scavenger scavenger, ref int score)
+        => score = 1;
 }

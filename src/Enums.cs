@@ -5,7 +5,21 @@ namespace SlugCrafting;
 
 public static class Enums
 {
-    public static readonly SlugcatStats.Name Crafter = new(nameof(Crafter), false);
+    public static void Init()
+    {
+        RuntimeHelpers.RunClassConstructor(typeof(SoundID).TypeHandle);
+        RuntimeHelpers.RunClassConstructor(typeof(AbstractObjectType).TypeHandle);
+        RuntimeHelpers.RunClassConstructor(typeof(SandboxUnlockID).TypeHandle);
+        RuntimeHelpers.RunClassConstructor(typeof(PlayerHandAnimations).TypeHandle);
+    }
+
+    public static class SlugcatStats
+    {
+        public static class Name
+        {
+            public static readonly global::SlugcatStats.Name Crafter = new(nameof(Crafter), false);
+        }
+    }
 
     public static class CosmeticLayers
     {

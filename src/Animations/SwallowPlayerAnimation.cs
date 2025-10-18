@@ -1,6 +1,6 @@
 ﻿namespace SlugCrafting.Animations;
 
-public class SwallowPlayerAnimation : MRAnimation<Player>
+public class SwallowPlayerAnimation : RWAnimation<Player>
 {
     public override void Start(Player player)
     {

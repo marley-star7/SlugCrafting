@@ -7,5 +7,5 @@ public class BigLizardHeadShellIcon : LizardHeadShellIcon
 
     }
 
-    public override string SpriteName(int data) => "icon_LizardHeadShellBig";
+    public override string SpriteName(int data) => "Symbol_LizardHeadShellBig";
 }

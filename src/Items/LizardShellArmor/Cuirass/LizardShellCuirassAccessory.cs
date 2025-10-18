@@ -14,7 +14,7 @@ public class LizardShellCuirassAccessory : LizardShellArmorAccessory
 
     public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        if (sLeaser == null)
+        if (SLeaser == null)
             return;
 
         var playerGraphics = (PlayerGraphics)wearer.graphicsModule;
@@ -45,7 +45,7 @@ public class LizardShellCuirassAccessory : LizardShellArmorAccessory
             anchorY: playerGraphicsCCGData.BaseHipsSprite.anchorY
         );
 
-        lizardShellCuirass.DrawSprites(sLeaser, rCam, timeStacker, camPos, bodyDrawContext, hipsDrawContext);
+        lizardShellCuirass.DrawSprites(SLeaser, rCam, timeStacker, camPos, bodyDrawContext, hipsDrawContext);
     }
 
     public override void PostWearerTerrainImpact(Player player, int chunkIndex, IntVector2 direction, float speed, bool firstContact)

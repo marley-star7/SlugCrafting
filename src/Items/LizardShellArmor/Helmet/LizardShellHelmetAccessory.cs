@@ -14,7 +14,7 @@ public class LizardShellHelmetAccessory : LizardShellArmorAccessory
 
     public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        if (sLeaser == null)
+        if (SLeaser == null)
             return;
 
         var playerGraphics = (PlayerGraphics)wearer.graphicsModule;
@@ -41,7 +41,7 @@ public class LizardShellHelmetAccessory : LizardShellArmorAccessory
             lookDirY: lookDirY
         );
 
-        lizardShellHelmet.DrawSprites(sLeaser, rCam, timeStacker, camPos, context);
+        lizardShellHelmet.DrawSprites(SLeaser, rCam, timeStacker, camPos, context);
     }
 
     public override void PostWearerTerrainImpact(Player player, int chunkIndex, IntVector2 direction, float speed, bool firstContact)

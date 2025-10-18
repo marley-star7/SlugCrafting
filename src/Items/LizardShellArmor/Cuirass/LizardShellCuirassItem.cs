@@ -1,14 +1,22 @@
 ﻿using CompartmentalizedCreatureGraphics.Extensions;
+using Fisobs.Properties;
 
 namespace SlugCrafting.Items;
 
 public class LizardShellCuirassItem : LizardShellArmorItem
 {
-    public LizardShellCuirass lizardShellCuirass;
-
-    public LizardShellCuirassItem(AbstractLizardShellCuirass abstractLizardShellCuirass, LizardShellCuirass lizardShellCuirass) : base(abstractLizardShellCuirass, lizardShellCuirass)
+    public LizardShellCuirass LizardShellCuirass
     {
-        this.lizardShellCuirass = lizardShellCuirass;
+        get => (LizardShellCuirass)base.lizardShellArmor;
+        set => base.lizardShellArmor = value;
+    }
+
+    public LizardShellCuirassItem(AbstractLizardShellCuirass abstractLizardShellCuirass, LizardShellCuirass lizardShellCuirass = null) : base(abstractLizardShellCuirass, lizardShellCuirass)
+    {
+        if (LizardShellCuirass == null)
+        {
+            LizardShellCuirass = new LizardShellCuirass(abstractLizardShellCuirass, LizardShellCuirassItemProperties.GetPropertiesForType(abstractLizardShellCuirass.type), new LizardShellEffectsModule(this, abstractLizardShellCuirass.shellColor));
+        }
 
         var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
 
@@ -23,8 +31,7 @@ public class LizardShellCuirassItem : LizardShellArmorItem
 
     public override void Equip(Player wearer)
     {
-        new LizardShellCuirassAccessory(wearer, lizardShellCuirass);
-        this.Destroy();
+        EquipLizardShellArmorAccessory(new LizardShellCuirassAccessory(wearer, LizardShellCuirass));
     }
 
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
@@ -51,7 +58,7 @@ public class LizardShellCuirassItem : LizardShellArmorItem
             anchorY: 0.25f
         );
 
-        lizardShellCuirass.DrawSprites(sLeaser, rCam, timeStacker, camPos, context, context);
+        LizardShellCuirass.DrawSprites(sLeaser, rCam, timeStacker, camPos, context, context);
 
         if (slatedForDeletetion || room != rCam.room)
         {

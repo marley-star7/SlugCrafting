@@ -9,6 +9,7 @@ sealed class KnifeFisob : Fisob
 {
     public KnifeFisob() : base(Enums.AbstractObjectType.Knife)
     {
+        Icon = new KnifeIcon();
         SandboxPerformanceCost = new(linear: 0.3f, exponential: 0f);
 
         RegisterUnlock(Enums.SandboxUnlockID.Knife, parent: MultiplayerUnlocks.SandboxUnlockID.Spear, data: 0);

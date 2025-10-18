@@ -54,28 +54,30 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
         HideRegion.None,
     };
 
+    public Dictionary<Type, RWModule> Modules = new();
+
     protected RoomCamera.SpriteLeaser? _sLeaser;
-    public RoomCamera.SpriteLeaser? sLeaser => _sLeaser;
+    public RoomCamera.SpriteLeaser? SLeaser => _sLeaser;
 
     private Player _wearer;
-    public Creature wearer => _wearer;
-    public GraphicsModule? wearerGraphics => _wearer.graphicsModule;
-
-    public Player owner => _wearer as Player;
+    public Creature Wearer => _wearer;
+    public GraphicsModule? WearerGraphics => _wearer.graphicsModule;
 
     public int wearingBodyChunkIndex = 0; // Default body chunk index for wearables, can be overridden in derived classes.
+    public BodyChunk wearingBodyChunk => _wearer.bodyChunks[wearingBodyChunkIndex];
+
     public float mass = 0f;
 
     private SpriteLayerGroup[] _spriteLayerGroups;
-    public SpriteLayerGroup[] spriteLayerGroups
+    public SpriteLayerGroup[] SpriteLayerGroups
     {
         get => _spriteLayerGroups;
         set => _spriteLayerGroups = value;
     }
 
-    public Accessory(Player owner)
+    public Accessory(Player wearer)
     {
-        this._wearer = owner;
+        this._wearer = wearer;
         var wearerCraftingData = _wearer.GetPlayerCraftingData();
         var wearerCCGData = _wearer.graphicsModule.GetGraphicsModuleCCGData();
 
@@ -94,7 +96,7 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
             }
         }
 
-        owner.UpdateMass();
+        wearer.UpdateMass();
     }
 
     /*
@@ -106,16 +108,6 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
         Wearer.graphicsModule.RemoveCreatureCosmetic(this);
     }
     */
-
-    public virtual bool PreSpearHitWearer(Spear spear, SharedPhysics.CollisionResult result, bool eu)
-    {
-        return true;
-    }
-
-    public virtual void PreWearerViolence(ViolenceContext violenceContext)
-    {
-
-    }
 
     public virtual void PostWearerGrabbed(Creature.Grasp grasp)
     {
@@ -174,5 +166,38 @@ public class Accessory : UpdatableAndDeletable, IDrawable, IDynamicCreatureCosme
     public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
     {
 
+    }
+
+    //
+    // RWModules
+    //
+
+    public RWModule GetModule(Type moduleType)
+    {
+        return Modules[moduleType];
+    }
+
+    public T GetModule<T>() where T : RWModule
+    {
+        return (T)Modules[typeof(T)];
+    }
+
+    public bool TryGetModule<T>(out T module) where T : RWModule
+    {
+        bool result = Modules.TryGetValue(typeof(T), out var moduleValue);
+        if (result)
+        {
+            module = (T)moduleValue;
+        }
+        else
+        {
+            module = null;
+        }
+        return result;
+    }
+
+    public void AddModule(RWModule module)
+    {
+        Modules.Add(module.moduleType, module);
     }
 }

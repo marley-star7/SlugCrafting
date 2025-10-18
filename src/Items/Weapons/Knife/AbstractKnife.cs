@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SlugCrafting.Items.Weapons;
 
 // TODO: swap the Abstract around?
-sealed class AbstractKnife : AbstractPhysicalObject
+public class AbstractKnife : AbstractPhysicalObject
 {
     // TODO: need to rework this whole class.
     public AbstractKnife(World world, AbstractObjectType type, WorldCoordinate pos, EntityID ID) 

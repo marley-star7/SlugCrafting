@@ -11,7 +11,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
     public AbstractCord abstractCord;
 
-    public MRLinePhysics mRLinePhysics;
+    public LinePhysics linePhysics;
     public Rope rope;
 
     public enum Mode
@@ -44,7 +44,6 @@ public class CordItem : PlayerCarryableItem, IDrawable
     public const float cordGraphicsPartLength = 4f;
 
     public int[] cordEndsMRLinePhysicsPartIndexes = new int[] {totalCordGraphicsParts - 2, 1};
-    public int midPart => mRLinePhysics.midPart;
 
     /// <summary>
     /// How fast the stalk will settle and surcumb to gravity.
@@ -57,9 +56,8 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
     public Color cordColor;
 
-    public CordItem(AbstractCord abstractCord, CordProperties properties) : base(abstractCord)
+    private void PhysicalObjectConstructor(AbstractCord abstractCord)
     {
-        this.abstractCord = abstractCord;
         var pos = abstractPhysicalObject.Room.realizedRoom.MiddleOfTile(abstractPhysicalObject.pos.Tile);
 
         base.bodyChunks = new BodyChunk[1];
@@ -73,15 +71,22 @@ public class CordItem : PlayerCarryableItem, IDrawable
         base.collisionLayer = 2;
         base.waterFriction = 0.92f;
         base.buoyancy = 1.2f;
+    }
 
-        mRLinePhysics = new MRLinePhysics(this, firstChunk, totalCordGraphicsParts)
+    public CordItem(AbstractCord abstractCord, CordProperties properties) : base(abstractCord)
+    {
+        this.abstractCord = abstractCord;
+        this.properties = properties;
+
+        PhysicalObjectConstructor(abstractCord);
+
+        linePhysics = new LinePhysics(this, totalCordGraphicsParts)
         {
             partLength = cordGraphicsPartLength,
             restSpeed = cordGraphicsRestSpeed,
-            midPart = totalCordGraphicsParts / 2,
+            //midPart = totalCordGraphicsParts / 2,
         };
-        mRLinePhysics.SetPartsRadius(properties.thickness);
-        this.properties = properties;
+        linePhysics.SetPartsRadius(properties.thickness);
 
         /*
         rope = new Rope(room, firstChunk.pos, firstChunk.pos, properties.thickness)
@@ -91,12 +96,34 @@ public class CordItem : PlayerCarryableItem, IDrawable
         */
     }
 
+    /// <summary>
+    /// Makes a cord out of information from rope graphics.
+    /// </summary>
+    /// <param name="abstractCord"></param>
+    /// <param name="properties"></param>
+    /// <param name="ropeGraphic"></param>
+    public CordItem(AbstractCord abstractCord, CordProperties properties, RopeGraphic ropeGraphic) : base(abstractCord)
+    {
+        this.abstractCord = abstractCord;
+        this.properties = properties;
+
+        PhysicalObjectConstructor(abstractCord);
+
+        linePhysics = new LinePhysics(this, totalCordGraphicsParts)
+        {
+            partLength = cordGraphicsPartLength,
+            restSpeed = cordGraphicsRestSpeed,
+            //midPart = totalCordGraphicsParts / 2,
+        };
+        linePhysics.SetPartsRadius(properties.thickness);
+    }
+
     public override void PlaceInRoom(Room placeRoom)
     {
         base.PlaceInRoom(placeRoom);
         //rope.room = placeRoom;
         //rope.Reset();
-        mRLinePhysics.ResetParts();
+        linePhysics.ResetParts();
     }
 
     public override void NewRoom(Room newRoom)
@@ -104,7 +131,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
         base.NewRoom(newRoom);
         //rope.room = newRoom;
         //rope.Reset();
-        mRLinePhysics.ResetParts();
+        linePhysics.ResetParts();
     }
 
     public void ChangeMode(Mode newMode)
@@ -125,7 +152,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
         if (newMode != Mode.FirstEndTiedAndSecondEndGrabbed && newMode != Mode.BothEndsTied)
         {
-            mRLinePhysics.forceSetPartPositions.Remove(cordEndsMRLinePhysicsPartIndexes[1]);
+            linePhysics.forceSetPartPositions.Remove(cordEndsMRLinePhysicsPartIndexes[1]);
         }
 
         _mode = newMode;
@@ -150,8 +177,6 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
         objectToTie.GetAbstractPhysicalObjectCraftingData().tiedCord = abstractCord;
 
-        mRLinePhysics.midPart = 0;
-
         if (tiePosition == 0)
             ChangeMode(Mode.FirstEndTied);
         else
@@ -175,7 +200,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
         abstractCord.tiedObjects[tiePosition] = null;
         abstractCord.tiedObjectBodyChunkIndexes[tiePosition] = -1;
-        mRLinePhysics.forceSetPartPositions.Remove(tiePosition);
+        linePhysics.forceSetPartPositions.Remove(tiePosition);
 
         if (tiePosition == 1)
             ChangeMode(Mode.Free);
@@ -187,9 +212,6 @@ public class CordItem : PlayerCarryableItem, IDrawable
 
         for (int i = 0; i < abstractCord.tiedObjects.Length; i++)
             UntieObject(i);
-
-        // Reset midpart to center of string.
-        mRLinePhysics.midPart = totalCordGraphicsParts / 2;
     }
 
     private void TugOnGrabber()
@@ -223,7 +245,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
             {
                 ChangeMode(Mode.FirstEndTiedAndSecondEndGrabbed);
 
-                mRLinePhysics.forceSetPartPositions[cordEndsMRLinePhysicsPartIndexes[1]] = firstChunk.pos;
+                linePhysics.forceSetPartPositions[cordEndsMRLinePhysicsPartIndexes[1]] = firstChunk.pos;
                 ropePos[1] = firstChunk.pos;
 
                 if (bodyChunkConnections.Length > 0)
@@ -298,12 +320,12 @@ public class CordItem : PlayerCarryableItem, IDrawable
             if (currentTiedObject.realizedObject.slatedForDeletetion)
                 UntieObject(i);
 
-            mRLinePhysics.forceSetPartPositions[cordEndsMRLinePhysicsPartIndexes[i]] = currentTiedObject.realizedObject.bodyChunks[abstractCord.tiedObjectBodyChunkIndexes[i]].pos;
+            linePhysics.forceSetPartPositions[cordEndsMRLinePhysicsPartIndexes[i]] = currentTiedObject.realizedObject.bodyChunks[abstractCord.tiedObjectBodyChunkIndexes[i]].pos;
             ropePos[i] = currentTiedObject.realizedObject.bodyChunks[abstractCord.tiedObjectBodyChunkIndexes[i]].pos;
         }
 
         //rope.Update(ropePos[0], ropePos[1]);
-        mRLinePhysics.Update();
+        linePhysics.Update();
     }
 
     //
@@ -314,8 +336,9 @@ public class CordItem : PlayerCarryableItem, IDrawable
     {
         sLeaser.sprites = new FSprite[totalSprites]
         {
-            TriangleMesh.MakeLongMesh(mRLinePhysics.parts.Length, pointyTip: false, customColor: true)
+            TriangleMesh.MakeLongMesh(linePhysics.parts.Length, pointyTip: false, customColor: true)
         };
+
         AddToContainer(sLeaser, rCam, null);
     }
 
@@ -323,11 +346,11 @@ public class CordItem : PlayerCarryableItem, IDrawable
     {
         var triMesh = sLeaser.sprites[cordSprite] as TriangleMesh;
 
-        Vector2 startingStalksChangeInPos = Vector2.Lerp(mRLinePhysics.parts[0].lastPos, mRLinePhysics.parts[0].pos, timeStacker);
-        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(mRLinePhysics.parts[1].lastPos, mRLinePhysics.parts[1].pos, timeStacker), startingStalksChangeInPos) * cordGraphicsPartLength;
-        for (int i = 0; i < mRLinePhysics.parts.Length; i++)
+        Vector2 startingStalksChangeInPos = Vector2.Lerp(linePhysics.parts[0].lastPos, linePhysics.parts[0].pos, timeStacker);
+        startingStalksChangeInPos += Custom.DirVec(Vector2.Lerp(linePhysics.parts[1].lastPos, linePhysics.parts[1].pos, timeStacker), startingStalksChangeInPos) * cordGraphicsPartLength;
+        for (int i = 0; i < linePhysics.parts.Length; i++)
         {
-            Vector2 currentStalkPos = Vector2.Lerp(mRLinePhysics.parts[i].lastPos, mRLinePhysics.parts[i].pos, timeStacker);
+            Vector2 currentStalkPos = Vector2.Lerp(linePhysics.parts[i].lastPos, linePhysics.parts[i].pos, timeStacker);
             Vector2 normalized = (currentStalkPos - startingStalksChangeInPos).normalized;
             Vector2 currentStalkPerpindicularAngle = Custom.PerpendicularVector(normalized);
             float distanceFromFirstStalk = Vector2.Distance(currentStalkPos, startingStalksChangeInPos) / 5f;
@@ -376,7 +399,7 @@ public class CordItem : PlayerCarryableItem, IDrawable
         }
     }
 
-    public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    public virtual void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
         cordColor = palette.blackColor;
         UpdateColor(sLeaser, false);

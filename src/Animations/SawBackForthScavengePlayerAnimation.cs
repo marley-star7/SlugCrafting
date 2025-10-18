@@ -1,7 +1,7 @@
 ﻿
 namespace SlugCrafting.Animations;
 
-public class SawBackForthScavengePlayerHandAnimation : MRAnimation<Player>
+public class SawBackForthScavengePlayerHandAnimation : RWAnimation<Player>
 {
     /// <summary>
     /// How fast the saw moves back and forth.

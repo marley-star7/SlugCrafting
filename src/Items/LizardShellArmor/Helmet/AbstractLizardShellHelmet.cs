@@ -17,6 +17,6 @@ public class AbstractLizardShellHelmet : AbstractLizardShellArmor
         LizardShellHelmetItemProperties properties = LizardShellHelmetItemProperties.GetPropertiesForType(type);
 
         if (realizedObject == null)
-            realizedObject = new LizardShellHelmetItem(this, new LizardShellHelmet(this, properties));
+            realizedObject = new LizardShellHelmetItem(this, null);
     }
 }

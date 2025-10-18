@@ -1,6 +1,6 @@
 ﻿namespace SlugCrafting.Animations;
 
-public class BiteStruggleAnimation : MRAnimation<Player>
+public class BiteStruggleAnimation : RWAnimation<Player>
 {
     public int hand = 1;
 

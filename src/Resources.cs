@@ -24,6 +24,8 @@ public static class Resources
         Futile.atlasManager.LoadAtlas(AtlasesDir + "/blueLizardShellHelmet");
 
         //-- ICONS
-        Futile.atlasManager.LoadAtlas(AtlasesDir + "/iconsLizardHeadShell");
+        Futile.atlasManager.LoadAtlas(AtlasesDir + "/Symbol_LizardHeadShells");
+        Futile.atlasManager.LoadAtlas(AtlasesDir + "/Symbol_Cords");
+        Futile.atlasManager.LoadAtlas(AtlasesDir + "/Symbol_Knife");
     }
 }

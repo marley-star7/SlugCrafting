@@ -1,10 +1,112 @@
-
-using System.Security.Policy;
+using MonoMod.Cil;
 
 namespace SlugCrafting;
 
 internal static class PlayerHooks
 {
+	internal static void ApplyHooks()
+	{
+		On.Player.Update += PlayerHooks.Player_Update;
+		On.Player.MovementUpdate += PlayerHooks.Player_MovementUpdate;
+		On.Player.GrabUpdate += PlayerHooks.Player_GrabUpdate;
+		On.Player.EatMeatUpdate += PlayerHooks.Player_EatMeatUpdate;
+		On.Player.MaulingUpdate += PlayerHooks.Player_MaulingUpdate;
+
+        IL.Player.UpdateBodyMode += PlayerHooks.Player_UpdateBodyMode;
+
+		On.Player.CanIPickThisUp += PlayerHooks.Player_CanIPickThisUp;
+		On.Player.Grabbed += PlayerHooks.Player_Grabbed;
+		On.Player.HeavyCarry += PlayerHooks.Player_HeavyCarry;
+		On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
+
+		On.Player.SetMalnourished += PlayerHooks.Player_SetMalnourished;
+
+		On.Creature.Violence += PlayerHooks.Creature_Violence;
+
+		MREvents.OnPlayerGrab += PlayerHooks.OnPlayerGrab;
+		MREvents.OnPlayerReleaseGrasp += PlayerHooks.OnPlayerReleaseGrasp;
+		MREvents.OnPlayerSwitchGrasp += PlayerHooks.OnPlayerSwitchGrasp;
+	}
+
+    private static void Player_ctor(On.Player.orig_ctor orig, Player self, AbstractCreature abstractCreature, World world)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void RemoveHooks()
+	{
+		On.Player.Update -= PlayerHooks.Player_Update;
+		On.Player.GrabUpdate -= PlayerHooks.Player_GrabUpdate;
+		On.Player.MovementUpdate -= PlayerHooks.Player_MovementUpdate;
+		On.Player.EatMeatUpdate -= PlayerHooks.Player_EatMeatUpdate;
+		On.Player.MaulingUpdate -= PlayerHooks.Player_MaulingUpdate;
+
+		IL.Player.UpdateBodyMode -= PlayerHooks.Player_UpdateBodyMode;
+
+		On.Player.CanIPickThisUp -= PlayerHooks.Player_CanIPickThisUp;
+		On.Player.Grabbed -= PlayerHooks.Player_Grabbed;
+		On.Player.HeavyCarry -= PlayerHooks.Player_HeavyCarry;
+		On.Player.TerrainImpact -= PlayerHooks.Player_TerrainImpact;
+
+		On.Player.SetMalnourished -= PlayerHooks.Player_SetMalnourished;
+
+		On.Creature.Violence -= PlayerHooks.Creature_Violence;
+
+		MREvents.OnPlayerGrab -= PlayerHooks.OnPlayerGrab;
+		MREvents.OnPlayerReleaseGrasp -= PlayerHooks.OnPlayerReleaseGrasp;
+		MREvents.OnPlayerSwitchGrasp -= PlayerHooks.OnPlayerSwitchGrasp;
+	}
+
+    private static void Player_UpdateBodyMode(ILContext il)
+    {
+        /*
+        try
+        {
+            ILCursor cursor = new ILCursor(il);
+            cursor.Index = 0;
+
+            ILLabel climbBeamSkipLabel = null;
+
+            // More specific pattern matching to target the exact location
+            if (cursor.TryGotoNext(MoveType.Before,
+                // x => x.MatchLdarg(0), // We steal this ldarg for ourself
+                x => x.MatchCall<Creature>("get_mainBodyChunk"),
+                x => x.MatchLdfld<BodyChunk>("pos"),
+                x => x.MatchCallvirt<Room>("GetTile"),
+                x => x.MatchLdfld<Room.Tile>("verticalBeam"),
+                x => x.MatchBrfalse(out _),
+				x => x.MatchLdsfld<ModManager>("MSC"),
+				x => x.MatchBrfalse(out _),
+				x => x.MatchLdarg(0),
+				x => x.MatchLdfld<Player>("monkAscension"),
+				x => x.MatchBrtrue(out climbBeamSkipLabel) // This is the branch to IL_2DF4
+				)
+			)
+            {
+
+                // Insert our custom condition check right before the monkAscension check
+                cursor.EmitDelegate((Player player) =>
+                {
+                    // Do not climb poles if we are crafting.
+                    return player.GetPlayerCraftingData().isHandCrafting;
+                });
+
+                // Branch to the original failure case if our condition fails
+                cursor.Emit(OpCodes.Brtrue, climbBeamSkipLabel);
+				cursor.Emit(OpCodes.Ldarg_0);
+			}
+            else
+            {
+                Plugin.LogGameError("Error in IL Hook for Player_UpdateBodyMode:" + il);
+			}
+        }
+        catch (Exception e)
+        {
+            Plugin.LogGameError("Error in Player_UpdateBodyMode: " + e.Message + e.StackTrace);
+		}
+        */
+	}
+
     internal static void Creature_Violence(On.Creature.orig_Violence orig, Creature self, BodyChunk source, Vector2? directionAndMomentum, BodyChunk hitChunk, PhysicalObject.Appendage.Pos hitAppendage, Creature.DamageType type, float damage, float stunBonus)
     {
         //-- MS7: We create a class of the parameters so we can easily adjust sent data however the accessories please before it reaches the player.
@@ -16,7 +118,10 @@ internal static class PlayerHooks
 
             for (int i = 0; i < playerCraftingData.accessories.Count; i++)
             {
-                playerCraftingData.accessories[i].PreWearerViolence(violenceContext);
+                if (playerCraftingData.accessories[i].TryGetModule<ArmorAccessoryModule>(out var armorAccessoryModule))
+                {
+                    armorAccessoryModule.PreWearerViolence(violenceContext);
+                }
             }
         }
 
@@ -135,16 +240,25 @@ internal static class PlayerHooks
 
         // --- Bundle Inputs Stuff ---
 
-        if (player.CanPhysicalCraft())
+        if (player.CanHandCraft())
         {
             // --- Crafts Inputs Stuff ---
-            if (player.JustPressed(Inputs.Craft))
-                player.CraftInputStart();
-            else if (player.IsPressed(Inputs.Craft))
-                player.CraftInputUpdate();
-            else if (player.JustReleased(Inputs.Craft))
-                player.CraftInputRelease();
-        }
+            if (player.IsPressed(Inputs.Craft) && player.IsPressed(PlayerKeybind.Up))
+            {
+                if (player.JustPressed(Inputs.Craft) || player.JustPressed(PlayerKeybind.Up))
+                {
+                    player.CraftInputStart();
+                }
+                else
+                {
+                    player.CraftInputUpdate();
+                }
+            }
+			else if (player.JustReleased(Inputs.Craft) || player.JustReleased(PlayerKeybind.Up))
+			{
+				player.CraftInputRelease();
+			}
+		}
 
         if (player.IsPressed(Inputs.AlternateUse))
             player.WhileInputAlternateUsePressed();
@@ -152,6 +266,14 @@ internal static class PlayerHooks
             player.OnInputAlternateUseJustReleased();
 
         orig(player, eu);
+
+        /*
+        if (player.vinePos != null && player.vinePos.vine is PoleMimic poleMimic)
+        {
+            var appendagePos = new PhysicalObject.Appendage.Pos(poleMimic.appendages[poleMimic.appendages.Count - 1], 1, 1);
+            poleMimic.SeverAndCordify(appendagePos);
+        }
+        */
     }
 
     //
@@ -162,25 +284,20 @@ internal static class PlayerHooks
     {
         // Cancel the physical craft if we have one.
         player.CancelPhysicalCraft();
-        player.CheckGraspsForPossiblePhysicalCraft();
+        player.CheckGraspsForPossibleHandCraft();
     }
 
     internal static void OnPlayerReleaseGrasp(this Player player, int grasp)
     {
         var playerSlugCraftingData = player.GetPlayerCraftingData();
 
-        if (grasp <= 1) // Only check for the first two grasps for a release, if so there is obviously no possible craft currently.
-        {
-            playerSlugCraftingData.currentPossibleHandCraft = null;
-        }
-
         // Update the current possible crafts
-        playerSlugCraftingData.currentPossibleHandCraft = player.GetGraspsHandCraft();
+        player.CheckGraspsForPossibleHandCraft();
     }
 
     internal static void OnPlayerGrab(Player player, PhysicalObject grabbedObj, int graspUsed, int chunkGrabbed, Creature.Grasp.Shareability shareability, float dominance, bool overrideEquallyDominant, bool pacifying)
     {
-        player.CheckGraspsForPossiblePhysicalCraft();
+        player.CheckGraspsForPossibleHandCraft();
     }
 
     internal static bool Player_CanIPickThisUp(On.Player.orig_CanIPickThisUp orig, Player self, PhysicalObject obj)

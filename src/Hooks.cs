@@ -16,9 +16,8 @@ public static partial class Hooks
         Plugin.LogInfo("Finish rain world");
 
 
-        ApplyPlayerHooks();
+        PlayerHooks.ApplyHooks();
         ApplyPlayerGraphicsHooks();
-        ApplySlugcatHandHooks();
         Plugin.LogInfo("Finish player");
 
         RegionStateHooks.ApplyHooks();
@@ -49,9 +48,8 @@ public static partial class Hooks
 
         On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
 
-        RemovePlayerHooks();
+        PlayerHooks.RemoveHooks();
         RemovePlayerGraphicsHooks();
-        RemoveSlugcatHandHooks();
 
         RegionStateHooks.RemoveHooks();
 
@@ -65,52 +63,6 @@ public static partial class Hooks
         RemoveSporePlantHooks();
 
         //RemoveSparkHooks();
-    }
-
-    // Player
-
-    private static void ApplyPlayerHooks()
-    {
-        On.Player.Update += PlayerHooks.Player_Update;
-        On.Player.MovementUpdate += PlayerHooks.Player_MovementUpdate;
-        On.Player.GrabUpdate += PlayerHooks.Player_GrabUpdate;
-        On.Player.EatMeatUpdate += PlayerHooks.Player_EatMeatUpdate;
-        On.Player.MaulingUpdate += PlayerHooks.Player_MaulingUpdate;
-
-        On.Player.CanIPickThisUp += PlayerHooks.Player_CanIPickThisUp;
-        On.Player.Grabbed += PlayerHooks.Player_Grabbed;
-        On.Player.HeavyCarry += PlayerHooks.Player_HeavyCarry;
-        On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
-
-        On.Player.SetMalnourished += PlayerHooks.Player_SetMalnourished;
-
-        On.Creature.Violence += PlayerHooks.Creature_Violence;
-
-        MREvents.OnPlayerGrab += PlayerHooks.OnPlayerGrab;
-        MREvents.OnPlayerReleaseGrasp += PlayerHooks.OnPlayerReleaseGrasp;
-        MREvents.OnPlayerSwitchGrasp += PlayerHooks.OnPlayerSwitchGrasp;
-    }
-
-    private static void RemovePlayerHooks()
-    {
-        On.Player.Update -= PlayerHooks.Player_Update;
-        On.Player.GrabUpdate -= PlayerHooks.Player_GrabUpdate;
-        On.Player.MovementUpdate -= PlayerHooks.Player_MovementUpdate;
-        On.Player.EatMeatUpdate -= PlayerHooks.Player_EatMeatUpdate;
-        On.Player.MaulingUpdate -= PlayerHooks.Player_MaulingUpdate;
-
-        On.Player.CanIPickThisUp -= PlayerHooks.Player_CanIPickThisUp;
-        On.Player.Grabbed -= PlayerHooks.Player_Grabbed;
-        On.Player.HeavyCarry -= PlayerHooks.Player_HeavyCarry;
-        On.Player.TerrainImpact -= PlayerHooks.Player_TerrainImpact;
-
-        On.Player.SetMalnourished -= PlayerHooks.Player_SetMalnourished;
-
-        On.Creature.Violence -= PlayerHooks.Creature_Violence;
-
-        MREvents.OnPlayerGrab -= PlayerHooks.OnPlayerGrab;
-        MREvents.OnPlayerReleaseGrasp -= PlayerHooks.OnPlayerReleaseGrasp;
-        MREvents.OnPlayerSwitchGrasp -= PlayerHooks.OnPlayerSwitchGrasp;
     }
 
     // PlayerGraphics
@@ -131,20 +83,6 @@ public static partial class Hooks
 
         //On.PlayerGraphics.DrawSprites += PlayerGraphicsHooks.PlayerGraphics_DrawSprites;
         On.PlayerGraphics.ApplyPalette -= PlayerGraphicsHooks.PlayerGraphics_ApplyPalette;
-    }
-
-    // SlugcatHand
-
-    private static void ApplySlugcatHandHooks()
-    {
-        On.SlugcatHand.EngageInMovement += SlugcatHandHooks.SlugcatHand_EngageInMovement;
-        On.SlugcatHand.Update += SlugcatHandHooks.SlugcatHand_Update;
-    }
-
-    private static void RemoveSlugcatHandHooks()
-    {
-        On.SlugcatHand.EngageInMovement -= SlugcatHandHooks.SlugcatHand_EngageInMovement;
-        On.SlugcatHand.Update -= SlugcatHandHooks.SlugcatHand_Update;
     }
 
     // PhysicalObject
@@ -250,19 +188,5 @@ public static partial class Hooks
         On.SporePlant.Update -= SporePlantHooks.SporePlant_Update;
         On.SporePlant.Collide -= SporePlantHooks.SporePlant_Collide;
         On.SporePlant.DrawSprites -= SporePlantHooks.SporePlant_DrawSprites;
-    }
-
-    // Spark
-
-    private static void ApplySparkHooks()
-    {
-        On.Spark.Update += SparkHooks.Spark_Update;
-        On.Spark.DrawSprites += SparkHooks.Spark_DrawSprites;
-    }
-
-    private static void RemoveSparkHooks()
-    {
-        On.Spark.Update -= SparkHooks.Spark_Update;
-        On.Spark.DrawSprites -= SparkHooks.Spark_DrawSprites;
     }
 }

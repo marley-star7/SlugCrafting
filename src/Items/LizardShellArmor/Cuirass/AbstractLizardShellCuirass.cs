@@ -17,6 +17,6 @@ public class AbstractLizardShellCuirass : AbstractLizardShellArmor
         LizardShellCuirassItemProperties itemProperties = LizardShellCuirassItemProperties.GetPropertiesForType(type);
 
         if (realizedObject == null)
-            realizedObject = new LizardShellCuirassItem(this, new LizardShellCuirass(this, itemProperties));
+            realizedObject = new LizardShellCuirassItem(this);
     }
 }

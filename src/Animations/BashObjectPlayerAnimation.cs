@@ -2,7 +2,7 @@ using Noise;
 
 namespace SlugCrafting.Animations;
 
-public class BashObjectPlayerAnimation : MRAnimation<Player>
+public class BashObjectPlayerAnimation : RWAnimation<Player>
 {
     // TODO: base it off the chunk position rather than hand.
     // TODO: add secret functionality to hit in time with the music lol
@@ -131,10 +131,6 @@ public class BashObjectPlayerAnimation : MRAnimation<Player>
 
         var beatingHand = playerGraphics.hands[beatingObjectIndex];
         var beatedHand = playerGraphics.hands[beatedObjectIndex];
-
-        // For some reason this works better?
-        //beatingHand.reachingForObject = true;
-        //beatingHand.absoluteHuntPos = Vector2.Lerp(self.drawPositions[0, 0] + Vector2.up * 5, beatedHand.pos, currentBeatProgress);
 
         Vector2 directionBeating = (fullRiseHandOffsetPos - fullDescentHandOffsetPos).normalized;
         float beatingKnockback = 2.5f;

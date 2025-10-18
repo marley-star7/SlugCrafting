@@ -88,6 +88,9 @@
 		<!-- Copy main mod DLL to plugins -->
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="../slugcrafting/plugins/" />
 		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="../slugcrafting/plugins/" />
+		
+		<!-- Copy main mod DLL to other mods -->
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\project017\lib" />
 
 		<!-- Copy dependencies (e.g., System.Text.Json) to libs -->
 		<ItemGroup>

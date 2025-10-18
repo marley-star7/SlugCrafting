@@ -6,6 +6,8 @@ public class CordFisob : Fisob
 
     public CordFisob() : base(Enums.AbstractObjectType.Cord)
     {
+        Icon = new CordIcon();
+
         CordProperties.typesProperties.Add(Enums.AbstractObjectType.Cord, properties);
 
         SandboxPerformanceCost = new(linear: 0.1f, exponential: 0f);

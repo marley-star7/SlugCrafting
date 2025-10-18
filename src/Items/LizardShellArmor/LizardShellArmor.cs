@@ -1,4 +1,6 @@
-﻿namespace SlugCrafting.Items;
+﻿using MRCustom.Modules.PhysicalObjects;
+
+namespace SlugCrafting.Items;
 
 public abstract class LizardShellArmor
 {
@@ -7,7 +9,8 @@ public abstract class LizardShellArmor
     public LizardShellArmorItemProperties ItemProperties;
     public LizardShellArmorAccessoryProperties AccessoryProperties => ItemProperties.ArmorAccessoryProperties;
 
-    public LizardEffectColorGraphics lizardEffectColorGraphics;
+    public LizardShellEffectsModule lizardShellEffectsModule;
+    public LizardEffectColorGraphics LizardShellEffectColorGraphics => lizardShellEffectsModule.effectColorGraphics;
 
     public SpriteLayerGroup[] spriteLayerGroups;
 
@@ -20,12 +23,11 @@ public abstract class LizardShellArmor
 
     public float terrainImpactNoiseModifier = 3;
 
-    public LizardShellArmor(AbstractLizardShellArmor abstractLizardShellArmor, LizardShellArmorItemProperties itemProperties)
+    public LizardShellArmor(AbstractLizardShellArmor abstractLizardShellArmor, LizardShellArmorItemProperties itemProperties, LizardShellEffectsModule lizardShellEffectsModule)
     {
         this.AbstractLizardShellArmor = abstractLizardShellArmor;
         this.ItemProperties = itemProperties;
-
-        lizardEffectColorGraphics = new LizardEffectColorGraphics(itemProperties.ArmorAccessoryProperties.DefaultShellColor);
+        this.lizardShellEffectsModule = lizardShellEffectsModule;
 
         spriteLayerGroups = AccessoryProperties.SpriteLayerGroups;
         spriteEffectGroups = AccessoryProperties.SpriteEffectGroups;
@@ -33,14 +35,15 @@ public abstract class LizardShellArmor
 
     public void Update(bool eu)
     {
-        lizardEffectColorGraphics.Update();
+        lizardShellEffectsModule.Update();
+        lizardShellEffectsModule.effectColorGraphics.brightness = Mathf.InverseLerp(0, AccessoryProperties.MaxHealth, AbstractLizardShellArmor.health);
     }
 
     public abstract void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam);
 
     protected void ApplySpriteEffectGroupColors(RoomCamera.SpriteLeaser sLeaser)
     {
-        var effectColor = lizardEffectColorGraphics.ShellColor(AbstractLizardShellArmor.health, ItemProperties.ArmorAccessoryProperties.MaxHealth);
+        var effectColor = LizardShellEffectColorGraphics.ShellColor();
         for (int i = 0; i < effectColorGroup.sprites.Length; i++)
         {
             sLeaser.sprites[effectColorGroup.sprites[i]].color = effectColor;
@@ -77,7 +80,7 @@ public abstract class LizardShellArmor
 
     public virtual void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        lizardEffectColorGraphics.ApplyPalette(palette);
+        LizardShellEffectColorGraphics.ApplyPalette(palette);
         blackColor = palette.blackColor;
     }
 
@@ -90,55 +93,18 @@ public abstract class LizardShellArmor
 
     public virtual void DoTerrainImpactEffects(BodyChunk impactChunk, Vector2 direction, float speed, bool firstContact)
     {
-        var owner = impactChunk.owner;
-        var vol = Mathf.Clamp(speed * 0.07f, 0, 0.7f); //--MS7: Limit volume to not blow your ears off lol.
-        var noiseStrength = Mathf.Clamp(speed * terrainImpactNoiseModifier, 0, 100f);
-
-        owner.room.PlaySound(SoundID.Spear_Fragment_Bounce, impactChunk, false, vol, Random.Range(0.8f, 1.2f));
-        owner.room.InGameNoise(new InGameNoise(impactChunk.pos, noiseStrength, owner, 1f));
-        int sparkNum = (int)Random.Range(vol * 2, vol * 7);
-
-        //lizardEffectColorGraphics.Flicker((int)Mathf.Max(speed * 0.3f, 30));
-        SpawnSparks(owner, impactChunk.pos, direction * speed, sparkNum);
-    }
-
-    private static float Rand => Random.value;
-
-    private void SpawnSparks(UpdatableAndDeletable owner, Vector2 sourcePos, Vector2 directionAndMomentum, int sparkNum)
-    {
-        Color sparkColor = lizardEffectColorGraphics.ShellColor(AbstractLizardShellArmor.health, ItemProperties.ArmorAccessoryProperties.MaxHealth);
-
-        for (int k = 0; k < sparkNum; k++)
-        {
-            //-- MS7: Figure out how to make sparks have the lizard graphics thing where they change color, without NEEDING lizard graphics.
-            Vector2 pos = sourcePos + Custom.DegToVec(Rand * 360f) * 5f * Rand;
-            Vector2 vel = -directionAndMomentum * -0.1f + Custom.DegToVec(Rand * 360f) * Mathf.Lerp(0.2f, 0.4f, Rand) * directionAndMomentum.magnitude;
-            owner.room.AddObject(new Spark(pos, vel, sparkColor, null, 10, 170));
-        }
+        lizardShellEffectsModule.DoTerrainImpactEffects(impactChunk, direction, speed, firstContact);
     }
 
     public void Shatter(UpdatableAndDeletable owner, Vector2 pos)
     {
-        for (int k = 0; k < 5; k++)
-        {
-            owner.room.AddObject(new LizardShellFragment(pos, Custom.RNV() * Mathf.Lerp(5f, 15f, UnityEngine.Random.value), lizardEffectColorGraphics.ShellColor(AbstractLizardShellArmor.health, ItemProperties.ArmorAccessoryProperties.MaxHealth)));
-        }
+        lizardShellEffectsModule.DoShatterEffects(pos);
         owner.Destroy();
     }
 
     public void DoDeflectEffects(BodyChunk chunkHit, Vector2 sourcePos, Vector2 directionAndMomentum, float damage, float stunBonus)
     {
-        var owner = chunkHit.owner;
-        //-- MS7: Required visual and audio queue for deflecting a hit.
-        Color sparkColor;
-
-        float flickerTimeF = (damage * 30f + stunBonus);
-        int flickerTime = (int)(Mathf.Clamp(flickerTimeF, 25f, damage * 30f));
-        lizardEffectColorGraphics.WhiteFlicker(flickerTime);
-
-        SpawnSparks(owner, sourcePos, directionAndMomentum, Random.Range(3, 8));
-        owner.room.AddObject(new StationaryEffect(sourcePos, new Color(1f, 1f, 1f), null, StationaryEffect.EffectType.FlashingOrb));
-        owner.room.PlaySound(SoundID.Spear_Bounce_Off_Creauture_Shell, chunkHit);
+        lizardShellEffectsModule.DoDeflectEffects(chunkHit, sourcePos, directionAndMomentum, damage, stunBonus);
     }
 
     /// <summary>
